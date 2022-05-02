@@ -12,11 +12,15 @@
 3. 交互式语言：可以再命令提示符“>>>”后直接执行，比如cmd、Python源文件下的交互式命令行程序
 4. 面向对象
 
+
+
 ###	安装目录下各文件作用
 
 1. IDLE是python自带的集成开发环境，可以运行调试代码，编写代码并保存等等
 2. Python3.x(64-bit)是交互式python环境，这里写的代码不能保存到文件中。命令提示符输入python就是运行了这个文件。
 3. Python3.x Module docs打开可以看到本机已安装的各种python的包的信息。
+
+
 
 ### pip源
 
@@ -99,15 +103,21 @@ pycharm在执行后将光标移到执行界面窗口	`alt+4`
    3. 点击Pycharm的File>>Invalidate Caches / Restart…，然后选择Invalidate and Restart。这个操作清空了项目中的缓存信息
    4. 重建整个工程并重新配置
 
+
+
 ### TODO
 
 待完成代码，类似C的空函数占位
 
 eg：#	TODO（“xxx”）
 
+
+
 ###	创建虚拟环境意义
 
 如果把包安装在解释器源文件夹中，假设做项目A，用的包版本要是selenium2.48.0 和 lxml=1.0.0，做项目B 必须用包版本是selenium2.50.0 和 lxml =1.2.0，那就要把selenium2.48.0 和 lxml=1.0.0卸载了并安装selenium2.50.0 和 lxml =1.2.0，但是这样换做类似项目A的包版本要求又得把以前的卸载了，装回selenium2.48.0 和 lxml=1.0.0，这样来来去去很麻烦，所以不如创建虚拟环境A装selenium2.48.0 和 lxml=1.0.0和虚拟环境B装selenium==2.50.0 和 lxml =1.2.0，做项目A就用虚拟环境A，项目B用虚拟环境B，互不干扰就方便多了。
+
+
 
 ###	新建文件模板配置
 
@@ -145,29 +155,129 @@ ${MONTH_NAME_FULL} - 一个月的全名。 示例：1月，2月等
 
 ##	模块（Module）
 
-为了编写可维护的代码，我们把很多函数分组，分别放到不同的文件里，这样，每个文件包含的代码就相对较少，在Python中，一个`.py`文件就称之为一个**模块（Module）**。
+为了编写可维护的代码，我们把很多函数分组，分别放到不同的文件里，这样，每个文件包含的代码就相对较少，在Python中，一个`.py`文件就称之为一个模块。
 
-**相同**名字的函数和变量完全**可以**分别存在不同的模块中，但是也要注意，**尽量不要与内置函数名字冲突**。
+**相同**名字的函数和变量完全**可以**分别存在不同的模块中，但尽量不要与内置函数名字冲突。
+
+在调用模块中的函数、变量或者类时，需要在其前面加上"**模块名.**"作为前缀
+
+模块名是**区分字母大小写**的，不能以数字开头
+
+推荐先导入标准模块，再导入第三方模块，最后导入自定义模块
+
+
 
 ###	模块导入
 
 用 **import** 或者 **from...import** 来导入相应的模块。
 
-1. 将整个模块(somemodule)导入，格式为： 
+在导入模块时可以使用as关键字为其设置一个别名，方便调用模组
 
-   **import somemodule**
+==**导入模块时会自动在搜索路径中寻找对应的模块，如果发现就会立即导入，然后运行这个模块的源码并进行初始化**==
 
-2. 从某个模块中导入某个函数,格式为： 
+在使用import语句导入模块时，每执行一条import语句都会创建一个命名空间(namespace)并且在该命名空间中执行与模块相关的所有语句，如果不想在每次导入模块时都创建一个命名空间可以使用**from...import**语句，该语句可以将具体的定义导入到当亲爱按的命名空间中，调用时**无须添加前缀**可直接进行访问，但需保证导入的定义在当前的命名空间中是唯一的，否则后导入的同名定义会覆盖先导入的
 
-   **from somemodule import somefunction**
+> ​	命名空间命名空间是一个包含了变量名称们（键）和它们各自相应的对象们（值）的字典，可以理解为记录对象名字和对象之间对应关系的空间
 
-3. 从某个模块中导入多个函数,格式为：
+1. 将整个模块(somemodule)导入
 
-   **from somemodule import firstfunc, secondfunc, thirdfunc**
+   ```python
+   import modulename [as alias]
+   ```
 
-4. 将某个模块中的全部函数导入，格式为：
+   >[as alias]：给模块起的别名
 
-   **from somemodule import \***
+   同时导入多个模块可以使用"**,**"分隔
+
+2. 从某个模块中导入某个定义
+
+   ```python
+   from modulename import somefunction
+   ```
+
+   同时导入多个函数可以使用"**,**"分隔
+
+4. 将某个模块中的全部定义导入
+
+   ```python
+   from modulename import *
+   ```
+   
+   使用通配符*导入全部定义后可以通过显示dir()函数的值查看具体导入了哪些定义，dir() 函数一个排好序的字符串列表，内容是一个模块里定义过的名字，返回的列表容纳了在一个模块里定义的所有模块，变量和函数。
+
+
+
+###	模块搜索目录
+
+使用import语句导入模块时，默认情况下会按照一定顺序对模块进行查找
+
+> 1. 在当前目录下查找(即执行的Python脚本文件所在目录)
+> 2. 在 shell 变量PYTHONPATH(环境变量)下的每一个目录中查找
+> 3. 在Python的默认安装目录下查找
+>
+> 以上各个目录的具体位置保存在标准模块sys的sys.path变量中
+
+1. 临时添加
+
+   ```python
+   import sys
+   sys.path.append("file path")
+   ```
+
+   该方法只在执行当前文件的窗口中有效，窗口关闭后即失效
+
+2. 增加.pth文件
+
+   在Python安装目录下的Lib\site-packages子目录中创建一个拓展名为.pth的文件，在该文件中添加要导入模块所在的目录
+
+   创建.pth文件后需要重新打开要执行导入模块的Python文件
+
+   通过该方法添加的目录只在当前版本的Python中有效
+
+3. 在PYTHONPATH环境变量中添加
+
+   需要重新打开要执行导入模块的Python文件
+
+   通过该方法添加的目录可以在不同版本中共享
+
+
+
+###	以主程序运行
+
+为了导入模块时不执行模块中的某些操作，可以使用以主程序运行的方法，即在模块中将其放入一个if语句中
+
+```python
+if __name__ == "__main__":
+    block
+```
+
+添加该语句后，只有以模块本身为入口才会执行函数体
+
+> ​	每个模块的定义中都包含一个记录模块名称的变量\__name__，程序可以检查这个变量以确定它们是在那个模块中执行
+>
+> ​	顶级模块的\__name\__变量的值为\__main__
+
+
+
+###	引用标准模块和第三方模块
+
+1. 内置标准模块，又称为标准库，如 sys、time、math、json 模块等。内置 Python 模块一般都位于安装目录下 Lib 文件夹中
+
+   标准库：https://blog.csdn.net/weixin_43413451/article/details/120170568
+
+   帮助文档：Python安装路径下的Doc目录，拓展名为.chm的文件
+
+2. 第三方模块可以在Python官方推出的https://pypi.org/ 中找到
+
+   下载和安装第三方模块可以使用pip命令实现
+
+   ```python
+   pip <command> [modulename]
+   ```
+
+   > command：指定要执行的命令，如install、uninstall、list
+
+
 
 
 
@@ -175,14 +285,63 @@ ${MONTH_NAME_FULL} - 一个月的全名。 示例：1月，2月等
 
 为了避免模块名冲突，Python又引入了按目录来组织模块的方法，称为**包（Package）**。
 
+包是一个分层次的目录结构，它将一组功能相近的模块组织在一个目录下
+
 假设我们的`abc`和`xyz`这两个模块名字与其他模块冲突了，于是我们可以通过包来组织模块，避免冲突。方法是选择一个顶层包名，比如`mycompany`，按照如下目录存放：
 
-mycompany
-├─ \__init__.py
-├─ abc.py
-└─ xyz.py
+> mycompany
+>
+> > \__init__.py
+> >
+> > abc.py
+> >
+> > xyz.py
 
 引入了包以后，只要顶层的包名不与别人冲突，那所有模块都不会与别人冲突。现在，`abc.py`模块的名字就变成了`mycompany.abc`，类似的，`xyz.py`的模块名变成了`mycompany.xyz`。（类似于C语言中的结构体，abc.py、xyz.py变成了结构体中的成员）
+
+
+
+###	创建包
+
+创建包实际上就是创建一个文件夹，并且在该文件夹中创建一个名称为"\__init__.py"的Python文件。
+
+在\__init__.py文件中可以不编写任何代码
+
+在\__init__.py文件中所编写的代码会在导入包时自动执行，相当于初始化模块文件
+
+
+
+###	使用包
+
+在包中创建相应模块之后就可以使用import语句从包中加载模块
+
+1. import+完整包名+模块名
+
+   ```python
+   import settings.size
+   ```
+
+   使用该形式导入模块后，调用模块时需要带包前缀
+
+2. from+完整包名+import+模块名
+
+   ```python
+   from settings import size
+   ```
+
+   使用该形式导入模块后，调用模块时可不带包前缀
+
+3. from+完整包名+模块名+import+定义名
+
+   ```python
+   from settings.size import a,b
+   ```
+
+   使用该形式导入定义后，可直接使用定义
+
+   可使用通配符*导入全部定义
+
+
 
 
 
@@ -218,21 +377,13 @@ mycompany
    
       ![Python格式化输入输出](E:\Study Notes\Pictures\Python格式化输入输出.png)
 
-##	文件操作
 
-1. 输出
 
-   输出到文件中(与C相似,但需要用==/替换\\==)
+##	文件及目录操作
 
-   1. 打开文件
+在Python中内置了File(文件)对象
 
-      `open('文件绝对路径'，'a+')`
 
-   2. print('xxx',file=指向文件的文件指针)
-
-   3. 关闭文件
-
-      `文件指针.close()`
 
 
 
@@ -255,6 +406,8 @@ keyword.kwlist
 
 错误代码：“invalid syntax”
 
+
+
 ###	标识符
 
 标识符可以简单地理解成一个名字，主要用来标识变量、函数、类、模块和其他对象的名称
@@ -267,6 +420,8 @@ keyword.kwlist
    2. 以双下划线开头的代表类的私有成员
    3. 以双下划线开头和结尾的代表 Python 里特殊方法专用的标识，如 \__init__() 代表类的构造函数
 5. 可以同一行显示多条语句，方法是用分号 **;**分开
+
+
 
 ###	运算符
 
@@ -316,11 +471,15 @@ keyword.kwlist
 
    ![image-20220221001836009](E:\Study Notes\Pictures\Python运算符优先级.png)
 
+
+
 ###	注释
 
 1. 单行注释用 **#** 
 2. 多行注释可以用一对 **'''** 和 **"""**
 2. 中文编码声明注释 **# -\*- coding:编码 -\*-**
+
+
 
 ###	代码组
 
@@ -329,6 +488,8 @@ keyword.kwlist
 首行以关键字开始，以冒号( : )结束
 
 首行及后面的代码组称为一个子句(clause)
+
+
 
 ###	 命令行参数
 
@@ -360,7 +521,7 @@ keyword.kwlist
 
 
 
-##	常用函数
+##	常用方法
 
 1. type()用于获取变量数据类型
 2. id()用于获取变量在内存中的地址
@@ -436,6 +597,8 @@ keyword.kwlist
 
 内置的 type() 函数可以用来查询变量所指的对象类型
 
+
+
 ###	Sequence（序列）
 
 一块用于存放多个值的连续内存空间，每一个值(称为元素)都分配一个数字，称为**索引**或位置，类似C语言中的数组下标
@@ -457,6 +620,8 @@ keyword.kwlist
 4. 乘法(multiplying)：Python中使用数字n乘以一个序列会生成原序列被重复n次的新序列
 
    可初始化指定长度的列表：emptylist=[None]*x
+
+
 
 ####	String（字符串）
 
@@ -545,9 +710,9 @@ keyword.kwlist
          strnew="*".join(listname)
      ```
 
-     string：字符串类型，用于指定合并时的分隔符
-
-     iterable：可迭代对象，该迭代对象中的所有元素(字符串表示)将被合并成一个新的字符串
+    > string：字符串类型，用于指定合并时的分隔符
+>
+    > iterable：可迭代对象，该迭代对象中的所有元素(字符串表示)将被合并成一个新的字符串
 
      使用join()方法时，第一个元素前不加分隔符
 
@@ -561,13 +726,13 @@ keyword.kwlist
          str.count(sub, start= 0,end=len(string))
          ```
 
-         str：原字符串
-
-         sub：要检索的子字符串
-
-         start：可选参数，表示检索范围的起始位置的索引，如果不指定则从头开始检索
-
-         end：可选参数，表示检索范围的结束位置的索引，如果不指定则一直检索到结尾
+         > str：原字符串
+>
+         > sub：要检索的子字符串
+>
+         > start：可选参数，表示检索范围的起始位置的索引，如果不指定则从头开始检索
+>
+         > end：可选参数，表示检索范围的结束位置的索引，如果不指定则一直检索到结尾
 
      2. find()方法
 
@@ -627,7 +792,7 @@ keyword.kwlist
          str.lstrip([chars])
          ```
 
-         chars：可选参数，用于指定要去除的字符，可以指定多个
+         > chars：可选参数，用于指定要去除的字符，可以指定多个
 
      2. rstrip()方法
 
@@ -637,7 +802,7 @@ keyword.kwlist
          str.rstrip([chars])
          ```
 
-         chars：可选参数，用于指定要去除的字符，可以指定多个
+         > chars：可选参数，用于指定要去除的字符，可以指定多个
 
      3. strip()方法
 
@@ -647,7 +812,7 @@ keyword.kwlist
          str.strip([chars])
          ```
 
-         chars：可选参数，用于指定要去除的字符，可以指定多个
+         > chars：可选参数，用于指定要去除的字符，可以指定多个
 
 15. 格式化字符串
 
@@ -659,17 +824,17 @@ keyword.kwlist
          "%[+][-][0][m][.n]格式化字符"%exp
          ```
 
-         +：可选参数，用于指定右对齐，正数前方加正号，负数前方加负号
-
-         -：可选参数，用于指定左对齐，正数前方无符号，负数前方加负号
-
-         0：可选参数，表示右对齐，正数前方无符号，负数前方加负号，用0填充空白处
-
-         m：可选参数，表示占有宽度
-
-         .n：可选参数，表示小数点后保留的位数
-
-         exp：要转换的项，如果指定的项有多个则需要通过元组的形式进行指定
+         > +：可选参数，用于指定右对齐，正数前方加正号，负数前方加负号
+    >
+         > -：可选参数，用于指定左对齐，正数前方无符号，负数前方加负号
+    >
+         > 0：可选参数，表示右对齐，正数前方无符号，负数前方加负号，用0填充空白处
+    >
+         > m：可选参数，表示占有宽度
+    >
+         > .n：可选参数，表示小数点后保留的位数
+    >
+         > exp：要转换的项，如果指定的项有多个则需要通过元组的形式进行指定
 
          格式化字符：用于指定类型
 
@@ -683,9 +848,9 @@ keyword.kwlist
          str.format(args)
          ```
 
-         format：用于指定字符串的显示模板
-
-         args：用于指定要转换的项，如果有多项要用逗号进行分隔
+         > format：用于指定字符串的显示模板
+         >
+         > args：用于指定要转换的项，如果有多项要用逗号进行分隔
 
          创建模板时要用"{}" ":"指定占位符
 
@@ -693,21 +858,21 @@ keyword.kwlist
          {[index][: [[fill]align] [sign] [#] [width] [.precision] [type] ]}
          ```
 
-         index：可选参数，用于指定要设置格式的对象在参数列表中的索引位置，索引值从0开始，默认根据值的先后顺序自动分配
-
-         fill：可选参数，用于指定空白处填充的字符
-
-         align：可选参数，用于指定对齐方式("<"表示内容左对齐，">"表示内容右对齐，"="表示内容右对齐且符号放在填充内容的最左侧且只对数字类型有效，"^"表示内容居中)，需要配合width一起使用
-
-         sign：可选参数，"+"表示正数加正号负数加负号，"-"表示正数不变负数加负号，" "表示正数加空格负数加负号
-
-         #：可选参数，对于二进制、八进制、十六进制数，会显示0b/0o/0x前缀
-
-         width：可选参数，用于指定所占宽度
-
-         .precision：可选参数，用于指定保留的小数位数
-
-         type：可选参数，用于指定类型
+         > index：可选参数，用于指定要设置格式的对象在参数列表中的索引位置，索引值从0开始，默认根据值的先后顺序自动分配
+         >
+         > fill：可选参数，用于指定空白处填充的字符
+         >
+         > align：可选参数，用于指定对齐方式("<"表示内容左对齐，">"表示内容右对齐，"="表示内容右对齐且符号放在填充内容的最左侧且只对数字类型有效，"^"表示内容居中)，需要配合width一起使用
+         >
+         > sign：可选参数，"+"表示正数加正号负数加负号，"-"表示正数不变负数加负号，" "表示正数加空格负数加负号
+         >
+         > #：可选参数，对于二进制、八进制、十六进制数，会显示0b/0o/0x前缀
+         >
+         > width：可选参数，用于指定所占宽度
+         >
+         > .precision：可选参数，用于指定保留的小数位数
+         >
+         > type：可选参数，用于指定类型
 
          当一个模板中出现多个占位符时，指定索引位置的规范需统一，即全部采用手动指定或全部采用自动指定
     
@@ -721,9 +886,9 @@ keyword.kwlist
           str.encode([encoding="xxx"],[errors="yyy"])
           ```
 
-          encoding=" "：可选参数，用于指定进行转码时采用的字符编码，默认为UTF-8，当只有这一个参数时可以省略前面的"coding="直接写编码
-
-          errors=" "：可选参数，用于指定错误处理方式，可选择值有"strict"(遇到非法字符就抛出异常)、"ignore"(忽略非法字符)、"replace"(用"?"替换非法字符)				   或"xmlcharrefreplace"(使用XML的字符引用)等，默认值为strict
+          > encoding=" "：可选参数，用于指定进行转码时采用的字符编码，默认为UTF-8，当只有这一个参数时可以省略前面的"coding="直接写编码
+    >
+          > errors=" "：可选参数，用于指定错误处理方式，可选择值有"strict"(遇到非法字符就抛出异常)、"ignore"(忽略非法字符)、"replace"(用"?"替换非法字符)或"xmlcharrefreplace"(使用XML的字符引用)等，默认值为strict
 
           使用encode()方法不会修改原字符串
 
@@ -739,9 +904,6 @@ keyword.kwlist
 
           使用decode()方法不会修改原字符串
           
-          
-          
-          ##	
 
 
 
@@ -820,7 +982,7 @@ keyword.kwlist
 del listname[index]
 ```
 
-2. 根据元素值删除
+​		  2.根据元素值删除
 
 
 ```python
@@ -849,9 +1011,9 @@ listname.remove(obj)
     sum(iterable[],start)
     ```
 
-    iterable为要统计的列表
-
-    start即将统计结果加上start所指定的数，默认为0
+    > iterable：要统计的列表
+>
+    > start：即将统计结果加上start所指定的数，默认为0
 
 14. 排序
 
@@ -863,11 +1025,11 @@ listname.remove(obj)
 
        **原列表中的元素顺序将发生改变**
 
-       cmp：排序时进行比较的函数，可以指定一个函数或者lambda函数
-
-       key:可选参数，表示指定从每个元素中提去一个用于比较的键(例如设置"key=str.lower"表示在排序时不区分字母大小写)，指定取待排序元素的哪一项进行排序
-
-       reverse:可选参数，如果将其值指定为True，则表示降序排列；如果为False，则表示升序排列，默认为升序排列
+       > cmp：排序时进行比较的函数，可以指定一个函数或者lambda函数
+>
+       > key:可选参数，表示指定从每个元素中提去一个用于比较的键(例如设置"key=str.lower"表示在排序时不区分字母大小写)，指定取待排序元素的哪一项进行排序
+>
+       > reverse:可选参数，如果将其值指定为True，则表示降序排列；如果为False，则表示升序排列，默认为升序排列
 
     2. 使用Python内置的sorted()函数实现
 
@@ -888,11 +1050,11 @@ listname.remove(obj)
            list=[random.randint for i in range(10)]
        ```
 
-       expression:表达式，用于计算新列表的元素
-
-       var:循环变量
-
-       range:采用range()函数生成的range对象
+       > expression:表达式，用于计算新列表的元素
+>
+       > var:循环变量
+>
+       > range:采用range()函数生成的range对象
 
     2. 根据列表生成指定需求的列表
 
@@ -903,7 +1065,7 @@ listname.remove(obj)
            newlist=[int(x*0.5) for x in oldlist]
        ```
 
-       list:用于生成新列表的原列表
+       > list:用于生成新列表的原列表
 
     3. 从列表中选择符合条件的元素组成新的列表
 
@@ -914,7 +1076,7 @@ listname.remove(obj)
            newlist=[x for x in oldlist if x>5000]
        ```
 
-       condition:条件表达式，用于指定筛选条件
+       > condition:条件表达式，用于指定筛选条件
 
 16. 二维列表的使用
 
@@ -935,8 +1097,6 @@ listname.remove(obj)
        ```
 
        
-
-
 
 ####	Tuple（元组）
 
@@ -1058,11 +1218,11 @@ print (tinydict.values()) # 输出所有值
       dictionary=dict(zip(list1,list2))
       ```
 
-      zip()函数用于将多个列表和元组对应位置的元素组合为元组，并返回包含这些内容的zip对象
-
-      list1用于指定要生成字典的键
-
-      list2用于指定要生成字典的值
+      > zip()函数用于将多个列表和元组对应位置的元素组合为元组，并返回包含这些内容的zip对象
+   >
+      > list1用于指定要生成字典的键
+   >
+      > list2用于指定要生成字典的值
 
       如果list1和list2长度不同，则与最短的列表长度相同
 
@@ -1078,7 +1238,7 @@ print (tinydict.values()) # 输出所有值
       dictionary=dict.fromkeys(list1)
       ```
 
-      list1是作为字典的键的列表
+      > list1是作为字典的键的列表
 
    5. 删除字典的全部元素
 
@@ -1100,9 +1260,9 @@ print (tinydict.values()) # 输出所有值
       dictionary.get(key,[default])
       ```
 
-      key为指定的键
-
-      default为可选项，用于指定当键不存在时，返回一个默认值，默认为None
+      > key为指定的键
+   >
+      > default为可选项，用于指定当键不存在时，返回一个默认值，默认为None
 
    8. 使用items()方法遍历
 
@@ -1149,7 +1309,7 @@ print (tinydict.values()) # 输出所有值
    setname=set(iteration)
    ```
 
-   iteration为可迭代对象，若该对象为字符串则返回的集合将包含全部不重复字符的集合
+   > iteration为可迭代对象，若该对象为字符串则返回的集合将包含全部不重复字符的集合
 
 2. 使用add()方法添加元素
 
@@ -1157,7 +1317,7 @@ print (tinydict.values()) # 输出所有值
    setname.add(element)
    ```
 
-   element只能使用**字符串、数字及布尔类型的True/False**
+   > element只能使用**字符串、数字及布尔类型的True/False**
 
 3. 删除
 
@@ -1204,6 +1364,8 @@ print (tinydict.values()) # 输出所有值
 
 转换后原变量数据类型不变
 
+
+
 ##	选择结构
 
 选择语句主要有3种形式，分别为if语句、if...else语句和if...elif...else语句
@@ -1216,6 +1378,8 @@ elif 表达式:
 else 表达式:
     语句块
 ```
+
+
 
 ##	循环结构
 
@@ -1337,11 +1501,11 @@ else 表达式:
              match=re.match(pattern,string,re.I)
          ```
 
-         pattern：模式字符串，由要匹配的正则表达式转换而来
-
-         string：要匹配的字符串
-
-         flags：可选参数，表示标志位，用于控制匹配方式
+         > pattern：模式字符串，由要匹配的正则表达式转换而来
+   >
+         > string：要匹配的字符串
+   >
+         > flags：可选参数，表示标志位，用于控制匹配方式
 
          | 修饰符 | 描述                                                         |
          | :----- | :----------------------------------------------------------- |
@@ -1385,15 +1549,15 @@ else 表达式:
       re,sub(pattern,repl,string,count,flags)
       ```
 
-      pattern：模式字符串
-
-      repl：替换的字符串
-
-      string：要被查找替换的原始字符串
-
-      count：可选参数，表示模式匹配后替换的最大次数，默认值为0，表示替换所有的匹配
-
-      flags：可选参数，表示标志位，用于控制匹配方式
+      >pattern：模式字符串
+   >
+      >repl：替换的字符串
+   >
+      >string：要被查找替换的原始字符串
+   >
+      >count：可选参数，表示模式匹配后替换的最大次数，默认值为0，表示替换所有的匹配
+   >
+      >flags：可选参数，表示标志位，用于控制匹配方式
 
    3. 使用split()方法分割字符串
 
@@ -1403,7 +1567,7 @@ else 表达式:
       re.split(parttern,string,[maxsplit],[flags])
       ```
 
-      maxsplit：可选参数，表示最大的拆分次数
+      > maxsplit：可选参数，表示最大的拆分次数
 
       
 
@@ -1417,11 +1581,11 @@ else 表达式:
        [functionbody]
    ```
 
-   parameterlist：可选参数，用于指定向函数中传递的参数
-
-   comments：可选参数，表示为函数指定注释，如果指定了comments参数，那么在调用函数输入函数名称及左侧小括号时会显示该函数的帮助信息
-
-   functionbody：可选参数，用于指定函数体，如果有返回值可以使用return语句返回
+   > parameterlist：可选参数，用于指定向函数中传递的参数
+>
+   > comments：可选参数，表示为函数指定注释，如果指定了comments参数，那么在调用函数输入函数名称及左侧小括号时会显示该函数的帮助信息
+>
+   > functionbody：可选参数，用于指定函数体，如果有返回值可以使用return语句返回
 
    即使函数没有参数也必须保留一对空的"()"
 
@@ -1465,9 +1629,9 @@ else 表达式:
       return value
       ```
    
-      result：用于保存返回结果，如果返回一个值，该值可以为任意类型；如果返回多个值，那么保存的是一个元组
-   
-      value：可选参数，用于指定要返回的值，可以返回一个值也可以返回多个值
+      > result：用于保存返回结果，如果返回一个值，该值可以为任意类型；如果返回多个值，那么保存的是一个元组
+   >
+      > value：可选参数，用于指定要返回的值，可以返回一个值也可以返回多个值
    
       当函数中没有return语句或省略了return语句的参数时将返回None，即返回空值
    
@@ -1485,6 +1649,8 @@ else 表达式:
    
       在局部变量和全局变量重名时，对函数体的变量进行赋值不影响函数体外的变量
    
+      Python 会假设任何在函数内赋值的变量都是局部的，因此，如果要给函数内的全局变量赋值，必须使用 global 语句。
+   
    9. 匿名函数(lambda)
    
       匿名函数是指没有名字的函数，这样的函数只能使用一次。
@@ -1496,11 +1662,11 @@ else 表达式:
           list.sort(key=lambda x:x[1] , reverse=False)
       ```
       
-      result：用于调用lambda表达式，接收lambda的返回值
-      
-      [arg1 [,arg2,...,argn] ]：可选参数，用于指定向要传递的参数列表
-      
-      expression：必选参数，指定一个实现具体功能的表达式
+      > result：用于调用lambda表达式，接收lambda的返回值
+      >
+      > [arg1 [,arg2,...,argn] ]：可选参数，用于指定向要传递的参数列表
+      >
+      > expression：必选参数，指定一个实现具体功能的表达式
       
       表达式只能有一个，即只能返回一个值，且不能出现其他非表达式语句(如for或while)
       
@@ -1548,9 +1714,9 @@ else 表达式:
       	statement
       ```
 
-      Classname：用于指定类名，一般使用大写字母开头，如果类名中包括两个单词，则第二个单词也用大写字母开头，即"驼峰式命名法"
-
-      statement：类体，主要由类变量(或类成员)、方法和属性等定义语句组成，也可以使用pass语句代替
+      > Classname：用于指定类名，一般使用大写字母开头，如果类名中包括两个单词，则第二个单词也用大写字母开头，即"驼峰式命名法"
+>
+      > statement：类体，主要由类变量(或类成员)、方法和属性等定义语句组成，也可以使用pass语句代替
 
    2. 创建类的实例
 
@@ -1558,9 +1724,9 @@ else 表达式:
       ClassName(parameterlist)
       ```
 
-      ClassName：必选参数，指定具体的类
-
-      parameter：可选参数，当创建一个类时，如果没有创建\__init__()方法或该方法只有一个self参数，parameterlist可以省略
+      > ClassName：必选参数，指定具体的类
+>
+      > parameter：可选参数，当创建一个类时，如果没有创建\__init__()方法或该方法只有一个self参数，parameterlist可以省略
 
    3. 创建\__init__()方法
 
@@ -1583,17 +1749,17 @@ else 表达式:
          	block
          ```
 
-         functionname：指定方法名，一般使用小写字母开头
-
-         self：必要参数，表示类的实例
-
-         block：方法体，实现具体的功能
+         > functionname：指定方法名，一般使用小写字母开头
+>
+         > self：必要参数，表示类的实例
+>
+         > block：方法体，实现具体的功能
 
          ```python
          instanceName.functionname(parameterlist)
          ```
 
-         instanceName：类的实例的名称
+         > instanceName：类的实例的名称
 
       2. 数据成员
 
@@ -1635,7 +1801,7 @@ else 表达式:
           block
       ```
 
-      block：方法体，通常以return语句结束用以返回计算结果
+      > block：方法体，通常以return语句结束用以返回计算结果
 
       通过@property转换后的属性不能重新赋值
 
@@ -1656,7 +1822,7 @@ else 表达式:
           statement
       ```
 
-      baseclasslist：指定要继承的基类，可以有多个，如果不指定将使用所有Python对象的根类
+      > baseclasslist：指定要继承的基类，可以有多个，如果不指定将使用所有Python对象的根类
 
    2. 方法重写
 
@@ -1669,3 +1835,151 @@ else 表达式:
       ```python
       super.__init__()
       ```
+
+
+
+##	异常处理
+
+当程序运行时，发生了未处理的异常，Python就将终止执行程序，并以堆栈回溯（Traceback，也 称向后追踪）的形式显示异常发生的上下文。
+
+1. 标准异常
+
+   | 异常名称                  | 描述                                               |
+   | :------------------------ | :------------------------------------------------- |
+   | BaseException             | 所有异常的基类                                     |
+   | SystemExit                | 解释器请求退出                                     |
+   | KeyboardInterrupt         | 用户中断执行(通常是输入^C)                         |
+   | Exception                 | 常规错误的基类                                     |
+   | StopIteration             | 迭代器没有更多的值                                 |
+   | GeneratorExit             | 生成器(generator)发生异常来通知退出                |
+   | StandardError             | 所有的内建标准异常的基类                           |
+   | ArithmeticError           | 所有数值计算错误的基类                             |
+   | FloatingPointError        | 浮点计算错误                                       |
+   | OverflowError             | 数值运算超出最大限制                               |
+   | ZeroDivisionError         | 除(或取模)零 (所有数据类型)                        |
+   | AssertionError            | 断言语句失败                                       |
+   | AttributeError            | 对象没有这个属性                                   |
+   | EOFError                  | 没有内建输入,到达EOF 标记                          |
+   | EnvironmentError          | 操作系统错误的基类                                 |
+   | IOError                   | 输入/输出操作失败                                  |
+   | OSError                   | 操作系统错误                                       |
+   | WindowsError              | 系统调用失败                                       |
+   | ImportError               | 导入模块/对象失败                                  |
+   | LookupError               | 无效数据查询的基类                                 |
+   | IndexError                | 序列中没有此索引(index)                            |
+   | KeyError                  | 映射中没有这个键                                   |
+   | MemoryError               | 内存溢出错误(对于Python 解释器不是致命的)          |
+   | NameError                 | 未声明/初始化对象 (没有属性)                       |
+   | UnboundLocalError         | 访问未初始化的本地变量                             |
+   | ReferenceError            | 弱引用(Weak reference)试图访问已经垃圾回收了的对象 |
+   | RuntimeError              | 一般的运行时错误                                   |
+   | NotImplementedError       | 尚未实现的方法                                     |
+   | SyntaxError               | Python 语法错误                                    |
+   | IndentationError          | 缩进错误                                           |
+   | TabError                  | Tab 和空格混用                                     |
+   | SystemError               | 一般的解释器系统错误                               |
+   | TypeError                 | 对类型无效的操作                                   |
+   | ValueError                | 传入无效的参数                                     |
+   | UnicodeError              | Unicode 相关的错误                                 |
+   | UnicodeDecodeError        | Unicode 解码时的错误                               |
+   | UnicodeEncodeError        | Unicode 编码时错误                                 |
+   | UnicodeTranslateError     | Unicode 转换时错误                                 |
+   | Warning                   | 警告的基类                                         |
+   | DeprecationWarning        | 关于被弃用的特征的警告                             |
+   | FutureWarning             | 关于构造将来语义会有改变的警告                     |
+   | OverflowWarning           | 旧的关于自动提升为长整型(long)的警告               |
+   | PendingDeprecationWarning | 关于特性将会被废弃的警告                           |
+   | RuntimeWarning            | 可疑的运行时行为(runtime behavior)的警告           |
+   | SyntaxWarning             | 可疑的语法的警告                                   |
+   | UserWarning               | 用户代码生成的警告                                 |
+
+2. 异常处理语句
+
+   1. try...except语句
+
+      ```python
+      try:
+          block1
+      except [ExceptionName [as alias]]:
+          block2
+      ```
+
+      > block1：表示可能出现错误的代码块
+      >
+      > ExceptionName [as alias]：可选参数，用于指定要捕获的异常，
+      >
+      > as alias：可选参数，表示为当前的异常指定一个别名，即接收错误信息的变量
+
+      >- 首先，执行 try 子句（在关键字 try 和关键字 except 之间的语句）。
+      >- 如果没有异常发生，忽略 except 子句，try 子句执行后结束。
+      >- 如果在执行 try 子句的过程中发生了异常，那么 try 子句余下的部分将被忽略。如果异常的类型和 except 之后的名称相符，那么对应的 except 子句将被执行。
+      >- 如果一个异常没有与任何的 except 匹配，那么这个异常将会传递给上层的 try 中。
+
+      如果不指定异常名称则表示捕获全部异常
+
+      要捕获多个异常可使用多个except语句或将异常放在一个括号里成为一个元组
+
+      只执行最先匹配的一个except
+
+      最后一个except子句可以忽略异常的名称，它将被当作通配符使用
+
+   2. try...except...else语句
+
+      else语句用于指定当try语句无异常时的要执行的语句块
+
+      如果使用这个子句，那么必须放在所有的 except 子句之后
+
+   3. try...except...finally语句
+
+      无论程序中有无异常产生，finally代码块中的代码都会执行
+
+      此功能通常在释放外部资源时出现
+
+      如果一个异常在 try 子句里（或者在 except 和 else 子句里）被抛出，而又没有任何的 except 把它截住，那么这个异常会在 finally 子句执行后被抛出
+
+   4. raise语句
+
+      自行触发异常，触发异常后，后面的代码不会执行
+
+      ```Python
+      raise [Exception [, args [, traceback]]]
+      
+      eg:
+          x = 10
+      	if x > 5:
+          	raise Exception('x 不能大于 5。x 的值为: {}'.format(x))
+      ```
+
+      > Exception：异常的类型，指定其名称
+      >
+      > args：自己提供的异常参数
+      >
+      > traceback：跟踪异常对象，用于异常的回溯对象
+
+      为了能够捕获异常，"except"语句必须有用相同的异常来抛出类对象或者字符串
+
+   5. 自定义异常
+
+      创建一个新的异常类来拥有自己的异常。异常类继承自 Exception 类，可以直接继承，或者间接继承
+
+      当创建一个模块有可能抛出多种不同的异常时，一种通常的做法是为这个包建立一个基础异常类，然后基于这个基础类为不同的错误情况创建不同的子类
+
+      大多数的异常的名字都以"Error"结尾，就跟标准的异常命名一样
+
+   6. assert语句
+
+      用于对程序某个时刻必须满足的条件进行验证
+
+      ```python
+      assert expression [,reason]
+      ```
+
+      > expression：条件表达式，如果该表达式的值为真则pass，值为假则抛出AssertionError异常
+      >
+      > reason：可选参数，用于对判断条件进行描述
+
+      通常与异常处理语句结合使用
+
+      assert语句只在调试阶段有效
+
+      可以通过在执行Python命令时加入-O参数来关闭assert语句
