@@ -250,9 +250,15 @@ git init newrepo	# 使用指定目录作为Git仓库
 
    ` git checkout -b (branchname)`- 创建新分支并立即切换到该分支下
 
-4. `git merge (branchname)` - 用来做分支合并，将其他分支中的内容合并到当前分支中
+4. `git merge (branchname)` - 用来进行分支合并，将其他分支中的内容合并到当前分支中
 
-3. `git branch -m 旧名字 新名字`- 修改分支名
+   `git merge --no-ff (branchname)`- 用来进行快进合并(fast-forward merge)
+
+5. `git branch -m 旧名字 新名字`- 修改分支名
+
+6. `git push origin --delete (branchname)`- 删除远程分支
+
+3. `git branch -dr [remote/branch]`- 删除远程分支
 
 
 
@@ -260,7 +266,7 @@ git init newrepo	# 使用指定目录作为Git仓库
 
 > 合并并不仅仅是简单的文件添加、移除的操作，Git 也会合并修改
 >
-> 远程仓库和本地仓库文件内容不一致且对方版本并不在自身版本库中，或不同分支间文件内容版本不一致，此时执行push/pull/merge会产生冲突
+> 远程仓库和本地仓库文件内容不一致且对方版本并不在自身版本库中，或当Git发现某一块数据在两个分支间的提交历史中都含有变更，此时执行push/pull/merge会产生冲突
 >
 > 如远程仓库的版本为基于V1开发的V2，本地仓库的版本为基于V1开发的V3，此时push V3或pull V2便会产生冲突
 
