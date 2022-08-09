@@ -22,6 +22,80 @@
 
 
 
+###	Python文件的后缀名
+
+1. .py：
+
+   以 py 扩展名的文件是 Python 源码文件，由 python.exe 解释，可在控制台下运行。可用文本编辑器读写。
+
+2. .py3：
+
+   Python3脚本（Python3脚本通常以.py而不是.py3结尾，很少使用）。
+
+3. .pyc：
+
+   以 pyc 为扩展名的是Python的编译文件。其执行速度快于 py 文件且不能用文本编辑编辑查看。所以 pyc 文件往往代替 py 文件发布。
+
+   Python 在执行时，首先会将 py 文件中的源代码编译成 PyCodeObject 写入 pyc 文件，再由虚拟机执行 PyCodeObject。当 Python 执行 import 时会先寻找对应的 pyc或 pyd（dll）文件，如果没有则将对应的py文件编译写入 pyc 文件。pyc文件也可以通过 `python -m py_compile src.py` 生成。
+
+   .pyc二进制文件可以反编译成.py文件，反编译软件叫Easy Python Decompiler。
+
+4. .pyo：
+
+   pyo 是优化编译后的程序，不能用文本编辑器编辑。 `python -O source.py` 即可将源程序编译为 pyo 文件。
+
+   这是在优化(-O)时创建的*.pyc文件，从Python3.5开始，Python将只使用.pyc而不是.pyo和.pyc。
+
+5. .pyd：
+
+   这基本上是一个Windows DLL文件。
+
+   pyd 一般是 Python 外的其他语言如 C/C++ 编写的 Python 扩展模块，即 Python 的一个动态连接库，与 dll 文件相当。在Linux系统中一般为.so文件
+
+6. .pyi：
+
+   MyPy存根，存根文件（PEP 484）。
+
+7. .pyw：
+
+   用pythonw.exe执行的Windows的Python脚本。
+
+   pyw 文件与 pyc 文件相似，但 pyw 执行的时候不会出控制台窗口。开发（纯图形界面程序）时可以暂时把 pyw 改成 py 以调出控制台窗口调试。
+
+8. .pyx：
+
+   将Cython src转换为C/C++。
+
+9. .pyz：
+
+   Python脚本归档（PEP 441）（这是一个包含标准Python脚本头之后的二进制形式的压缩Python脚本（ZIP）的脚本）。
+
+10. .pywz：
+
+    用于MS-Windows的Python脚本归档（PEP 441）（这是一个包含标准Python脚本头之后的二进制形式的压缩 Python脚本（ZIP）的脚本）。
+
+11. .py [cod]：
+
+    .gitignore中的通配符表示该文件可能是.pyc，.pyo或.pyd。
+
+12. .rpy：
+
+    包含应用程序或框架特定功能的RPython脚本或Python脚本。
+
+13. .pyde：
+
+    处理使用的Python脚本。
+
+14. .pyp：
+
+    Py4D Python插件。
+
+15. .pyt：
+
+    Python声明文件。
+
+
+
 ### pip源
 
 (例如：pip install -i xxx yyy)
