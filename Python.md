@@ -1368,7 +1368,7 @@ keyword.kwlist
 
          创建模板时要用"{}" ":"指定占位符
 
-         ```python
+         ```
          {[index][: [[fill]align] [sign] [#] [width] [.precision] [type] ]}
          ```
 
