@@ -638,6 +638,12 @@ dataType[] arrayRefVar;   // 首选的方法
 dataType arrayRefVar[];  // 效果相同，但不是首选方法
 ```
 
+> datatype：数组中保存的数据类型
+>
+> []：声明为数组
+>
+> arrayRefVar：数组名
+
 1. 必须声明数组变量，才能在程序中使用数组
 2. `dataType arrayRefVar[]` 风格是来自 C/C++ 语言 ，在Java中采用是为了让 C/C++ 程序员能够快速理解java语言
 
@@ -645,11 +651,11 @@ dataType arrayRefVar[];  // 效果相同，但不是首选方法
 
 ####	创建数组
 
-```java
-arrayRefVar = new dataType[arraySize];
-```
+1. ```java
+   arrayRefVar = new dataType[arraySize];
+   ```
 
-1. 上面的语法语句做了两件事：
+   上面的语法语句做了两件事：
 
    1. 使用 dataType[arraySize] 创建了一个数组。
    2. 把新创建的数组的引用赋值给变量 arrayRefVar。
@@ -663,10 +669,15 @@ arrayRefVar = new dataType[arraySize];
 3. 可以在创建数组的同时为数组中的元素赋值
 
    ```java
-   dataType[] arrayRefVar = {value0, value1, ..., valuek};
+   dataType[] arrayRefVar = new dataType[] {value0, value1, ..., valuek};
+   dataType[] arrayRefVar = {value0, value1, ..., valuek};//省略格式初始化时不可单独使用
    ```
 
-   
+4. 初始化
+
+   1. 动态初始化：指定长度
+   2. 静态初始化：指定内容
+
 
 
 
@@ -803,36 +814,52 @@ byte,short,char —> int —> long —> float —> double
 
 1. ```java
    while( 布尔表达式 ) {
+     //while循环
      //循环内容
    }
    ```
-
+   
 2. ```java
    do {
+          //do-while循环
           //代码语句
    }while(布尔表达式);
    ```
-
+   
    > do…while 循环至少会执行一次
-
+   
 3. ```java
    for(初始化; 布尔表达式; 更新) {
+       //for循环
        //代码语句
    }
    ```
-
+   
    > - 最先执行初始化步骤。可以声明一种类型，但可初始化一个或多个循环控制变量，也可以是空语句。
    > - 然后，检测布尔表达式的值。如果为 true，循环体被执行。如果为false，循环终止，开始执行循环体后面的语句。
    > - 执行一次循环后，更新循环控制变量。
    > - 再次检测布尔表达式。循环执行上面的过程。
-
+   
 4. ```java
    for(声明语句 : 表达式)
    {
+      //For-Each循环
       //代码句子
    }
+   
+   eg:
+   public class TestArray {
+      public static void main(String[] args) {
+         double[] myList = {1.9, 2.9, 3.4, 3.5};
+    
+         // 打印所有数组元素
+         for (double element: myList) {
+            System.out.println(element);
+         }
+      }
+   }
    ```
-
+   
    > 声明语句：声明新的局部变量，该变量的类型必须和数组元素的类型匹配。其作用域限定在循环语句块，其值与此时数组元素的值相等。
    >
    > 表达式：表达式是要访问的数组名，或者是返回值为数组的方法。
