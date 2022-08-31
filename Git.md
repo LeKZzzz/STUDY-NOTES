@@ -362,3 +362,15 @@ git init newrepo	# 使用指定目录作为Git仓库
 | Mozilla   | 与LGPL类似，但是需要对修改过的源码内容做说明                 |
 | Unlicense | 与CCZ相似，且开放商标和所用的专利授权                        |
 
+
+
+##	GIthub Pages
+
+> GitHub.io 就是GitHub Pages，GitHub Pages 是一种静态站点托管服务，它直接从 GitHub 上的存储库获取 HTML、CSS 和 JavaScript 文件，可选择通过构建过程运行文件，然后发布网站。
+>
+> github pages有300M免费空间，资料自己管理，保存可靠
+>
+> 它的 URL 采用 username.github.io/my-repository-name 的格式
+
+1. `Settings -》GitHub Pages`
+2. `Choose a theme` 按钮可以帮你选择一个网站主题
