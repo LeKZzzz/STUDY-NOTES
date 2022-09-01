@@ -4,7 +4,7 @@
 
 #	JRE与JDK
 
-JRE(Java Runtime Environment ) Java运行环境，用来运行JAVA程序的。
+JRE(Java Runtime Environment ) Java运行环境，用来运行JAVA程序，由JVM和Java类库共同构建。
 
 JDK(Java Development Kit) Java开发工具包，包含JRE。因此只需要下载安装JDK即可。
 
@@ -16,13 +16,13 @@ JDK是Java语言的软件开发工具包(SDK)。
 
 没有JDK的话，无法编译Java程序，如果想只运行Java程序，要确保已安装相应的JRE。
 
-#	J2EE JavaME JavaSE
+#	JavaEE JavaME JavaSE
 
-SE(J2SE)，standardedition，标准版，是我们通常用的一个版本，从JDK5.0开始，改名为JavaSE。
+SE(J2SE)，standardedition，标准版，是我们通常用的一个版本，从JDK5.0开始，改名为JavaSE，用来开发客户端的应用程序，应用程序可以独立运行或作为Applet在Web浏览器中运行。
 
-EE(J2EE)，enterpriseedition，企业版，使用这种JDK开发J2EE应用程序，从JDK5.0开始，改名为JavaEE。
+EE(J2EE)，enterpriseedition，企业版，使用这种JDK开发J2EE应用程序，从JDK5.0开始，改名为JavaEE，用来开发服务端的应用程序，例如，Java Servlet、JSP、JSF。
 
-ME(J2ME)，microedition，微型版，主要用于移动设备、嵌入式设备上的java应用程序，从JDK5.0开始，改名为JavaME。
+ME(J2ME)，microedition，微型版，主要用于移动设备、嵌入式设备上的java应用程序，从JDK5.0开始，改名为JavaME，用来开发移动设备上运行的应用程序。
 
 ![](E:\Study Notes\Pictures\J2EE JavaME JavaSE)
 
@@ -49,6 +49,8 @@ JVM执行程序的过程：
 JRE（java运行时环境）是由JVM构造的java程序的运行环，也是Java程序运行的环境，但是他同是一个操作系统的一个应用程序一个进程，因此他也有他自己的运行的生命周期，也有自己的代码和数据空间。
 JVM在整个jdk中处于最底层，负责于操作系统的交互，用来屏蔽操作系统环境，提供一个完整的Java运行环境。
 
+当一个Java程序执行时，JVM首先会用一个称为类加载器(class loader)的程序将类的字节码加载到内存中，如果程序还要用到其他类，类加载程序会在需要它们之前动态地加载它们。当加载该类后，JVM使用一个称为字节码验证器(bytecode verifier)的程序校验字节码的合法性，最后通过的字节码由运行时解释器(rutime interpreter)翻译和执行。
+
 
 
 #	Java特性
@@ -61,9 +63,9 @@ Java具有简单性、面向对象、分布式、健壮性、安全性、平台�
 
 #	.java文件和.class文件
 
-.java文件是一个文本文件，就是我们用java语言写成的代码。
+.java文件是一个文本文件，就是我们用java语言写成的源程序。
 
-.class文件是一种二进制文件，即字节码文件，.java文件通过javac(编译器)编译生成的一个文件，可以由JVM装载(类装载)，然后由java(解释器)解释执行。
+.class文件是一种二进制文件，即字节码文件，.java文件是通过javac(编译器)编译生成的一个文件，可以由JVM装载(类装载)，然后由java(解释器)解释执行。
 
 注意：
 
@@ -103,8 +105,6 @@ Java具有简单性、面向对象、分布式、健壮性、安全性、平台�
 IDEA的配置文件
 
 #	基础语法
-
-##	基本语法
 
 1. Java 是**大小写敏感**的
 2. **源文件名必须和类名相同**。当保存文件的时候，你应该使用类名作为文件名保存（切记 Java 是大小写敏感的），文件名的后缀为 **.java**。（如果文件名和类名不相同则会导致编译错误）
@@ -353,7 +353,7 @@ Java可以使用修饰符来修饰类中方法和属性，通常放在语句的�
 */
 
 /**
-这是文档注释
+这是文档注释，这是Java特有的注释方式，主要用来生成类定义的api文档
 */
 ```
 
