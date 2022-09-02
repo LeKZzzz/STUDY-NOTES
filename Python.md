@@ -10,7 +10,7 @@
 
 2. 跨平台的计算机程序设计语言，支持Windows、Linux、Mac
 3. 交互式语言：可以再命令提示符“>>>”后直接执行，比如cmd、Python源文件下的交互式命令行程序
-4. 面向对象
+4. 面向对象，Python中的一切都是对象
 
 
 
@@ -96,13 +96,27 @@
 
 
 
-## pip源
+## pip
 
-(例如：pip install -i xxx yyy)
+| 序号                               | 语法                                 |
+| ---------------------------------- | ------------------------------------ |
+| 在线安装                           | pip install somepackage              |
+| 在线安装指定版本                   | pip install robotframework==2.8.7    |
+| 通过whl文件离线安装拓展库          | pip install somepackage.whl          |
+| 卸载已安装的库                     | pip uninstall package                |
+| 列出已经安装模块及其版本号         | pip list pip freeze                  |
+| 将已经安装的库列表保存到文本文件中 | pip freeze > path                    |
+| 根据依赖文件批量安装库             | pip install -r requirements.txt      |
+| 显示所安装包的信息                 | pip show package pip show -f package |
+| 升级指定的包                       | pip install -U package               |
+
+
 
 1. 清华源：https://pypi.tuna.tsinghua.edu.cn/simple/
 2. 阿里云源：https://mirrors.aliyun.com/pypi/simple/
 3. 中国科技大学源：https://pypi.mirrors.ustc.edu.cn/simple/
+3. 豆瓣(douban)： https://pypi.douban.com/simple/
+3. 中国科学技术大学：http://pypi.mirrors.ustc.edu.cn/simple/
 
 
 
@@ -281,7 +295,7 @@ ${MONTH_NAME_FULL} - 一个月的全名。 示例：1月，2月等
 
 ==**导入模块时会自动在搜索路径中寻找对应的模块，如果发现就会立即导入，然后运行这个模块的源码并进行初始化**==
 
-在使用import语句导入模块时，每执行一条import语句都会创建一个命名空间(namespace)并且在该命名空间中执行与模块相关的所有语句，如果不想在每次导入模块时都创建一个命名空间可以使用**from...import**语句，该语句可以将具体的定义导入到当亲爱按的命名空间中，调用时**无须添加前缀**可直接进行访问，但需保证导入的定义在当前的命名空间中是唯一的，否则后导入的同名定义会覆盖先导入的
+在使用import语句导入模块时，每执行一条import语句都会创建一个命名空间(namespace)并且在该命名空间中执行与模块相关的所有语句，如果不想在每次导入模块时都创建一个命名空间可以使用**from...import**语句，该语句可以将具体的定义导入到当前的命名空间中，调用时**无须添加前缀**可直接进行访问，但需保证导入的定义在当前的命名空间中是唯一的，否则后导入的同名定义会覆盖先导入的
 
 > ​	命名空间命名空间是一个包含了变量名称们（键）和它们各自相应的对象们（值）的字典，可以理解为记录对象名字和对象之间对应关系的空间
 
@@ -298,7 +312,7 @@ ${MONTH_NAME_FULL} - 一个月的全名。 示例：1月，2月等
 2. 从某个模块中导入某个定义
 
    ```python
-   from modulename import somefunction
+   from modulename import somefunction [as alias]
    ```
 
    同时导入多个函数可以使用"**,**"分隔
