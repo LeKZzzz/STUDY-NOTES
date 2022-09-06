@@ -2232,6 +2232,8 @@ else 表达式:
       表达式只能有一个，即只能返回一个值，且不能出现其他非表达式语句(如for或while)
       
       首要用途是指定短小的回调函数
+      
+   10. 函数内定义的函数称为内部函数，内部函数的创建过程在外部函数的执行过程中，不可直接调用内部函数，可以通过return内部函数的方式在外部执行
 
 
 
@@ -2544,6 +2546,112 @@ else 表达式:
       assert语句只在调试阶段有效
 
       可以通过在执行Python命令时加入-O参数来关闭assert语句
+
+
+
+
+
+#	闭包(Closure)
+
+> 内部函数对外部函数作用域里变量的引用
+
+闭包内的闭包函数私有化了变量，完成了数据的封装，类似于面向对象
+
+通过返回内部函数的方式，一个代表函数的变量可以封装该内部函数及该内部函数在其对应的外部函数中调用的变量
+
+函数做闭包的时候，外层的变量会被销毁，而在调用内层函数的时候会重新创建一个值和引用相同的变量
+
+```python
+def func(obj):  # 外部函数
+    a = 1  # 外部函数的变量
+
+    def func1():  # 内部函数
+        obj[0] += a
+        print(obj)
+
+    return func1  # 返回内部函数
+
+
+var = func([3, 2, 1, 0])  # 调用外部函数，通过返回值使变量var可以调用闭包函数
+# 闭包函数封装了传递进去的数值，并且可以重复调用，调用后变化的数值仍然封装在闭包函数中供下一次调用
+var()  # [4, 2, 1, 0]
+var()  # [5, 2, 1, 0]
+var()  # [6, 2, 1, 0]
+```
+
+
+
+
+
+#	装饰器(Decorators 语法糖)
+
+```python 
+def func1(func):  # 外部闭包函数的参数时被装饰的函数对象
+    def func2():
+        print("This is the function 2.")
+        return func()  # 返回被装饰函数的调用，即函数执行的结果
+
+    return func2    # 返回闭包函数对象名
+
+
+@func1
+def myprint():
+    print("This is the original function.")
+
+
+myprint()
+
+'''
+This is the function 2.
+This is the original function.
+'''
+```
+
+装饰器会自动实现闭包调用，而在这个闭包函数中最后返回值时会执行一次被装饰的函数，通过这种方式实现在不改变原函数的基础上添加额外的功能
+
+装饰器函数带参数，可以在最外层多一层包装来接收装饰器的参数
+
+被装饰函数带参数时，可以在最内部函数传入参数
+
+```python
+def func1(type):
+    def func2(func):
+        def func3(x, y):
+            if type == 1:
+                print('各+5')
+                x += 5
+                y += 5
+            else:
+                print('各+10')
+                x += 10
+                y += 10
+            return func(x, y)
+
+        return func3
+
+    return func2
+
+
+@func1(type=1)
+def myprint1(x, y):
+    print(x, y)
+
+
+@func1(type=2)
+def myprint2(x, y):
+    print(x, y)
+
+
+myprint1(5, 5)
+myprint2(5, 5)
+
+'''
+各+5
+10 10
+各+10
+15 15
+'''
+```
 
 
 
