@@ -312,7 +312,7 @@ Java可以使用修饰符来修饰类中方法和属性，通常放在语句的�
    | ^ =     | 按位异或赋值操作符                                           | C ^ = 2等价于C = C ^ 2                   |
    | \| =    | 按位或赋值操作符                                             | C \| = 2等价于C = C \| 2                 |
 
-6. 条件运算符：`xxx?yyy:zzz`条件运算符也被称为三元运算符。该运算符有3个操作数，并且需要判断布尔表达式的值。该运算符的主要是决定哪个值应该赋值给变量。
+6. 条件运算符：`condition?expression1:expression2`条件运算符也被称为三元运算符，condition为关系或逻辑表达式，其计算结果为布尔值，如果该值为true，则计算表达式expression1的值，并将计算结果作为条件表达式的结果；如果该值为false，则计算表达式expression2的值，并将计算结果作为条件表达式的结果
 
 7. instanceof 运算符:该运算符用于操作对象实例，检查该对象是否是一个特定类型（类类型或接口类型）
 
@@ -812,18 +812,20 @@ byte,short,char —> int —> long —> float —> double
 1. ```java
    if(布尔表达式)
    {
+      //单分支if语句
       //如果布尔表达式为true将执行的语句
    }
    ```
-
+   
 2. ```java
    if(布尔表达式){
+      //双分支if-else语句
       //如果布尔表达式的值为true
    }else{
       //如果布尔表达式的值为false
    }
    ```
-
+   
 3. ```java
    if(布尔表达式 1){
       //如果布尔表达式 1的值为true执行代码
@@ -853,7 +855,7 @@ byte,short,char —> int —> long —> float —> double
    > - switch 语句中的变量类型可以是： byte、short、int 或者 char。从 Java SE 7 开始，switch 支持字符串 String 类型了，同时 case 标签必须为字符串常量或字面量。
    > - switch 语句可以拥有多个 case 语句。每个 case 后面跟一个要比较的值和冒号。
    > - case 语句中的值的数据类型必须与变量的数据类型相同，而且只能是常量或者字面常量。
-   > - 当变量的值与 case 语句的值相等时，那么 case 语句之后的语句开始执行，直到 break 语句出现才会跳出 switch 语句。
+   > - 当表达式的值与 case 语句的值相等时，那么 case 语句之后的语句开始执行，直到 break 语句出现才会跳出 switch 语句。
    > - 当遇到 break 语句时，switch 语句终止。程序跳转到 switch 语句后面的语句执行。case 语句不必须要包含 break 语句。如果没有 break 语句出现，程序会继续执行下一条 case 语句，直到出现 break 语句。
    > - switch 语句可以包含一个 default 分支，该分支一般是 switch 语句的最后一个分支（可以在任何位置，但建议在最后一个）。default 在没有 case 语句的值和变量值相等的时候执行。default 分支不需要 break 语句。
    > - switch case 执行时，一定会先进行匹配，匹配成功返回当前 case 的值，再根据是否有 break，判断是否继续输出，或是跳出判断。
@@ -915,6 +917,16 @@ byte,short,char —> int —> long —> float —> double
    > 表达式：表达式是要访问的数组名，或者是返回值为数组的方法。
    >
    > 类似于Python中的in关键字
+   
+5. break语句
+
+   1. 直接执行break语句，跳出当前循环体
+   2. 使用带标签的break语句，跳出指定的循环体或带标签的语句块
+
+6. continue语句
+
+   1. 直接执行continue语句，终止执行当前的迭代，不跳出当前循环体，开始下一次的迭代
+   2. 使用带标签的continue语句，跳出指定的迭代，开始下一次的迭代
 
 
 
