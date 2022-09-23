@@ -188,11 +188,11 @@ https://www.bilibili.com/medialist/play/watchlater/BV1aN411o7Ei
 
 ## 快捷键
 
-![](E:\Study Notes\Pictures\Pycharm快捷键1.png)
+![](Pictures\Pycharm快捷键1.png)
 
-![image-20220204150042206](E:\Study Notes\Pictures\Pycharm快捷键2.png)
+![image-20220204150042206](Pictures\Pycharm快捷键2.png)
 
-![](E:\Study Notes\Pictures\Pycharm快捷键3.png)
+![](Pictures\Pycharm快捷键3.png)
 
 自动调整代码格式的快捷键，默认为	`Alt+Ctrl+L`
 
@@ -495,9 +495,9 @@ if __name__ == "__main__":
       print("%_"%(_))
       ```
    
-      ![](E:\Study Notes\Pictures\Python格式化操作符辅助指令.png)
+      ![](Pictures\Python格式化操作符辅助指令.png)
    
-      ![Python格式化输入输出](E:\Study Notes\Pictures\Python格式化输入输出.png)
+      ![Python格式化输入输出](Pictures\Python格式化输入输出.png)
       
    5. 多行输入
    
@@ -893,7 +893,7 @@ import keyword
 keyword.kwlist
 ```
 
-![](E:\Study Notes\Pictures\Python保留字.png)
+![](Pictures\Python保留字.png)
 
 错误代码：“invalid syntax”
 
@@ -918,7 +918,7 @@ keyword.kwlist
 
 1. 算数运算符
 
-   ![image-20220220232641177](E:\Study Notes\Pictures\Python算数运算符.png)
+   ![image-20220220232641177](Pictures\Python算数运算符.png)
 
    除数不能为0，取模时如果除数为负数则结果也为负值
 
@@ -926,11 +926,11 @@ keyword.kwlist
 
 2. 赋值运算符
 
-   ![image-20220220233852935](E:\Study Notes\Pictures\Python赋值运算符.png)
+   ![image-20220220233852935](Pictures\Python赋值运算符.png)
 
 3. 比较(关系)运算符
 
-   ![image-20220220234034532](E:\Study Notes\Pictures\比较运算符.png)
+   ![image-20220220234034532](Pictures\比较运算符.png)
 
    判断一个变量是否介于两个值之间可采用"值1<变量<值2"的形式
 
@@ -944,17 +944,17 @@ keyword.kwlist
 
 5. 位运算符
 
-   ![image-20220220235234232](E:\Study Notes\Pictures\Python位运算符.png)
+   ![image-20220220235234232](Pictures\Python位运算符.png)
 
    左端为高位端，右端为低位端
 
 6. 成员运算符
 
-   ![image-20220221000905312](E:\Study Notes\Pictures\Python成员运算符.png)
+   ![image-20220221000905312](Pictures\Python成员运算符.png)
 
 7. 身份运算符
 
-   ![image-20220221001117806](E:\Study Notes\Pictures\Python身份运算符.png)
+   ![image-20220221001117806](Pictures\Python身份运算符.png)
 
 8. 集合运算符
 
@@ -971,7 +971,7 @@ keyword.kwlist
 
    优先级高的运算先执行，同一优先级的操作从左到右进行，可使用()优先执行
 
-   ![image-20220221001836009](E:\Study Notes\Pictures\Python运算符优先级.png)
+   ![image-20220221001836009](Pictures\Python运算符优先级.png)
 
 
 
@@ -1159,7 +1159,7 @@ Python3.6以上支持在数字**中间**添加单个下划线_进行分割
 
 序列是一块用于存放多个值的连续内存空间，每一个值(称为元素)都分配一个数字，称为**索引**或位置，类似C语言中的数组下标
 
-![image-20220216223523384](E:\Study Notes\Pictures\字符串索引和截取.png)
+![image-20220216223523384](Pictures\字符串索引和截取.png)
 
 1. 索引(indexing)：从左往右以 **0** 开始，从右往左以 **-1** 开始
 
@@ -1211,7 +1211,7 @@ Python3.6以上支持在数字**中间**添加单个下划线_进行分割
 
 4. 转义符 **\\**
 
-   ![image-20220220230311929](E:\Study Notes\Pictures\Python转义字符.png)
+   ![image-20220220230311929](Pictures\Python转义字符.png)
 
 5. 反斜杠可以用来转义，使用 **r或R** (指 raw)可以让反斜杠不发生转义
 
@@ -1414,9 +1414,9 @@ Python3.6以上支持在数字**中间**添加单个下划线_进行分割
          
           格式化字符：用于指定类型
          
-          ![](E:\Study Notes\Pictures\Python格式化操作符辅助指令.png)
+          ![](Pictures\Python格式化操作符辅助指令.png)
          
-          ![Python格式化输入输出](E:\Study Notes\Pictures\Python格式化输入输出.png)
+          ![Python格式化输入输出](Pictures\Python格式化输入输出.png)
 
      2. format()方法
 
@@ -1949,7 +1949,7 @@ print (tinydict.values()) # 输出所有值
 
 #	数据类型转换
 
-![image-20220220231948606](E:\Study Notes\Pictures\Python数据类型转换函数.png)
+![image-20220220231948606](Pictures\Python数据类型转换函数.png)
 
 转换后原变量数据类型不变
 
@@ -2194,7 +2194,7 @@ else 表达式:
        [functionbody]
    ```
 
-   > parameterlist：可选参数，用于指定向函数中传递的参数
+   > parameterlist：可选参数，用于指定向函数中传递的参数，不需要说明形参类型
    >
    > comments：可选参数，表示为函数指定注释，如果指定了comments参数，那么在调用函数输入函数名称及左侧小括号时会显示该函数的帮助信息
    >
@@ -2210,9 +2210,9 @@ else 表达式:
 
    2. 位置参数也称为必备参数，必须按照正确的顺序传到函数中，即调用时的数量和位置必须与定义时一样
    
-   3. 关键字参数时指使用形参的名字来确定输入的参数值，这种方式不需要与形参位置完全一致
+   3. 关键字参数是指使用形参的名字来确定输入的参数值，这种方式不需要与形参位置完全一致
    
-   4. 在定义函数时可以直接指定形参的默认值，在没有实参传入时会直接使用该默认值而不会抛出异常，**指定默认的形参必须在所有参数的最后**(可使用\__defaults__方法查看函数的默认值参数的当前值)
+   4. 默认值参数是在定义函数时可以直接指定形参的默认值，在没有实参传入时会直接使用该默认值而不会抛出异常，**指定默认的形参必须在所有参数的最后**(可使用\__defaults__方法查看函数的默认值参数的当前值)
    
    5. 最好使用None作为可变对象的默认值，再加上必要的检查代码
    
@@ -2224,15 +2224,16 @@ else 表达式:
    
          这种形式表示接收任意多个实参并将其放到一个**元组**中
    
-         如果想要使用一个已经存在的列表作为函数的可变参数，可以在列表的名称前加"*****"
-   
       2. **parameter
    
-         这种形式表示接收任意多个类似关键字参数一样显示赋值的实参，并将其放到一个**字典**中
+         这种形式表示接收任意多个类似**关键字参数**一样显示赋值的实参，并将其放到一个**字典**中
    
-         如果想使用一个已经存在的字典作为函数的可变参数，可以在字典的名称前加"******"
+   7. 传递参数时的序列解包
    
-   7. 返回值：
+      1. 调用含有多个位置参数的函数时，如果想要使用一个已经存在的可迭代对象作为函数的实参，可以在可迭代对象的名称前加`*`
+      2. 调用含有多个位置参数的函数时，如果想使用一个已经存在的字典作为函数的实参，可以在字典的名称前加`**`，该方法会将字典转换为类似于关键字参数的形式进行参数传递，该方法要求实参字典中的所有键都必须是函数的形参名称或者与函数中两个星号的可变长度参数相对应
+   
+   8. 返回值：
    
       返回值可以是任意类型，无论return语句出现在函数的什么位置，只要得到执行，就会直接结束函数的运行
    
@@ -2248,7 +2249,7 @@ else 表达式:
    
       当函数中没有return语句或省略了return语句的参数时将返回None，即返回空值
    
-   8. 变量的作用域：
+   9. 变量的作用域：
    
       1. 局部变量
    
@@ -2264,28 +2265,55 @@ else 表达式:
    
       Python 会假设任何在函数内赋值的变量都是局部的，因此，如果要在函数内部使用全局变量，必须先用global 语句声明
    
-   9. 匿名函数(lambda)
+   10. 匿名函数(lambda)
    
-      匿名函数是指没有名字的函数，这样的函数只能使用一次。
+      匿名函数是指没有名字的函数，这样的函数只能使用一次
    
       ```python
       result=lambda [arg1 [,arg2,...,argn] ]:expression
       
       eg:
           list.sort(key=lambda x:x[1] , reverse=False)
+          f = lambda x,y,z : x+y+z
       ```
-      
+   
       > result：用于调用lambda表达式，接收lambda的返回值
       >
       > [arg1 [,arg2,...,argn] ]：可选参数，用于指定向要传递的参数列表
       >
-      > expression：必选参数，指定一个实现具体功能的表达式
-      
-      表达式只能有一个，即只能返回一个值，且不能出现其他非表达式语句(如for或while)
-      
+      > expression：必选参数，指定一个实现具体功能的表达式，表达式的计算结果作为返回值
+   
+      表达式只能有一个，即只能返回一个值，且不能出现其他非表达式语句(如for或while)，但可以调用其他函数
+   
       首要用途是指定短小的回调函数
-      
-   10. 函数内定义的函数称为内部函数，内部函数的创建过程在外部函数的执行过程中，不可直接调用内部函数，可以通过return内部函数的方式在外部执行
+   
+   11. 函数内定义的函数称为内部函数，内部函数的创建过程在外部函数的执行过程中，不可直接调用内部函数，可以通过return内部函数的方式在外部执行
+   
+   12. 生成器函数
+   
+       包含yield语句的函数可以用来创建生成器对象，这样的函数也称为生成器函数。yield语句与return语句的作用相似，都是用来从函数中返回值，但是yield语句返回一个值后会暂停或挂起后面代码的执行，在下一次通过生成器对象的`__next__()`方法、内置函数next()、for循环遍历生成器对象元素或其他方式显式"索要"数据时恢复执行，具有惰性求值的特点。
+   
+       ```python
+       def f():
+           a, b = 1, 1
+           while True:
+               yield a
+               a, b = b, a + b
+       
+       
+       c = f()
+       for i in range(10):
+           print(c.__next__(), end=' ')
+       # 1 1 2 3 5 8 13 21 34 55 
+           
+       for i in f():
+           if i > 100:
+               print(i, end=' ')
+               break
+       # 144 
+       ```
+   
+       
 
 
 
@@ -2711,7 +2739,7 @@ myprint2(5, 5)
 
 > 为了对数据库进行统一的操作，在Python Database API 2.0 规范中定义了Python数据库API接口的各个部分，如模块接口、连接对象、游标对象、类型对象和构造器、DB API的可选拓展以及可选的错误处理机制等。
 
-![](E:\Study Notes\Pictures\数据库操作通用流程-16577780132491.jpg)
+![](Pictures\数据库操作通用流程-16577780132491.jpg)
 
 1. 数据库编程接口
 
@@ -2966,7 +2994,7 @@ myprint2(5, 5)
 > >
 > > top-level窗口可以是一个重叠(Overlapped)窗口(带有WS_OVERLAPPED属性，通常作为应用程序主窗口), 也可以是一个弹出式窗口(带有WM_POPUP属性，通常用于各类弹出消息框)。
 
-![](E:\Study Notes\Pictures\界面坐标.png)
+![](Pictures\界面坐标.png)
 
 
 
