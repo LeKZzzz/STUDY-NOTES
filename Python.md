@@ -2287,7 +2287,7 @@ else 表达式:
    
       首要用途是指定短小的回调函数
    
-   11. 函数内定义的函数称为内部函数，内部函数的创建过程在外部函数的执行过程中，不可直接调用内部函数，可以通过return内部函数的方式在外部执行
+   11. 函数内定义的函数称为内部函数，内部函数的创建过程在外部函数的执行过程中，外部不可直接调用内部函数，可以通过return内部函数的方式在外部执行
    
    12. 生成器函数
    
@@ -2381,44 +2381,68 @@ else 表达式:
 
    4. 创建类的成员并访问
 
-      类的成员主要由实例方法和数据成员组成
+      类的成员主要由成员方法和数据成员组成
 
-      1. 实例方法
+      1. 成员方法
 
          类中定义的函数，该函数是在类的实例上操作的函数
 
+         1. 实例方法
+         
          ```python
          def functionname(self,paramentlist):
          	block
          ```
-
+         
          > functionname：指定方法名，一般使用小写字母开头
          >
-         > self：必要参数，表示类的实例
+         > self：必要参数，表示当前的实例，且必须是方法的第一个形参，在调用方法时并不需要传递这个参数而是会把对象隐式绑定到self参数
          >
          > block：方法体，实现具体的功能
          
+         方法调用：
+         
           ```python
-          instanceName.functionname(parameterlist)
+         instanceName.functionname(parameterlist)
           ```
          
          > instanceName：类的实例的名称
          
+         2. 静态方法和类方法
+         
+            静态方法和类方法都可以通过类名和对象名调用，但这两种方法中不能直接访问属于对象的成员，只能访问属于类的成员。一半以cls作为类方法的第一个参数表示该类自身，在调用类方法时不需要为该参数传递值；静态方法可以不接受任何参数
+         
+            ```python
+            @classmethod	# 装饰器，声明类方法
+            def functionname(cls):
+                block
+                
+            @staticmethod	# 装饰器，声明静态方法
+            def functionname():
+                block
+            ```
+         
+            
+         
            2. 数据成员
          
-              类中定义的变量，即属性，根据定义位置分为类属性和实例属性
+              类中定义的变量，即属性，根据定义位置分为类变量和实例变量
          
-              1. 类属性
+              1. 类变量
          
-                 定义在类中且在方法外的属性，在类的所有实例中共享值，可以通过类名称或实例名访问
+                 定义在类中且在方法外的变量，在类的所有实例中共享值，可以通过类名称或实例名访问
          
-                 可以动态地为类和对象添加修改属性，结果作用于所有实例
+                 可以动态地为类和对象添加修改变量，结果作用于所有实例
          
-              2. 实例属性
+                 对类变量的修改应使用`类名.类变量名`的方式进行修改，若用`实例名.类变量名`进行修改会自动创建一个同名的实例变量
          
-                 定义在类的方法中的属性，只作用于当前实例中，只能通过实例名访问
+              2. 实例变量
          
-                 实例属性可以通过实例名称更改 ，且更改后不影响该类的另一个实例中对应的实例属性的值
+                 定义在类的方法中的变量，只作用于当前实例中，只能通过实例名访问
+              
+                 实例变量主要在构造方法中定义
+                 
+                 实例变量可以通过实例名称更改 ，且更改后不影响该类的另一个实例中对应的实例变量的值
 
    5. 访问限制
 
@@ -2430,27 +2454,97 @@ else 表达式:
 
 3. 属性(Property)
 
-   不同于类的数据成员，这种属性不返回存储的值，访问它时将计算它的值
+   属性是一种特殊形式的成员方法，综合了公开数据成员和成员方法二者的优点，既可以像成员方法一样对值进行必要的检查，又可以想数据成员一样灵活地访问。不同于类的数据成员，属性不返回存储的值，访问它时将计算它的值。
 
-   1. 创建
+   通过`@property`装饰器或`property`函数将方法转换为属性，实现用于计算的属性
 
-      通过@property(装饰器)将一个方法转换为属性，实现用于计算的属性
+   将方法转换为属性之后可以直接通过方法名来访问方法而不需要再添加一对小括号"()"
 
-      将方法转换为属性之后可以直接通过方法名来访问方法而不需要再添加一对小括号"()"
+   通过属性可以实现安全保护机制
+
+   ```python
+   @property
+   def methodname(self):
+       block
+   ```
+
+   > block：方法体，通常以return语句结束用以返回计算结果
+
+   1. 创建一个可读取但不能修改的属性，可以使用`@property`实现只读属性，使其无法修改其值，无法删除对象属性，也无法为对象增加与属性同名的新成员。
 
       ```python
-      @property
-      def methodname(self):
-          block
+      class Test:
+          def __init__(self, value):
+              self.__value = value
+      
+          @property
+          def value(self):  # 读取私有数据成员的值
+              return self.__value
+      
+      
+      t = Test(3)
+      print(t.value)	# 3
       ```
 
-      > block：方法体，通常以return语句结束用以返回计算结果
+   2. 创建一个可读、可修改而不允许删除的属性
 
-      通过@property转换后的属性不能重新赋值
+      ```python
+      class Test:
+          def __init__(self, value):
+              self.__value = value
+      
+          def __get(self):  # 读取私有数据成员的值
+              return self.__value
+      
+          def __set(self, v):  # 修改私有数据成员的值
+              self.__value = v
+      
+          value = property(__get, __set)  # 可读可写属性，指定相应的读写方法
+      
+          def show(self):
+              print(self.__value)
+      
+      
+      t = Test(3)
+      print(t.value)  # 3
+      t.show()  # 3
+      
+      t.value = 5
+      t.show()  # 5
+      ```
 
-   2. 添加安全保护机制
+   3. 创建一个可读、可修改、可删除的属性
 
-      为了创建一个课读取但不能修改的属性，可以使用@property实现只读属性
+      ```python
+      class Test:
+          def __init__(self, value):
+              self.__value = value
+      
+          def __get(self):  # 读取私有数据成员的值
+              return self.__value
+      
+          def __set(self, v):  # 修改私有数据成员的值
+              self.__value = v
+      
+          def __del(self):  # 删除对象的私有数据成员
+              del self.__value
+      
+          value = property(__get, __set, __del)  # 可读可写可删除属性，指定相应的读写方法
+      
+          def show(self):
+              print(self.__value)
+      
+      
+      t = Test(3)
+      print(t.value)  # 3
+      t.show()  # 3
+      
+      t.value = 5
+      t.show()  # 5
+      
+      del t.value
+      t.show()    # 'Test' object has no attribute '_Test__value'
+      ```
 
 4. 继承
 
@@ -2471,13 +2565,21 @@ else 表达式:
 
       当基类中的某个方法不完全适用于派生类时，就需要在派生类中重写基类的方法
 
-   3. 在子类中调用父类的\__init__()方法
+   3. 如果需要在派生类中调用基类的方法，可以使用内置函数`super()`或者通过`基类名.方法名()`的方式来实现
 
       在子类中定义\__init__()方法时，不会自动调用父类的初始化方法，因此调用父类的初始化方法需要进行必要的初始化
 
       ```python
-      super().__init__()
+      super(Child,self).__init__()
+      
+      Parent.__init__(self)
       ```
+      
+   4. Python支持多继承，如果父类中有相同的方法名，而在子类中使用时没有指定父类名，则Python解释器将从左向右按顺序进行搜索，使用第一个匹配的成员
+   
+5. 特殊方法
+
+   https://docs.python.org/3/reference/datamodel.html#special-method-names
 
 
 
