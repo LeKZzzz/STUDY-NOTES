@@ -120,6 +120,32 @@
 
 
 
+##	GIL(global interpreter lock)
+
+> 由于物理上得限制，各CPU厂商在核心频率上的比赛已经被多核所取代。为了更有效的利用多核处理器的性能，就出现了多线程的编程方式，而随之带来的就是线程间数据一致性和状态同步的困难。即使在CPU内部的Cache也不例外，为了有效解决多份缓存之间的数据同步时各厂商花费了不少心思，也不可避免的带来了一定的性能损失。
+>
+> Python当然也逃不开，为了利用多核，Python开始支持多线程。而解决多线程之间数据完整性和状态同步的最简单方法自然就是加锁。 于是有了GIL这把超级大锁，而当越来越多的代码库开发者接受了这种设定后，他们开始大量依赖这种特性（即默认python内部对象是thread-safe的，无需在实现时考虑额外的内存锁和同步操作）。
+>
+> 慢慢的这种实现方式被发现是低效的。但当大家试图去拆分和去除GIL的时候，发现大量库代码开发者已经重度依赖GIL而非常难以去除了。有多难？做个类比，像MySQL这样的“小项目”为了把Buffer Pool Mutex这把大锁拆分成各个小锁也花了从5.5到5.6再到5.7多个大版为期近5年的时间，而且仍在继续。MySQL这个背后有公司支持且有固定开发团队的产品走的如此艰难，那又更何况Python这样核心开发和代码贡献者高度社区化的团队呢？
+>
+> 所以简单的说GIL的存在更多的是历史原因。如果推倒重来，多线程的问题依然还是要面对，但是至少会比目前GIL这种方式会更优雅。
+
+1. GIL的全称是 Global Interpreter Lock，全局解释器锁。之所以叫这个名字，是因为**Python的执行依赖于解释器**。Python最初的设计理念在于，**为了解决多线程之间数据完整性和状态同步的问题，设计为在任意时刻只有一个线程在解释器中运行。**而当执行多线程程序时，由GIL来控制同一时刻只有一个线程能够运行。即**Python中的多线程是表面多线程**，也可以理解为fake多线程，不是真正的多线程。
+
+2. 需要明确的一点是GIL并不是Python的特性，它是在实现Python解析器(CPython)时所引入的一个概念。就好比C++是一套语言（语法）标准，但是可以用不同的编译器来编译成可执行代码。有名的编译器例如GCC，INTEL C++，Visual C++等。Python也一样，同样一段代码可以通过CPython，PyPy，Psyco等不同的Python执行环境来执行。像其中的JPython就没有GIL。然而因为CPython是大部分环境下默认的Python执行环境。所以在很多人的概念里CPython就是Python，也就想当然的把GIL归结为Python语言的缺陷。所以这里要先明确一点：GIL并不是Python的特性，Python完全可以不依赖于GIL。
+
+3. 同一时刻只有一个线程能够运行，那么是怎么执行多线程程序的呢？其实原理很简单：**解释器的分时复用**。即多个线程的代码，轮流被解释器执行，只不过切换的很频繁很快，给人一种多线程“同时”在执行的错觉。聊的学术化一点，其实就是“**并发**”。
+
+4. GIL的优点是显而易见的，GIL可以保证我们在多线程编程时，无需考虑多线程之间数据完整性和状态同步的问题。
+
+   GIL缺点是：我们的多线程程序执行起来是“并发”，而不是“并行”。因此执行效率会很低，会不如单线程的执行效率。
+
+   网上很多人都提到过这样的疑问：”为什么我多线程Python程序运行得比其只有一个线程的时候还要慢?“显然，大家觉得一个具有两个线程的程序要比其只有一个线程时要快。事实上,这个问题是确实存在的，原因在于GIL的存在使得Python多线程程序的执行效率甚至比不上单线程的执行效率。很简单，由于GIL使得同一时刻只有一个线程在运行程序，再加上切换线程和竞争GIL带来的开销，显然Python多线程的执行效率就比不上单线程的执行效率了。
+
+    
+
+
+
 #	编写规范
 
 Python中采用PEP 8（Python Enhancement Proposal version 8）作为编写规范
@@ -2228,6 +2254,26 @@ else 表达式:
    
          这种形式表示接收任意多个类似**关键字参数**一样显示赋值的实参，并将其放到一个**字典**中
    
+   7. 参数列表中的/与*
+   
+      如有函数定义
+   
+      ```python
+      def f(pos1, pos2, /, pos_or_kwd, *, kwd1, kwd2):
+      ```
+   
+      - `pos1` 和`pos2`只能以位置的形式传参，而不能以关键字的形式传参。
+      - `pos_or_kwd`可以以位置和关键字的形式传参
+      - `kwd1`和`kwd2`只能以关键字的形式传参
+   
+   8. 函数参数中的冒号与箭头
+   
+      函数参数中的冒号是参数的类型建议符，告诉函数调用者希望传入的实参的类型
+   
+      函数后面跟着的箭头是函数返回值的类型建议符，用来说明该函数返回的值是什么类型
+   
+      **值得注意的是，类型建议符并非强制规定和检查，也就是说即使传入的实际参数与建议参数不符，也不会报错**
+   
    7. 传递参数时的序列解包
    
       1. 调用含有多个位置参数的函数时，如果想要使用一个已经存在的可迭代对象作为函数的实参，可以在可迭代对象的名称前加`*`
@@ -4069,3 +4115,122 @@ myprint2(5, 5)
       > - 元描述信息；
       > - 元标签。
 
+
+
+#	多线程(threading)
+
+> 线程是CPU分配资源的基本单位。当一程序开始运行，这个程序就变成了一个进程，而一个进程相当于一个或者多个线程。当没有多线程编程时，一个进程相当于一个主线程；当有多线程编程时，一个进程包含多个线程（含主线程）。使用线程可以实现程序大的开发。
+>
+> 多个线程可以在同一个程序中运行，并且每一个线程完成不同的任务。
+>
+> 多线程实现后台服务程序可以同时处理多个任务，并不发生阻塞现象。
+>
+> 多线程的程序设计的特点就是能够提高程序执行效率和处理速度。
+>
+> python程序可以同时并行运行多个相对独立的线程。
+>
+> python的多线程可以降低IO的时间损耗，在遇到IO阻塞的时候可以执行其他线程任务，但数据处理的时间减少不是绝对的
+
+ ```python
+ import threading
+ import time
+ from queue import Queue
+ 
+ 
+ def thread_job():
+     print('T1 start\n')
+     print("This is an added Thread, number is %s\n" % threading.current_thread())
+     for i in range(3):
+         time.sleep(1)
+     print('T1 finish')
+ 
+ 
+ def thread2_job(list, q):
+     for i in range(len(list)):
+         list[i] = list[i] ** 2
+     q.put(list)
+ 
+ 
+ def thread3_job():
+     global A, lock
+     lock.acquire()
+     for i in range(10):
+         A += 1
+         print('job1', A)
+     lock.release()
+ 
+ 
+ def thread4_job():
+     global A, lock
+     lock.acquire()
+     for i in range(10):
+         A += 10
+         print('job2', A)
+     lock.release()
+ 
+ 
+ def main():
+     added_thread = threading.Thread(target=thread_job, name='T1')  # 添加线程
+     added_thread.start()  # 运行线程
+     added_thread.join()  # 阻塞主线程
+     print('This is main function.')
+ 
+     print(threading.active_count())  # 返回正在运行线程的数量，相当于len(threading.enumerate())
+     print(threading.enumerate())  # 返回一个正在运行线程的列表
+     print(threading.current_thread())  # 返回当前线程变量
+ 
+     # 使用Queue队列返回多线程的结果
+     q = Queue()
+     data = [[1, 2, 3], [3, 4, 5], [4, 4, 4], [5, 5, 5]]
+     threads = []
+     for i in range(4):
+         t = threading.Thread(target=thread2_job, args=(data[i], q))
+         t.start()
+         threads.append(t)
+     for thread in threads:
+         thread.join()
+     result = []
+     for _ in range(4):
+         result.append(q.get())
+     print(result)
+ 
+     # 锁
+     global A,lock
+     A = 0
+     lock = threading.Lock()
+     t1 = threading.Thread(target=thread3_job)
+     t2 = threading.Thread(target=thread4_job)
+     t1.start()
+     t2.start()
+     t1.join()
+     t2.join()
+ 
+ 
+ if __name__ == '__main__':
+     main()
+ ```
+
+- 注意：赋值给target的回调函数是不带括号的，不能这样`thread = threading.Thread(target=thread_job())`。带上括号会执行这个函数，target这里只是进行索引而已，是不带参数的，所以是没有()的。需要传递参数则使用args这个参数。
+- 使用join方法后，该子线程所在的主线程会被阻塞，主线程会等待该子线程执行结束后再继续执行。
+- 多线程是没有返回值的，需要把结果放在队列中，可以使用python的标准库queue。
+
+
+
+
+
+#	异步执行
+
+---
+
+
+
+##	协程(coroutine )
+
+1. 协程不是系统级线程，很多时候协程被称为“轻量级线程”、“微线程”、“纤程(fiber)”等，是用户态内的上下文切换技术，用于降低IO阻塞的时间消耗。简单来说可以认为协程是**同一个线程里不同的函数**，这些**函数之间可以相互快速切换**
+2. 协程和用户态线程非常接近，用户态线程之间的切换不需要陷入内核，但部分操作系统中用户态线程的切换需要内核态线程的辅助
+3. 协程是编程语言（或者 lib）提供的特性（协程之间的切换方式与过程可以由编程人员确定），是用户态操作。协程适用于 IO 密集型的任务。常见提供原生协程支持的语言有：c++20、golang、python 等，其他语言以库的形式提供协程功能，比如 C++20 之前腾讯的 fiber 和 libco 等等
+4. Python中的实现方法
+   1. greenlet，早期模块
+   2. yield关键字，生成器
+   3. asyncio装饰器 (Python 3.4以上版本)
+   4. async、await关键字 (Python 3.5以上版本)【推荐】
