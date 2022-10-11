@@ -4232,5 +4232,181 @@ myprint2(5, 5)
 4. Python中的实现方法
    1. greenlet，早期模块
    2. yield关键字，生成器
-   3. asyncio装饰器 (Python 3.4以上版本)
-   4. async、await关键字 (Python 3.5以上版本)【推荐】
+   3. asyncio装饰器 (Python 3.4及以上版本)
+   4. async、await关键字 (Python 3.5及以上版本)【推荐】
+
+
+
+##	asyncio
+
+1. 事件循环(Eventloop)
+
+   Eventloop可以说是asyncio应用的核心，是中央总控。Eventloop实例提供了注册、取消和执行任务和回调的方法。
+
+   把一些异步函数(任务，Task)注册到这个事件循环上，事件循环会循环执行这些函数(但同时只能执行一个)，当执行到某个函数时，如果它正在等待I/O返回，事件循环会暂停它的执行去执行其他的函数；当某个函数完成I/O后会恢复，下次循环到它的时候继续执行。因此，这些异步函数可以协同(Cooperative)运行：这就是事件循环的目标。
+
+   ```python
+   import asyncio
+   
+   loop = asyncio.get_event_loop()  # 生成或获取一个事件循环
+   loop.run_until_complete(asyncio.wait(tasks))  # 将任务放入任务列表中
+   loop.close()  # 关闭事件循环
+   
+   # Python 3.7添加新接口可替代上述代码
+   asyncio.run(asyncio.wait(tasks) )
+   ```
+
+2. 协程函数
+
+   ```python
+   # 此写法仅支持Python 3.5以上版本
+   async def func():
+       block
+   ```
+
+3. 协程对象
+
+   ```python
+   async def func():
+       block
+   result = func()	# 协程对象
+   ```
+
+   协程对象生成时不会执行协程函数
+
+   协程对象可作为任务添加入事件循环中
+
+4. await关键字
+
+   await + IO等待 即可等待对象(协程对象、Future对象、Task对象)
+
+   遇到IO操作时会挂起当前协程(任务)，等IO操作完成后等待事件循环再次执行该函数剩余部分；当当前协程挂起时事件循环可以去执行其他协程(任务)。
+   
+5. Future对象
+
+   1. asyncio.Future对象它代表了一个「未来」对象，异步操作结束后会把最终结果设置到这个Future对象上。Future是对协程的封装，不过日常开发基本不需要直接用这个底层Future类。Task继承Future，Task对象内部await结果的处理基于Future。
+   2. concurrent.futures.Future对象是使用进程池、线程池实现异步操作时用到的对象
+
+6. Task对象
+
+   Task是Future的子类，Tasks用于并发调度协程，通过`asyncio.create_task(协程对象)`的方式(仅适用于Python 3.7及以上版本)创建对象，这样可以让协程立即加入事件循环中等待被调度执行，即在事件循环中添加多个任务。还可以用低层级的`loop.create_task()`或`ensure_future()`函数。不建议手动实例化Task对象。
+
+   asyncio.create_task方法是将一个协程包装成一个任务对象，**并且将该任务任务绑定到事件循环上** ，然后看时机等待被事件循环调度，这些都是非阻塞的，返回任务对象本身，如果你对任何一个可等待对象直接进行了await操作，那么一定得等到该可等待对象的状态确定之后才能返回，否则一定会被阻塞在此处，所以你不要在所有的地方都进行await操作，你只需在需要等待的地方进行await操作，以避免阻塞；并且你的每一个协程任务应该尽可能的小，让他们只做好一件事，如果是cpu密集型的任务，尽量与你的异步代码分离，因为你每个时刻只能干一件事，如果cpu密集型的任务占用了太多的cpu，你就没办法处理更多的IO了，异步IO是为了用更少的资源更方便处理更多的多的IO
+
+   ```python
+   import asyncio
+   
+   
+   async def func():
+       print(1)
+       await asyncio.sleep(2)
+       print(2)
+       return '返回值'
+   
+   
+   async def main():
+       print('main开始')
+       # 创建Task对象，并将这些对象放入一个列表中
+       task_list = [
+           asyncio.create_task(func(), name='n1'),
+           asyncio.create_task(func(), name='n2')
+       ]
+       done, pending = await asyncio.wait(task_list, timeout=None)  # done以集合的形式接收结果，pending接收未完成任务
+       print(done)
+       print('main结束')
+   
+   
+   asyncio.run(main())
+   
+   '''
+   main开始
+   1
+   1
+   2
+   2
+   {<Task finished name='n1' coro=<func() done, defined at E:\Test File\Python\STUDY-TEST\coroutine.py:9> result='返回值'>, <Task finished name='n2' coro=<func() done, defined at E:\Test File\Python\STUDY-TEST\coroutine.py:9> result='返回值'>}
+   main结束
+   '''
+   ```
+
+   ```python
+   async def func():
+       print(1)
+       await asyncio.sleep(2)
+       print(2)
+       return '返回值'
+   
+   # 因为创建Task对象前没有事件循环被创建，因此此时使用asyncio.create_task()方法不能使协程添加进事件循环
+   task_list = [
+       func(),
+       func()
+   ]
+   # asyncio.wait()方法会自动将task_list中的协程添加入事件循环
+   done, pending =asyncio.run(asyncio.wait(task_list))
+   print(done)
+   
+   '''
+   1
+   1
+   2
+   2
+   {<Task finished name='Task-2' coro=<func() done, defined at E:\Test File\Python\STUDY-TEST\coroutine.py:9> result='返回值'>, <Task finished name='Task-3' coro=<func() done, defined at E:\Test File\Python\STUDY-TEST\coroutine.py:9> result='返回值'>}
+   '''
+   ```
+
+7. 异步与非异步模块的结合
+
+   ```python
+   import asyncio
+   import requests
+   
+   
+   async def download_image(url):
+       # 发送网络请求，下载图片
+       print('开始下载', url)
+   
+       # request模块默认不支持异步操作，想要实现异步操作可以使用线程池进行转换
+       # 第一步：内部会先调用 ThreadPoolExeutor的submit方法申请一个线程去执行函数，并返回一个concurrent.futures.Future对象
+       # 第二步：调用asyncio.wrap_future方法将concurrent.futures.Future对象包装为asyncio.Future对象
+       loop = asyncio.get_event_loop()
+       future = loop.run_in_executor(None, requests.get, url)	# 第一个参数若为None则申请线程
+       response = await future
+       print('下载完成')
+   
+       # 将图片保存到本地
+       file_name = url.rsplit('_')[-1]
+       with open(file_name, mode='wb') as file_object:
+           file_object.write(response.content)
+   
+   
+   if __name__ == '__main__':
+       url_list = [
+   
+       ]
+   
+       tasks = [download_image(url) for url in url_list]
+       asyncio.run(asyncio.wait(tasks))
+   
+   ```
+
+8. 异步上下文管理器
+
+   此种对象通过定义`__aenter__()` `__aexit__()`方法对`async with`语句中的环境进行控制
+
+
+
+##	uvloop
+
+ uvloop是 asyncio 默认事件循环的一个代替品，实现的功能完整，且即插即用。
+
+uvloop是用Cython写的，基于 li.buv。
+
+uvloop 可以使 asyncio 更快。事实上，它至少比 nodejs、gevent 和其他 Python 异步框架要快 **两倍** 。基于 uvloop 的 asyncio 的速度几乎接近了 Go 程序的速度。
+
+```python
+import asyncio
+import uvloop
+
+asyncio.set_event_loop_policy(uvloop.EventLoopPloicy)
+```
+
