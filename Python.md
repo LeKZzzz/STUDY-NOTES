@@ -98,17 +98,18 @@
 
 ## pip
 
-| 序号                               | 语法                                 |
-| ---------------------------------- | ------------------------------------ |
-| 在线安装                           | pip install somepackage              |
-| 在线安装指定版本                   | pip install robotframework==2.8.7    |
-| 通过whl文件离线安装拓展库          | pip install somepackage.whl          |
-| 卸载已安装的库                     | pip uninstall package                |
-| 列出已经安装模块及其版本号         | pip list pip freeze                  |
-| 将已经安装的库列表保存到文本文件中 | pip freeze > path                    |
-| 根据依赖文件批量安装库             | pip install -r requirements.txt      |
-| 显示所安装包的信息                 | pip show package pip show -f package |
-| 升级指定的包                       | pip install -U package               |
+| 序号                               | 语法                                                        |
+| ---------------------------------- | ----------------------------------------------------------- |
+| 在线安装                           | pip install somepackage                                     |
+| 在线安装指定版本                   | pip install robotframework==2.8.7                           |
+| 通过whl文件离线安装拓展库          | pip install somepackage.whl                                 |
+| 卸载已安装的库                     | pip uninstall package                                       |
+| 列出已经安装模块及其版本号         | pip list pip freeze                                         |
+| 将已经安装的库列表保存到文本文件中 | pip freeze > path                                           |
+| 根据依赖文件批量安装库             | pip install -r requirements.txt                             |
+| 显示所安装包的信息                 | pip show package pip show -f package                        |
+| 升级指定的包                       | pip install -U package   pip install --upgrade 要升级的包名 |
+| 指定pip源                          | pip install somepackage -i url                              |
 
 
 
@@ -117,6 +118,21 @@
 3. 中国科技大学源：https://pypi.mirrors.ustc.edu.cn/simple/
 3. 豆瓣(douban)： https://pypi.douban.com/simple/
 3. 中国科学技术大学：http://pypi.mirrors.ustc.edu.cn/simple/
+
+
+
+多个python环境下，在指定的版本下pip安装包:
+
+1. 将要安装的python版本放在环境变量变量前面
+2. 指定python 版本安装
+   1. python2: py -2 -m pip install lettuce
+   2. python3:py -3 -m pip install lettuce
+3. 使用全路径安装
+   1. python2: C:\Users\LeK\AppData\Local\Programs\Python\Python27\python.exe -m pip install lettuce
+   2. python3: C:\Users\LeK\AppData\Local\Programs\Python\Python37\python.exe -m pip install lettuce
+4. 修改python.exe的文件名
+   1. python2：python2 -m pip install lettuce
+   2. python3：python3 -m pip install lettuce
 
 
 
@@ -732,71 +748,71 @@ if __name__ == "__main__":
 
       | 序号 | 方法及描述                                                   |
       | :--- | :----------------------------------------------------------- |
-      | 1    | [os.access(path, mode)](https://www.runoob.com/python3/python3-os-access.html) 检验权限模式 |
-      | 2    | [os.chdir(path)](https://www.runoob.com/python3/python3-os-chdir.html) 改变当前工作目录 |
-      | 3    | [os.chflags(path, flags)](https://www.runoob.com/python3/python3-os-chflags.html) 设置路径的标记为数字标记。 |
-      | 4    | [os.chmod(path, mode)](https://www.runoob.com/python3/python3-os-chmod.html) 更改权限 |
-      | 5    | [os.chown(path, uid, gid)](https://www.runoob.com/python3/python3-os-chown.html) 更改文件所有者 |
-      | 6    | [os.chroot(path)](https://www.runoob.com/python3/python3-os-chroot.html) 改变当前进程的根目录 |
-      | 7    | [os.close(fd)](https://www.runoob.com/python3/python3-os-close.html) 关闭文件描述符 fd |
-      | 8    | [os.closerange(fd_low, fd_high)](https://www.runoob.com/python3/python3-os-closerange.html) 关闭所有文件描述符，从 fd_low (包含) 到 fd_high (不包含), 错误会忽略 |
-      | 9    | [os.dup(fd)](https://www.runoob.com/python3/python3-os-dup.html) 复制文件描述符 fd |
-      | 10   | [os.dup2(fd, fd2)](https://www.runoob.com/python3/python3-os-dup2.html) 将一个文件描述符 fd 复制到另一个 fd2 |
-      | 11   | [os.fchdir(fd)](https://www.runoob.com/python3/python3-os-fchdir.html) 通过文件描述符改变当前工作目录 |
-      | 12   | [os.fchmod(fd, mode)](https://www.runoob.com/python3/python3-os-fchmod.html) 改变一个文件的访问权限，该文件由参数fd指定，参数mode是Unix下的文件访问权限。 |
-      | 13   | [os.fchown(fd, uid, gid)](https://www.runoob.com/python3/python3-os-fchown.html) 修改一个文件的所有权，这个函数修改一个文件的用户ID和用户组ID，该文件由文件描述符fd指定。 |
-      | 14   | [os.fdatasync(fd)](https://www.runoob.com/python3/python3-os-fdatasync.html) 强制将文件写入磁盘，该文件由文件描述符fd指定，但是不强制更新文件的状态信息。 |
-      | 15   | [os.fdopen(fd[, mode[, bufsize\]])](https://www.runoob.com/python3/python3-os-fdopen.html) 通过文件描述符 fd 创建一个文件对象，并返回这个文件对象 |
-      | 16   | [os.fpathconf(fd, name)](https://www.runoob.com/python3/python3-os-fpathconf.html) 返回一个打开的文件的系统配置信息。name为检索的系统配置的值，它也许是一个定义系统值的字符串，这些名字在很多标准中指定（POSIX.1, Unix 95, Unix 98, 和其它）。 |
-      | 17   | [os.fstat(fd)](https://www.runoob.com/python3/python3-os-fstat.html) 返回文件描述符fd的状态，像stat()。 |
-      | 18   | [os.fstatvfs(fd)](https://www.runoob.com/python3/python3-os-fstatvfs.html) 返回包含文件描述符fd的文件的文件系统的信息，Python 3.3 相等于 statvfs()。 |
-      | 19   | [os.fsync(fd)](https://www.runoob.com/python3/python3-os-fsync.html) 强制将文件描述符为fd的文件写入硬盘。 |
-      | 20   | [os.ftruncate(fd, length)](https://www.runoob.com/python3/python3-os-ftruncate.html) 裁剪文件描述符fd对应的文件, 所以它最大不能超过文件大小。 |
-      | 21   | [os.getcwd()](https://www.runoob.com/python3/python3-os-getcwd.html) 返回当前工作目录 |
-      | 22   | [os.getcwdb()](https://www.runoob.com/python3/python3-os-getcwdb.html) 返回一个当前工作目录的Unicode对象 |
-      | 23   | [os.isatty(fd)](https://www.runoob.com/python3/python3-os-isatty.html) 如果文件描述符fd是打开的，同时与tty(-like)设备相连，则返回true, 否则False。 |
-      | 24   | [os.lchflags(path, flags)](https://www.runoob.com/python3/python3-os-lchflags.html) 设置路径的标记为数字标记，类似 chflags()，但是没有软链接 |
-      | 25   | [os.lchmod(path, mode)](https://www.runoob.com/python3/python3-os-lchmod.html) 修改连接文件权限 |
-      | 26   | [os.lchown(path, uid, gid)](https://www.runoob.com/python3/python3-os-lchown.html) 更改文件所有者，类似 chown，但是不追踪链接。 |
-      | 27   | [os.link(src, dst)](https://www.runoob.com/python3/python3-os-link.html) 创建硬链接，名为参数 dst，指向参数 src |
-      | 28   | [os.listdir(path)](https://www.runoob.com/python3/python3-os-listdir.html) 返回path指定的文件夹包含的文件或文件夹的名字的列表。 |
-      | 29   | [os.lseek(fd, pos, how)](https://www.runoob.com/python3/python3-os-lseek.html) 设置文件描述符 fd当前位置为pos, how方式修改: SEEK_SET 或者 0 设置从文件开始的计算的pos; SEEK_CUR或者 1 则从当前位置计算; os.SEEK_END或者2则从文件尾部开始. 在unix，Windows中有效 |
-      | 30   | [os.lstat(path)](https://www.runoob.com/python3/python3-os-lstat.html) 像stat(),但是没有软链接 |
-      | 31   | [os.major(device)](https://www.runoob.com/python3/python3-os-major.html) 从原始的设备号中提取设备major号码 (使用stat中的st_dev或者st_rdev field)。 |
-      | 32   | [os.makedev(major, minor)](https://www.runoob.com/python3/python3-os-makedev.html) 以major和minor设备号组成一个原始设备号 |
-      | 33   | [os.makedirs(path[, mode\])](https://www.runoob.com/python3/python3-os-makedirs.html) 递归文件夹创建函数。像mkdir(), 但创建的所有intermediate-level文件夹需要包含子文件夹。 |
-      | 34   | [os.minor(device)](https://www.runoob.com/python3/python3-os-minor.html) 从原始的设备号中提取设备minor号码 (使用stat中的st_dev或者st_rdev field )。 |
-      | 35   | [os.mkdir(path[, mode\])](https://www.runoob.com/python3/python3-os-mkdir.html) 以数字mode的mode创建一个名为path的文件夹.默认的 mode 是 0777 (八进制)。 |
-      | 36   | [os.mkfifo(path[, mode\])](https://www.runoob.com/python3/python3-os-mkfifo.html) 创建命名管道，mode 为数字，默认为 0666 (八进制) |
-      | 37   | [os.mknod(filename[, mode=0600, device\])](https://www.runoob.com/python3/python3-os-mknod.html) 创建一个名为filename文件系统节点（文件，设备特别文件或者命名pipe）。 |
-      | 38   | [os.open(file, flags[, mode\])](https://www.runoob.com/python3/python3-os-open.html) 打开一个文件，并且设置需要的打开选项，mode参数是可选的 |
-      | 39   | [os.openpty()](https://www.runoob.com/python3/python3-os-openpty.html) 打开一个新的伪终端对。返回 pty 和 tty的文件描述符。 |
-      | 40   | [os.pathconf(path, name)](https://www.runoob.com/python3/python3-os-pathconf.html) 返回相关文件的系统配置信息。 |
-      | 41   | [os.pipe()](https://www.runoob.com/python3/python3-os-pipe.html) 创建一个管道. 返回一对文件描述符(r, w) 分别为读和写 |
-      | 42   | [os.popen(command[, mode[, bufsize\]])](https://www.runoob.com/python3/python3-os-popen.html) 从一个 command 打开一个管道 |
-      | 43   | [os.read(fd, n)](https://www.runoob.com/python3/python3-os-read.html) 从文件描述符 fd 中读取最多 n 个字节，返回包含读取字节的字符串，文件描述符 fd对应文件已达到结尾, 返回一个空字符串。 |
-      | 44   | [os.readlink(path)](https://www.runoob.com/python3/python3-os-readlink.html) 返回软链接所指向的文件 |
-      | 45   | [os.remove(path)](https://www.runoob.com/python3/python3-os-remove.html) 删除路径为path的文件。如果path 是一个文件夹，将抛出OSError; 查看下面的rmdir()删除一个 directory。 |
-      | 46   | [os.removedirs(path)](https://www.runoob.com/python3/python3-os-removedirs.html) 递归删除目录。 |
-      | 47   | [os.rename(src, dst)](https://www.runoob.com/python3/python3-os-rename.html) 重命名文件或目录，从 src 到 dst |
-      | 48   | [os.renames(old, new)](https://www.runoob.com/python3/python3-os-renames.html) 递归地对目录进行更名，也可以对文件进行更名。 |
-      | 49   | [os.rmdir(path)](https://www.runoob.com/python3/python3-os-rmdir.html) 删除path指定的空目录，如果目录非空，则抛出一个OSError异常。 |
-      | 50   | [os.stat(path)](https://www.runoob.com/python3/python3-os-stat.html) 获取path指定的路径的信息，功能等同于C API中的stat()系统调用。返回值为一个对象，可以访问对象属性获得文件基本信息。 |
-      | 51   | [os.stat_float_times([newvalue\])](https://www.runoob.com/python3/python3-os-stat_float_times.html) 决定stat_result是否以float对象显示时间戳 |
-      | 52   | [os.statvfs(path)](https://www.runoob.com/python3/python3-os-statvfs.html) 获取指定路径的文件系统统计信息 |
-      | 53   | [os.symlink(src, dst)](https://www.runoob.com/python3/python3-os-symlink.html) 创建一个软链接 |
-      | 54   | [os.tcgetpgrp(fd)](https://www.runoob.com/python3/python3-os-tcgetpgrp.html) 返回与终端fd（一个由os.open()返回的打开的文件描述符）关联的进程组 |
-      | 55   | [os.tcsetpgrp(fd, pg)](https://www.runoob.com/python3/python3-os-tcsetpgrp.html) 设置与终端fd（一个由os.open()返回的打开的文件描述符）关联的进程组为pg。 |
+      | 1    | os.access(path, mode) 检验权限模式                           |
+      | 2    | os.chdir(path) 改变当前工作目录                              |
+      | 3    | os.chflags(path, flags) 设置路径的标记为数字标记。           |
+      | 4    | os.chmod(path, mode) 更改权限                                |
+      | 5    | os.chown(path, uid, gid) 更改文件所有者                      |
+      | 6    | os.chroot(path) 改变当前进程的根目录                         |
+      | 7    | os.close(fd) 关闭文件描述符 fd                               |
+      | 8    | os.closerange(fd_low, fd_high) 关闭所有文件描述符，从 fd_low (包含) 到 fd_high (不包含), 错误会忽略 |
+      | 9    | os.dup(fd) 复制文件描述符 fd                                 |
+      | 10   | os.dup2(fd, fd2) 将一个文件描述符 fd 复制到另一个 fd2        |
+      | 11   | os.fchdir(fd) 通过文件描述符改变当前工作目录                 |
+      | 12   | os.fchmod(fd, mode) 改变一个文件的访问权限，该文件由参数fd指定，参数mode是Unix下的文件访问权限。 |
+      | 13   | os.fchown(fd, uid, gid) 修改一个文件的所有权，这个函数修改一个文件的用户ID和用户组ID，该文件由文件描述符fd指定。 |
+      | 14   | os.fdatasync(fd) 强制将文件写入磁盘，该文件由文件描述符fd指定，但是不强制更新文件的状态信息。 |
+      | 15   | os.fdopen(fd[, mode[, bufsize\]]) 通过文件描述符 fd 创建一个文件对象，并返回这个文件对象 |
+      | 16   | os.fpathconf(fd, name) 返回一个打开的文件的系统配置信息。name为检索的系统配置的值，它也许是一个定义系统值的字符串，这些名字在很多标准中指定（POSIX.1, Unix 95, Unix 98, 和其它）。 |
+      | 17   | os.fstat(fd) 返回文件描述符fd的状态，像stat()。              |
+      | 18   | os.fstatvfs(fd) 返回包含文件描述符fd的文件的文件系统的信息，Python 3.3 相等于 statvfs()。 |
+      | 19   | os.fsync(fd) 强制将文件描述符为fd的文件写入硬盘。            |
+      | 20   | os.ftruncate(fd, length) 裁剪文件描述符fd对应的文件, 所以它最大不能超过文件大小。 |
+      | 21   | os.getcwd() 返回当前工作目录                                 |
+      | 22   | os.getcwdb() 返回一个当前工作目录的Unicode对象               |
+      | 23   | os.isatty(fd) 如果文件描述符fd是打开的，同时与tty(-like)设备相连，则返回true, 否则False。 |
+      | 24   | os.lchflags(path, flags) 设置路径的标记为数字标记，类似 chflags()，但是没有软链接 |
+      | 25   | os.lchmod(path, mode) 修改连接文件权限                       |
+      | 26   | os.lchown(path, uid, gid) 更改文件所有者，类似 chown，但是不追踪链接。 |
+      | 27   | os.link(src, dst) 创建硬链接，名为参数 dst，指向参数 src     |
+      | 28   | os.listdir(path) 返回path指定的文件夹包含的文件或文件夹的名字的列表。 |
+      | 29   | os.lseek(fd, pos, how) 设置文件描述符 fd当前位置为pos, how方式修改: SEEK_SET 或者 0 设置从文件开始的计算的pos; SEEK_CUR或者 1 则从当前位置计算; os.SEEK_END或者2则从文件尾部开始. 在unix，Windows中有效 |
+      | 30   | os.lstat(path) 像stat(),但是没有软链接                       |
+      | 31   | os.major(device) 从原始的设备号中提取设备major号码 (使用stat中的st_dev或者st_rdev field)。 |
+      | 32   | os.makedev(major, minor) 以major和minor设备号组成一个原始设备号 |
+      | 33   | [os.makedirs(path, mode\]) 递归文件夹创建函数。像mkdir(), 但创建的所有intermediate-level文件夹需要包含子文件夹。 |
+      | 34   | os.minor(device) 从原始的设备号中提取设备minor号码 (使用stat中的st_dev或者st_rdev field )。 |
+      | 35   | [os.mkdir(path, mode\]) 以数字mode的mode创建一个名为path的文件夹.默认的 mode 是 0777 (八进制)。 |
+      | 36   | [os.mkfifo(path, mode\]) 创建命名管道，mode 为数字，默认为 0666 (八进制) |
+      | 37   | [os.mknod(filename, mode=0600, device\]) 创建一个名为filename文件系统节点（文件，设备特别文件或者命名pipe）。 |
+      | 38   | [os.open(file, flags, mode\]) 打开一个文件，并且设置需要的打开选项，mode参数是可选的 |
+      | 39   | os.openpty() 打开一个新的伪终端对。返回 pty 和 tty的文件描述符。 |
+      | 40   | os.pathconf(path, name) 返回相关文件的系统配置信息。         |
+      | 41   | os.pipe() 创建一个管道. 返回一对文件描述符(r, w) 分别为读和写 |
+      | 42   | os.popen(command[, mode[, bufsize\]]) 从一个 command 打开一个管道 |
+      | 43   | os.read(fd, n) 从文件描述符 fd 中读取最多 n 个字节，返回包含读取字节的字符串，文件描述符 fd对应文件已达到结尾, 返回一个空字符串。 |
+      | 44   | os.readlink(path) 返回软链接所指向的文件                     |
+      | 45   | os.remove(path) 删除路径为path的文件。如果path 是一个文件夹，将抛出OSError; 查看下面的rmdir()删除一个 directory。 |
+      | 46   | os.removedirs(path) 递归删除目录。                           |
+      | 47   | os.rename(src, dst) 重命名文件或目录，从 src 到 dst          |
+      | 48   | os.renames(old, new) 递归地对目录进行更名，也可以对文件进行更名。 |
+      | 49   | os.rmdir(path) 删除path指定的空目录，如果目录非空，则抛出一个OSError异常。 |
+      | 50   | os.stat(path) 获取path指定的路径的信息，功能等同于C API中的stat()系统调用。返回值为一个对象，可以访问对象属性获得文件基本信息。 |
+      | 51   | [os.stat_float_times(newvalue\]) 决定stat_result是否以float对象显示时间戳 |
+      | 52   | os.statvfs(path) 获取指定路径的文件系统统计信息              |
+      | 53   | os.symlink(src, dst) 创建一个软链接                          |
+      | 54   | os.tcgetpgrp(fd) 返回与终端fd（一个由os.open()返回的打开的文件描述符）关联的进程组 |
+      | 55   | os.tcsetpgrp(fd, pg) 设置与终端fd（一个由os.open()返回的打开的文件描述符）关联的进程组为pg。 |
       | 56   | os.tempnam([dir[, prefix]]) **Python3 中已删除。**返回唯一的路径名用于创建临时文件。 |
       | 57   | os.tmpfile() **Python3 中已删除。**返回一个打开的模式为(w+b)的文件对象 .这文件对象没有文件夹入口，没有文件描述符，将会自动删除。 |
       | 58   | os.tmpnam() **Python3 中已删除。**为创建一个临时文件返回一个唯一的路径 |
-      | 59   | [os.ttyname(fd)](https://www.runoob.com/python3/python3-os-ttyname.html) 返回一个字符串，它表示与文件描述符fd 关联的终端设备。如果fd 没有与终端设备关联，则引发一个异常。 |
-      | 60   | [os.unlink(path)](https://www.runoob.com/python3/python3-os-unlink.html) 删除文件路径 |
-      | 61   | [os.utime(path, times)](https://www.runoob.com/python3/python3-os-utime.html) 返回指定的path文件的访问和修改的时间。 |
+      | 59   | os.ttyname(fd) 返回一个字符串，它表示与文件描述符fd 关联的终端设备。如果fd 没有与终端设备关联，则引发一个异常。 |
+      | 60   | os.unlink(path) 删除文件路径                                 |
+      | 61   | os.utime(path, times) 返回指定的path文件的访问和修改的时间。 |
       | 62   | os.walk(top[, topdown=True[, onerror=None[, followlinks=False\]]])输出在文件夹中的文件名通过在树中游走，向上或者向下。 |
-      | 63   | [os.write(fd, str)](https://www.runoob.com/python3/python3-os-write.html) 写入字符串到文件描述符 fd中. 返回实际写入的字符串长度 |
-      | 64   | [os.path 模块](https://www.runoob.com/python3/python3-os-path.html) 获取文件的属性信息。 |
-      | 65   | [os.pardir()](https://www.runoob.com/python3/python3-os-pardir.html) 获取当前目录的父目录，以字符串形式显示目录名。 |
+      | 63   | os.write(fd, str) 写入字符串到文件描述符 fd中. 返回实际写入的字符串长度 |
+      | 64   | os.path 模块 获取文件的属性信息。                            |
+      | 65   | os.pardir() 获取当前目录的父目录，以字符串形式显示目录名。   |
       | 66   | os.name 获取操作系统类型，nt为Windows，posix为Linux、Unix或Mac |
       | 67   | os.linesep 获取当前操作系统上的换行符                        |
       | 68   | os.sep 获取当前操作系统所使用的路径分隔符                    |
@@ -809,7 +825,7 @@ if __name__ == "__main__":
       | os.path.dirname(path)               | 返回文件路径                                                 |
       | os.path.exists(path)                | 路径存在则返回True,路径损坏返回False                         |
       | os.path.lexists                     | 路径存在则返回True,路径损坏也返回True                        |
-      | os.path.expanduser(path)            | 把path中包含的"~"和"~user"转换成用户目录                     |
+      | os.path.expanduser(path)            | 把path中包含的"\~"和"~user"转换成用户目录                    |
       | os.path.expandvars(path)            | 根据环境变量的值替换path中包含的"$name"和"${name}"           |
       | os.path.getatime(path)              | 返回最近访问时间（浮点型秒数）                               |
       | os.path.getmtime(path)              | 返回最近文件修改时间                                         |
@@ -3561,6 +3577,67 @@ myprint2(5, 5)
 
 
 
+##	PyQt5
+
+> PyQt是Qt框架的Python语言实现，由Riverbank Computing开发，是最强大的GUI库之一。PyQt提供了一个设计良好的窗口控件集合，每一个PyQt控件都对应一个Qt控件，因此PyQt的API接口与Qt的API接口很接近，但PyQt不再使用QMake系统和Q_OBJECT宏。
+> PyQt5提供GPL版和商业版证书，自由开发者可以使用免费的GPL许可，如果需要将PyQt用于商业应用，则必须购买商业许可。
+>
+> PyQt5特性如下：
+> （1）基于高性能的Qt的GUI控件集。
+> （2）能够跨平台运行在Linux、Window和Mac OS系统上。
+> （3）使用信号槽机制进行通信。
+> （4）对Qt库进行完全封装。
+> （5）可以使用成熟的IDE进行界面设计，并自动生成可执行的Python代码。
+> （6）提供一整套种类齐全的窗口控件。
+>
+> - **QtCore模块**涵盖了包的核心的非GUI功能，此模块被用于处理程序中涉及到的 time、文件、目录、数据类型、文本流、链接、mime、线程或进程等对象。
+> - **QtGui模块**涵盖多种基本图形功能的类; 包括但不限于：窗口集、事件处理、2D图形、基本的图像和界面 和字体文本。
+> - **QtWidgets模块**包含了一整套UI元素组件，用于建立符合系统风格的classic界面，非常方便，可以在安装时选择是否使用此功能。
+> - **QtMultimedia模块**包含了一套类库，该类库被用于处理多媒体事件，通过调用API接口访问摄像头、语音设备、收发消息（radio functionality）等。
+> - **QtBluetooth模块**包含了处理蓝牙活动的类库，它的功能包括：扫描设备、连接、交互等行为。
+> - **QtNetwork模块**包含用于网络编程的类库，这组类程序通过提供便捷的TCP/IP 及 UDP 的 c/s 程式码集合，使得基于Qt的网络编程更容易。
+> - **QtPositioning模块**用于获取位置信息，此模块允许使用多种方式达成定位，包括但不限于：卫星、无线网、文字信息。此应用一般用于网络地图定位系统。
+> - **Enginio模块**用于构建客户端的应用程式库，用于在运行时访问 Qt Cloud 服务器托管的应用程序。
+> - **QtWebSockets模块**包含了一组类程序，用以实现websocket协议。
+> - **QtWebKit**包含了用于实现基于webkit2的网络浏览器的类库。
+> - **QtWebKitWidgets模块**包含用于基于WebKit1的Web浏览器实现的类，用于基于QtWidgets的应用程序
+> - **QtXml模块**包含了用于处理XML的类库，此模块为SAX和DOM API 的实现提供了方法。
+> - **QtSvg模块**通过一组类，为显示矢量图形文件的内容提供了方法。
+> - **QtSql模块**提供了数据库对象的接口以供使用
+> - **QtTest模块**包含了可以通过单元测试，以调试PyQt5应用程式的功能。
+
+1. 要在界面上 创建一个控件 ，就需要在程序代码中 创建 这个 控件对应类 的一个 实例对象。
+
+   在 Qt 系统中，控件（widget）是 层层嵌套 的，除了最顶层的控件，其他的控件都有父控件。
+
+2. 界面动作处理 (signal 和 slot)
+
+   1. 在 Qt 系统中， 当界面上一个控件被操作时，比如 被点击、被输入文本、被鼠标拖拽等， 就会发出 信号 ，英文叫 signal 。就是表明一个事件（比如被点击、被输入文本）发生了。
+   2. 我们可以预先在代码中指定 处理这个 signal 的函数，这个处理 signal 的函数 叫做 slot (槽函数)
+
+3. 如果要设计稍微复杂一些的程序，就会出现太多的控件对应的变量名，而且这样也不利于 代码的模块化，所以，我们通常应该把 一个窗口和其包含的控件，对应的代码全部封装到类中
+
+4. 对于Qt Designer生成的ui文件，可进行动态加载或pyuic转换为Python代码
+
+   1. 动态加载ui文件
+
+      ```python
+      from PyQt5 import uic
+      self.ui = uic.loadUi("main.ui")
+      ```
+
+   2. 转化UI文件为Python代码
+
+      ```
+      python -m PyQt5.uic.pyuic FileName -o FileName.py
+      ```
+
+5. `QApplication` 提供了整个图形界面程序的底层管理功能，比如：初始化、程序入口参数的处理，用户事件（对界面的点击、输入、拖拽）分发给各个对应的控件，等等…
+
+   所以，我们必须在任何界面控件对象创建前，先创建它
+
+6. 
+
 #	Pygame
 
 > Pygame是跨平台的Python模块，专为电子游戏设计(包含图像、声音)，创建在SDL(Simple DirectMedia Layer)开发库的基础上，允许实时电子游戏研发而不被低级语言束缚。基于这个设想，所有需要的游戏功能和理念(主要是图像方面)都完全简化为游戏逻辑本身，所有的资源结构都可以由高级语言提供。
@@ -4258,6 +4335,8 @@ myprint2(5, 5)
 
 2. 协程函数
 
+   协程函数并不能在事件循环中被执行，必须要变成task才能被事件循环进行执行
+
    ```python
    # 此写法仅支持Python 3.5以上版本
    async def func():
@@ -4278,8 +4357,10 @@ myprint2(5, 5)
 
 4. await关键字
 
-   await + IO等待 即可等待对象(协程对象、Future对象、Task对象)
+   类似于生成器的`yield from`
 
+   await + IO等待 即可等待对象(协程对象、Future对象、Task对象)
+   
    遇到IO操作时会挂起当前协程(任务)，等IO操作完成后等待事件循环再次执行该函数剩余部分；当当前协程挂起时事件循环可以去执行其他协程(任务)。
    
 5. Future对象

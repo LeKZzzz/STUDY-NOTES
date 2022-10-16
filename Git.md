@@ -172,6 +172,10 @@ git init newrepo	# 使用指定目录作为Git仓库
 
    默认情况下，Git 会按照提供的 URL 所指向的项目的名称创建本地项目目录。 通常就是该 URL 最后一个 / 之后的项目名称。如果你想要一个不一样的名字， 你可以在该命令后加上你想要的名称
 
+7. 当项目过大时，git clone时会出现error: RPC failed; HTTP 504 curl 22 The requested URL returned error: 504 Gateway Time-out的问题，解决方法很简单，在git clone时加上--depth=1即可解决:depth用于指定克隆深度，为1即表示只克隆最近一次commit.
+
+   
+
 7. ```python
    git diff [file]	# 比较文件的不同，即比较文件在暂存区和工作区的差异
    
