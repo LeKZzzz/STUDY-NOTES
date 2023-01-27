@@ -2853,11 +2853,13 @@ This is the original function.
 '''
 ```
 
-装饰器会自动实现闭包调用，而在这个闭包函数中最后返回值时会执行一次被装饰的函数，通过这种方式实现在不改变原函数的基础上添加额外的功能
+装饰器会自动实现闭包调用，而在这个闭包函数中最后返回值时会执行一次被装饰的函数，通过这种方式实现在不改变原函数的基础上添加额外的功能，即函数的入口变成了在装饰函数中
 
 装饰器函数带参数，可以在最外层多一层包装来接收装饰器的参数
 
 被装饰函数带参数时，可以在最内部函数传入参数
+
+多个装饰器的装饰过程是: 离函数最近的装饰器先装饰，然后外面的装饰器再进行装饰，由内到外的装饰过程
 
 ```python
 def func1(type):
@@ -4149,13 +4151,219 @@ myprint2(5, 5)
       > Scrapy使用了Twisted（其主要对手是Tornado）异步网络框架来处理网络通讯，该网络框架可以加快我们的下载速度，并且包含了各种中间件接口，可以灵活的完成各种需求。
       >
       > 由于Scrapy运行速度快、操作简单、可扩展强，它已成为目前最常用的通用爬虫框架。
+      >
+      > 
+      >
+      > - **Scrapy Engine(引擎)**: 负责Spider、ItemPipeline、Downloader、Scheduler中间的**通讯，信号、数据传递**等。
+      > - **Scheduler(调度器)**: 它负责**接受引擎发送过来的Request请求，并按照一定的方式进行整理排列，入队**，当引擎需要时，交还给引擎。
+      > - **Downloader（下载器）**：负责**下载Scrapy Engine(引擎)发送的所有Requests请求，并将其获取到的Responses交还给Scrapy Engine(引擎)**，由引擎交给Spider来处理，
+      > - **Spider（爬虫）**：它负责**处理所有Responses,从中分析提取数据，获取Item字段需要的数据，并将需要跟进的URL提交给引擎**，再次进入Scheduler(调度器).
+      > - **Item Pipeline(管道)**：它负责**处理Spider中获取到的Item，并进行进行后期处理**（详细分析、过滤、存储等）的地方。
+      > - **Downloader Middlewares（下载中间件）**：你可以当作是一个可以**自定义扩展下载功能**的组件。
+      > - **Spider Middlewares（Spider中间件）**：你可以理解为是一个可以**自定扩展和操作引擎和Spider中间通信的功能组件**（比如进入Spider的Responses;和从Spider出去的Requests）
+   
+      1. 新建项目(scrapy startproject)
+   
+         在开始爬取之前，必须创建一个新的Scrapy项目。
+   
+         ```
+         scrapy startproject spidername
+         ```
 
+         目录结构
+
+         ```
+         mySpider/
+             scrapy.cfg
+             mySpider/
+                 __init__.py
+                 items.py
+                 pipelines.py
+                 middlewares.py
+                 settings.py
+                 spiders/
+                     __init__.py
+                     ...
+         ```
+
+         - 放置 spider 代码的目录文件 spiders（用于编写爬虫）。
+         - 项目中的 item 文件 items.py（用于保存所抓取的数据的容器，其存储方式类似于 Python 的字典）。
+         - 项目的中间件
+         - middlewares.py（提供一种简便的机制，通过允许插入自定义代码来拓展 Scrapy 的功能）。
+         - 项目的 pipelines 文件 pipelines.py（核心处理器）。
+         - 项目的设置文件 settings.py。
+         - 项目的配置文件 scrapy.cfg。
+   
+      2. Scrapy设置(settings)提供了定制Scrapy组件的方法。可以控制包括核心(core)，插件(extension)，pipeline及spider组件。比如 设置Json Pipeliine、LOG_LEVEL等。
+   
+         - `BOT_NAME`
+   
+            - 默认: 'scrapybot'
+            - 当您使用 startproject 命令创建项目时其也被自动赋值。
+   
+         - `CONCURRENT_ITEMS`
+   
+            - 默认: 100
+            - Item Processor(即 Item Pipeline) 同时处理(每个response的)item的最大值。
+   
+         - `CONCURRENT_REQUESTS`
+   
+            - 默认: 16
+            - Scrapy downloader 并发请求(concurrent requests)的最大值。
+   
+         - `DEFAULT_REQUEST_HEADERS`
+   
+            - 默认: 如下
+   
+               ```1c
+                    {
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en',
+                    }
+               ```
+   
+         ​             Scrapy HTTP Request使用的默认header。
+   
+         - `DEPTH_LIMIT`
+   
+            - 默认: 0
+            - 爬取网站最大允许的深度(depth)值。如果为0，则没有限制。
+   
+         - `DOWNLOAD_DELAY`
+   
+            - 默认: 0
+   
+            - 下载器在下载同一个网站下一个页面前需要等待的时间。该选项可以用来限制爬取速度， 减轻服务器压力。同时也支持小数:
+   
+               `DOWNLOAD_DELAY = 0.25 # 250 ms of delay`
+   
+            - 默认情况下，Scrapy在两个请求间不等待一个固定的值， 而是使用0.5到1.5之间的一个随机值 `DOWNLOAD_DELAY` 的结果作为等待间隔。
+   
+         - `DOWNLOAD_TIMEOUT`
+   
+            - 默认: 180
+            - 下载器超时时间(单位: 秒)。
+   
+         - `ITEM_PIPELINES`
+   
+            - 默认: {}
+            - 保存项目中启用的pipeline及其顺序的字典。该字典默认为空，值(value)任意，不过值(value)习惯设置在0-1000范围内，值越小优先级越高。
+   
+         ```ebnf
+                     ITEM_PIPELINES = {
+                     'mySpider.pipelines.SomethingPipeline': 300,
+                     'mySpider.pipelines.ItcastJsonPipeline': 800,
+                     }
+         ```
+   
+         - `LOG_ENABLED`
+   
+            - 默认: True
+            - 是否启用logging。
+   
+         - `LOG_ENCODING`
+   
+            - 默认: 'utf-8'
+            - logging使用的编码。
+   
+         - `LOG_LEVEL`
+   
+            - 默认: 'DEBUG'
+            - log的最低级别。可选的级别有: CRITICAL、 ERROR、WARNING、INFO、DEBUG 。
+   
+         - `USER_AGENT`
+   
+            - 默认: "Scrapy/VERSION (+[http://scrapy.org](https://link.segmentfault.com/?enc=ebPMBmbKjhtCA0bX6ZPyyg%3D%3D.we3BSMpAuublWoYP4SV57J%2B5Mq8ONSfNymSla9l59mE%3D))"
+            - 爬取的默认User-Agent，除非被覆盖。
+   
+         - `PROXIES`： 代理设置
+   
+            - 示例：
+   
+               ```1c
+                  PROXIES = [
+                     {'ip_port': '111.11.228.75:80', 'password': ''},
+                     {'ip_port': '120.198.243.22:80', 'password': ''},
+                     {'ip_port': '111.8.60.9:8123', 'password': ''},
+                     {'ip_port': '101.71.27.120:80', 'password': ''},
+                     {'ip_port': '122.96.59.104:80', 'password': ''},
+                     {'ip_port': '122.224.249.122:8088', 'password':''},
+                   ]
+               ```
+   
+         - `COOKIES_ENABLED = False`
+   
+            - 禁用Cookies
+   
+      2. 制作爬虫
+   
+         ```
+         scrapy genspider spidername domain
+         ```
+   
+         要建立一个Spider， 你必须用scrapy.Spider类创建一个子类，并确定了三个强制的属性 和 一个方法。
+   
+         1. name = "" ：这个爬虫的识别名称，必须是唯一的，在不同的爬虫必须定义不同的名字。
+         2. allow_domains = [] 是搜索的域名范围，也就是爬虫的约束区域，规定爬虫只爬取这个域名下的网页，不存在的URL会被忽略。
+         3. start_urls = () ：爬取的URL元祖/列表。爬虫从这里开始抓取数据，所以，第一次下载的数据将会从这些urls开始。其他子URL将会从这些起始URL中继承性生成。
+         4. parse(self, response) ：解析的方法，每个初始URL完成下载后将被调用，调用的时候传入从每一个URL传回的Response对象来作为唯一参数，主要作用：负责解析返回的网页数据(response.body)，提取结构化数据(生成item)，生成需要下一页的URL请求。
+   
+      3. 运行爬虫
+   
+         ```python
+         from scrapy.cmdline import execute
+         import sys
+         import os
+         
+         # os.path.abspath(__file__) 获取当前文件所在的路径
+         # os.path.dirname(os.path.abspath(__file__)) 获取当前文件所在的父目录
+         
+         # 设置执行路径
+         sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+         
+         # 设置执行命令
+         execute(["scrapy", "crawl", "cymy_spider"])  # 成语谜语
+         ```
+   
+      5. Scrapy爬虫的数据类型：
+   
+         1. Request类
+            1. Request对象表示一个HTTP请求
+            2. 由Spider生成，由Downloader执行
+   
+         2. Response类
+            1. Response对象表示一个HTTP响应
+            2. 由Downloader生成，由Spider处理   
+   
+         3. Item类
+            1. Item对象表示一个从HTML页面中提取的信息内容
+            2. 由Spider生成，由Item Pipeline处理
+            3. Item类似字典类型，可以按照字典类型操作
+   
+      6. xpath表达式
+   
+         - `/html/head/title`: 选择HTML文档中 `<head>` 标签内的 `<title>` 元素
+         - `/html/head/title/text()`: 选择上面提到的 `<title>` 元素的文字
+         - `//td`: 选择所有的 `<td>` 元素
+         - `//div[@class="mine"]`: 选择所有具有 `class="mine"` 属性的 `div` 元素
+   
+      7. **scrapy框架会根据 yield 返回的实例类型来执行不同的操作：**
+   
+         - 返回 scrapy.Request 对象，scrapy框架会去获得该对象指向的链接并在请求完成后调用该对象的回调函数。
+         - 返回 scrapy.Item 对象，scrapy框架会将这个对象传递给 pipelines.py做进一步处理。
+   
+      8. pipeline
+   
+         >https://segmentfault.com/a/1190000013199835
+   
+      
+   
    2. Crawley
-
+   
       > Crawley是Python开发出的、基于非阻塞通信（NIO）的Python爬虫框架。它能高速爬取对应网站的内容，支持关系型和非关系型数据库如MongoDB、Postgre、Mysql、Oracle、Sqlite等，支持输出Json、XML 和CSV等各种格式。
-
+   
    3. PySpider
-
+   
       > pyspider是Binux做的一个爬虫架构的开源化实现，主要功能有 ：
       >
       > - 抓取、更新调度多站点的特定的页面
@@ -4167,15 +4375,15 @@ myprint2(5, 5)
       > - 各个组件间使用消息队列连接，除了scheduler是单点的，fetcher 和 processor 都是可以多实例分布式部署的。 scheduler 负责整体的调度控制
       > - 任务由 scheduler 发起调度，fetcher 抓取网页内容， processor 执行预先编写的python脚本，输出结果或产生新的提链任务（发往 scheduler），形成闭环
       > - 每个脚本可以灵活使用各种python库对页面进行解析，使用框架API控制下一步抓取动作，通过设置回调控制解析动作
-
+   
    4. Portia
-
+   
       > Portia是scrapyhub开源的一款可视化的爬虫规则编写工具，提供可视化的Web页面，用户只需要通过点击标注页面上需要抽取的数据，不需要任何编程知识即可完成规则的开发（但是动态网页需要自己编写JS解析器）。
       >
       > 除此之外，Portia框架还提供了网页版，用户不需要下载框架就可以直接使用，只需要注册一个账号即可。
-
+   
    5. Newspaper
-
+   
       > Newspaper框架是专门用于提取新闻、文章和内容分析的爬虫框架。该框架的特点包括：
       >
       > - 支持10多种语言（英语，中文，德语等）；
@@ -4183,9 +4391,9 @@ myprint2(5, 5)
       > - 使用多线程下载文章；
       > - 能够识别新闻网站的URL；
       > - 能够从网页中提取文本和图片，并且从文本中提取关键词、摘要和作者。
-
+   
    6. Python-goose
-
+   
       > Goose本身是一个Java语言编写的用于提取文章的框架，Python-goose是用Python语言对goose框架的重新实现。Python-goose的设计目的是爬取新闻和网页文章，并从中提取以下内容：
       >
       > - 文章的主体；

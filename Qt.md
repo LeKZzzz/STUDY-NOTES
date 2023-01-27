@@ -266,3 +266,23 @@ Qt Design Studio创建以下文件和文件夹:
 5. 信号与槽的连接方式可以是同步连接，也可以是异步连接。
 6. 信号与槽的连接可能会跨线程
 7. 信号可能会断开
+
+
+
+# SizePolicy
+
+A. Fixed：控件不能放大或者缩小，控件的大小就是它的sizeHint。
+
+B. Minimum：控件的sizeHint为控件的最小尺寸。控件不能小于这个sizeHint，但是可以
+
+放大。
+
+C. Maximum：控件的sizeHint为控件的最大尺寸，控件不能放大，但是可以缩小到它的最小
+
+的允许尺寸。
+
+D. Preferred：控件的sizeHint是它的sizeHint，但是可以放大或者缩小
+
+E. Expandint：控件可以自行增大或者缩小
+
+注：sizeHint（布局管理中的控件默认尺寸，如果控件不在布局管理中就为无效的值）
