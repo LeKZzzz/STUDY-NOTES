@@ -8,6 +8,6 @@
 
 #	口型图
 
-![Live2D口形图2](E:\Study Notes\Pictures\Live2D口形图2.png)
+![Live2D口形图2](Pictures\Live2D口形图2.png)
 
-![Live2D口型图1](E:\Study Notes\Pictures\Live2D口型图1.png)
+![Live2D口型图1](Pictures\Live2D口型图1.png)

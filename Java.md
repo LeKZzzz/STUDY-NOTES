@@ -24,7 +24,7 @@ EE(J2EE)，enterpriseedition，企业版，使用这种JDK开发J2EE应用程序
 
 ME(J2ME)，microedition，微型版，主要用于移动设备、嵌入式设备上的java应用程序，从JDK5.0开始，改名为JavaME，用来开发移动设备上运行的应用程序。
 
-![](E:\Study Notes\Pictures\J2EE JavaME JavaSE)
+![](Pictures\J2EE JavaME JavaSE)
 
 
 
@@ -714,7 +714,7 @@ dataType arrayRefVar[];  // 效果相同，但不是首选方法
 
 ####	内存划分
 
-![](E:\Study Notes\Pictures\Java数组内存划分.png)
+![](Pictures\Java数组内存划分.png)
 
 ####	数组方法
 
@@ -1283,7 +1283,7 @@ byte,short,char —> int —> long —> float —> double
 2. 不同方法的定义前后顺序不影响使用
 2. 方法定义后不会执行，只有调用时才会执行
 
-![](E:\Study Notes\Pictures\方法的定义.jpg)
+![](Pictures\方法的定义.jpg)
 
 
 

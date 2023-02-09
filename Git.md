@@ -25,7 +25,7 @@ Git的内容存储使用的是SHA-1哈希算法。这能确保代码内容的完
 5. **Git 没有一个全局的版本号，而 SVN 有：**目前为止这是跟 SVN 相比 Git 缺少的最大的一个特征。
 6. **Git 的内容完整性要优于 SVN：**Git 的内容存储使用的是 SHA-1 哈希算法。这能确保代码内容的完整性，确保在遇到磁盘故障和网络问题时降低对版本库的破坏。
 
-![](E:\Study Notes\Pictures\Git与SVN的区别.jpg)
+![](Pictures\Git与SVN的区别.jpg)
 
 
 
@@ -55,7 +55,7 @@ Git的内容存储使用的是SHA-1哈希算法。这能确保代码内容的完
 2. **暂存区(stage 或 index)**：一般存放在 .git 目录下的 index 文件（.git/index）中，所以我们把暂存区有时也叫作索引(index)，用以暂存已经修改的文件
 3. **版本库(repository)：**工作区有一个隐藏目录 **.git**，这个不算工作区，而是 Git 的版本库，最终确定的文件保存到仓库，成为一个新的版本，并且对别人可见
 
-![](E:\Study Notes\Pictures\Git 工作区、暂存区和版本库)
+![](Pictures\Git 工作区、暂存区和版本库)
 
 - 图中左侧为工作区，右侧为版本库。在版本库中标记为 "index" 的区域是暂存区（stage/index），标记为 "master" 的是 master 分支所代表的目录树。
 - 图中我们可以看出此时 "HEAD" 实际是指向 master 分支的一个"游标"。所以图示的命令中出现 HEAD 的地方可以用 master 来替换。
@@ -143,17 +143,17 @@ git init newrepo	# 使用指定目录作为Git仓库
 
    1. **--mixed** 参数为默认，可以不用带该参数，HEAD指针指向了要回退的版本，暂存区的文件回滚至之前版本的提交(commit)，工作区文件内容保持不变
 
-      ![](E:\Study Notes\Pictures\git reset --mixed.png)
+      ![](Pictures\git reset --mixed.png)
 
    2. **--soft** 参数用于回退到某个版本，HEAD指针指向了要回退的版本，工作区和暂存区文件不发生改变，再次提交，会在该版本之上再创建一个新的commit提交，并移动HEAD指针指向的分支来使其指向该commit提交，执行log指令时不会显示回退版本之后提交的信息，但已提交的内容不会被删除，使用reflog命令可查看
 
-      ![](E:\Study Notes\Pictures\git reset --soft 1.png)
+      ![](Pictures\git reset --soft 1.png)
 
-      ![](E:\Study Notes\Pictures\git reset --soft 2.png)
+      ![](Pictures\git reset --soft 2.png)
 
    3. **--hard** 参数撤销工作区中所有未提交的修改内容，将暂存区与工作区都回到上一次版本，并删除该回退版本之后所有的信息提交，执行log指令时不会显示回退版本之后提交的信息，但已提交的内容不会被删除，使用reflog命令可查看
 
-      ![](E:\Study Notes\Pictures\git reset --hard.png)
+      ![](Pictures\git reset --hard.png)
 
    4. `git reset HEAD [filename]`- 用于取消已缓存的内容
 
