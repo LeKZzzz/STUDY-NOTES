@@ -1,4 +1,4 @@
-#   HTML
+#    HTML
 
 ---
 
@@ -672,3 +672,232 @@ HTML 表单表示文档中的一个区域，此区域包含交互控件，将用
 
 - en定义语言为英语
 - zh-CN定义语言为中文
+
+
+
+
+
+# 使用CSS
+
+CSS 是在 HTML 4 开始使用的,是为了更好的渲染HTML元素而引入的.
+
+CSS 可以通过以下方式添加到HTML中:
+
+- 内联样式- 在HTML元素中使用"style" **属性**
+- 内部样式表 -在HTML文档头部 <head> 区域使用<style> **元素** 来包含CSS
+- 外部引用 - 使用外部 CSS **文件**
+
+最好的方式是通过外部引用CSS文件.
+
+1. 内联样式
+
+   ```html
+   <body style="background-color:yellow;">
+   ```
+
+2. 内部样式表
+
+   ```html
+   <head>
+   <style type="text/css">
+   body {background-color:yellow;}
+   p {color:blue;}
+   </style>
+   </head>
+   ```
+
+3. 外部样式表
+
+   ```html
+   <head>
+   <link rel="stylesheet" type="text/css" href="mystyle.css">
+   </head>
+   ```
+
+   
+
+
+
+# 命名规范
+
+1. 文件命名
+
+   统一使用，小写的英文字母，数字和下划线和减号的组合，不得包含汉字空格和特殊符号，原则是，方便理解和方便查找
+
+2. 首页面命名
+
+   统一使用index
+
+3. 标签命名
+
+   >   头：header       
+   >
+   >   内容：content/container   
+   >
+   >   尾：footer
+   >
+   >   导航：nav         
+   >
+   >   侧栏：sidebar                    
+   >
+   >   栏目：column
+   >
+   >   页面外围控制整体布局宽度：wrapper           
+   >
+   >   左右中：left right center
+   >
+   >   登录条：loginbar
+   >
+   >   标志：logo
+   >
+   >   广告：banner（版心部分）
+   >
+   >   页面主体：main    
+   >
+   >   热点：hot
+   >
+   >   新闻：news
+   >
+   >   下载：download 
+   >
+   >   注册：regsiter
+   >
+   >   子导航：subnav 
+   >
+   >   菜单：menu 
+   >
+   >   子菜单：submenu
+   >
+   >   搜索：search     
+   >
+   >   友情链接：friendlink
+   >
+   >   提示信息：msg
+   >
+   >   版权：copyright 
+   >
+   >   滚动：scroll  
+   >
+   >   小技巧：tips
+   >
+   >   标签页：tab
+   >
+   >   文章列表：list  
+   >
+   >   栏目标题：title
+   >
+   >   加入：joinus   
+   >
+   >   指南：guild  
+   >
+   >   服务：service
+   >
+   >   状态：status
+   >
+   >   投票：vote  
+   >
+   >   合作伙伴：partner
+
+4. id命名
+
+   >  容器: container/wrap
+   >
+   >  页头：header
+   >
+   >  内容：content/container
+   >
+   >  页面主体：main
+   >
+   >  页尾：footer
+   >
+   >  导航：nav
+   >
+   >  侧栏：sidebar
+   >
+   >  栏目：column
+   >
+   >  导航：nav
+   >
+   >  主导航：mainbav
+   >
+   >  子导航：subnav
+   >
+   >  顶导航：topnav
+   >
+   >  边导航：sidebar
+   >
+   >  左导航：leftsidebar
+   >
+   >  右导航：rightsidebar
+   >
+   >  菜单：menu
+   >
+   >  子菜单：submenu
+   >
+   >  标题: title
+   >
+   >  摘要: summary
+   >
+   >  标志：logo
+   >
+   >  标题：title
+   >
+   >  广告：banner
+   >
+   >  登陆：login             
+   >
+   >  登录条：loginbar     
+   >
+   >  注册：regsiter
+   >
+   >  搜索：search
+   >
+   >  功能区：shop
+   >
+   >  加入：joinus        
+   >
+   >  状态：status
+   >
+   >  按钮：btn
+   >
+   >  滚动：scroll
+   >
+   >  标签页：tab
+   >
+   >  文章列表：list
+   >
+   >  提示信息：msg
+   >
+   >  当前的: current
+   >
+   >  小技巧：tips
+   >
+   >  图标: icon
+   >
+   >  注释：note
+   >
+   >  指南：guild     
+   >
+   >  服务：service  新闻：news
+   >
+   >  热点：hot         合作伙伴：partner  友情链接：link
+   >
+   >  下载：download     投票：vote
+   >
+   >  版权：copyright
+
+5. 图片命名
+
+   取名_图片名.jpg/gif...
+
+   > 1、放置在页面顶部的广告、装饰图案等长方形的图片取名： banner
+   > 2、标志性的图片取名为： logo
+   > 3、在页面上位置不固定并且带有链接的小图片我们取名为 button
+   > 4、在页面上某一个位置连续出现，性质相同的链接栏目的图片我们取名： menu
+   > 5、装饰用的照片我们取名： pic 
+   >
+   > 6、不带链接表示标题的图片取名：title
+   >
+   > 7、鼠标感应效果图片命名：图片名+_on/off
+
+6. 小驼峰命名
