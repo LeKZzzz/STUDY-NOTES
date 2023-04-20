@@ -58,6 +58,31 @@ CSS 优先级法则：
 -  D 继承的CSS 样式不如后来指定的CSS 样式；
 -  E 在同一组属性设置中标有“!important”规则的优先级最大
 
+
+
+
+
+# Emmet语法
+
+Emmet语法的前身是Zen coding,它使用缩写,来提高HTML/CSS的编写速度,VScode内部已经集成该语法.
+
+1. 快速生成HTML结构语法
+
+   ​	 ①生成标签 直接输入标签名 按tab键即可 比如 div 然后tab键,就可以生成<div></div>
+   ​     ②如果想要生成多个相同标签 加上 * 就可以 比如 div*3 就可以快速生成3个div
+   ​     ③如果有父子级关系,可以用> 比如 ul>li就可以
+   ​     ④如果有兄弟关系的标签,用+ 就可以 比如 div+p
+   ​     ⑤如果生成带有类名或者id名字的,直接写 .demo 或者 #two tab 键就可以了
+   ​     ⑥如果生成的div类名是由顺序的,可以用自增符号$
+   ​     ⑦如果想要在生成的标签内部写内容可以用{}表示
+
+2. 快速生成CSS样式语法
+
+   CSS基本采取简写形式即可
+
+   ​     ①比如w200 按tab 可以生成 width:200px;
+   ​     ②比如lh26 按tab 可以生成 line-height:26px; 
+
 # 基本语法
 
 ```css
@@ -600,3 +625,156 @@ ID属性只能在每个HTML文档中出现一次。
     | normal   | 默认。定义单词间的标准空间。                 |
     | *length* | 定义单词间的固定空间。                       |
     | inherit  | 规定应该从父元素继承 word-spacing 属性的值。 |
+
+
+
+
+
+# 复合选择器
+
+在CSS中，可以根据选择器的类型把选择器分为基础选择器和复合选择器，复合选择器是建立在基础选择器之上，对基本选择器进行组合形成的
+
+ 复合选择器由两个或多个基础选择器通过不同方式组合而成，复合选择器可以更准确、高效地选择目标元素(标签)。
+
+
+
+## 后代选择器
+
+```css
+父元素 子元素 {
+    样式声明
+}
+```
+
+后代选择器又称为包含选择器，可以选择父元素里面子元素(所有后代)。其写法就是把外层标签写在前面，内层标签写在后面，中间用空格分隔。当标签发生嵌套时，内层标签就成为外层标签的后代。
+
+
+
+## 子选择器
+
+```css
+父元素>子元素 {
+    样式声明
+}
+```
+
+子元素选择器(子选择器 )只能选择父元素的**最近一级子元素**
+
+
+
+## 并集选择器
+
+```css
+元素1,
+元素2,
+...
+元素n {
+    样式声明
+}
+```
+
+并集选择器可以选择多组标签, 同时为他们定义相同的样式。通常用于集体声明.
+并集选择器是各选择器通过英文逗号(,)连接而成，任何形式的选择器都可以作为并集选择器的一部分。
+
+
+
+## 伪类选择器
+
+```css
+元素:伪类 {
+    样式声明
+}
+```
+
+伪类是一种不存在的类，伪类用来表示元素的一种状态。
+
+伪类选择器用于向某些选择器添加特殊的效果，比如给链接添加特殊效果，或选择第1个，第n个元素.
+
+伪类选择器书写最大的特点是用冒号(:)表示，比如:hover 、 :first-child。
+
+1. :first-child{},用来选择父元素下的第一个子元素。
+
+   注意：:first-child{}是根据父元素下所有子元素进行排序。
+
+2. :last-child{},用来选择父元素下的最后一个子元素。
+
+   注意：:last-child{}是根据父元素下所有子元素进行排序
+
+3. :nth-child(n){}，选中父元素第n个子元素，n为一个具体数字。
+
+   :nth-child(n){}，选中父元素下所有子元素，n为字母。
+
+   :nth-child(2n){}，选中父元素下偶数行的子元素。
+
+   :nth-child(even){}，选中父元素下偶数行的子元素。
+
+   :nth-child(2n+1){}，选中父元素下奇数行的子元素。
+
+   :nth-child(odd){}，选中父元素下奇数行的子元素。
+
+   注意：:nth-child(){}是根据父元素下所有子元素进行排序
+
+4. :first-of-type{},用来选择父元素下的第一个子元素。
+
+   注意：:first-of-type{}是根据父元素下所有同类型的子元素进行排序。
+
+5. :last-of-type{},用来选择父元素下的最后一个子元素。
+
+   注意：:last-of-type{}是根据父元素下所有同类型的子元素进行排序。
+
+6. :nth-of-type(n){}，选中父元素第n个子元素，n为一个具体数字。
+
+   :nth-of-type(n){}，选中父元素下所有子元素，n为字母。
+
+   :nth-of-type(2n){}，选中父元素下偶数行的子元素。
+
+   :nth-of-type(even){}，选中父元素下偶数行的子元素。
+
+   :nth-of-type(2n+1){}，选中父元素下奇数行的子元素。
+
+   :nth-of-type(odd){}，选中父元素下奇数行的子元素。
+
+   注意：:nth-of-stype(n){}是根据父元素下同类型的子元素进行排序
+
+7. :not(n){}否定类，将复合的元素去除，n为指定数值。
+
+8. 为了确保链接伪类选择器生效，请按照LVHA 的循顺序声明:link - :visited - :hover  - :active.
+
+9. :focus 伪类选择器用于选取获得焦点的表单元素
+   焦点就是光标，一般情况<input>类表单元素才能获取，因此这个选择器也主要针对于表单元素
+
+
+
+| 选择器               | 例子                  | 例子描述                                                     |
+| -------------------- | --------------------- | ------------------------------------------------------------ |
+| :active              | a:active              | 匹配被点击的链接                                             |
+| :checked             | input:checked         | 匹配处于选中状态的 <input> 元素                              |
+| :disabled            | input:disabled        | 匹配每个被禁用的 <input> 元素                                |
+| :empty               | p:empty               | 匹配任何没有子元素的 <p> 元素                                |
+| :enabled             | input:enabled         | 匹配每个已启用的 <input> 元素                                |
+| :first-child         | p:first-child         | 匹配父元素中的第一个子元素 <p>，<p> 必须是父元素中的第一个子元素 |
+| :first-of-type       | p:first-of-type       | 匹配父元素中的第一个 <p> 元素                                |
+| :focus               | input:focus           | 匹配获得焦点的 <input> 元素                                  |
+| :hover               | a:hover               | 匹配鼠标悬停其上的元素                                       |
+| :in-range            | input:in-range        | 匹配具有指定取值范围的 <input> 元素                          |
+| :invalid             | input:invalid         | 匹配所有具有无效值的 <input> 元素                            |
+| :lang(language)      | p:lang(it)            | 匹配每个 lang 属性值以 "it" 开头的 <p> 元素                  |
+| :last-child          | p:last-child          | 匹配父元素中的最后一个子元素 <p>， <p> 必须是父元素中的最后一个子元素 |
+| :last-of-type        | p:last-of-type        | 匹配父元素中的最后一个 <p> 元素                              |
+| :link                | a:link                | 匹配所有未被访问的链接                                       |
+| :not(selector)       | :not(p)               | 匹配每个非 <p> 元素的元素                                    |
+| :nth-child(n)        | p:nth-child(2)        | 匹配父元素中的第二个子元素 <p>                               |
+| :nth-last-child(n)   | p:nth-last-child(2)   | 匹配父元素的倒数第二个子元素 <p>                             |
+| :nth-last-of-type(n) | p:nth-last-of-type(2) | 匹配父元素的倒数第二个子元素 <p>                             |
+| :nth-of-type(n)      | p:nth-of-type(2)      | 匹配父元素的第二个子元素 <p>                                 |
+| :only-of-type        | p:only-of-type        | 匹配父元素中唯一的 <p> 元素                                  |
+| :only-child          | p:only-child          | 匹配父元素中唯一的子元素 <p>                                 |
+| :optional            | input:optional        | 匹配不带 "required" 属性的 <input> 元素                      |
+| :out-of-range        | input:out-of-range    | 匹配值在指定范围之外的 <input> 元素                          |
+| :read-only           | input:read-only       | 匹配指定了 "readonly" 属性的 <input> 元素                    |
+| :read-write          | input:read-write      | 匹配不带 "readonly" 属性的 <input> 元素                      |
+| :required            | input:required        | 匹配指定了 "required" 属性的 <input> 元素                    |
+| :root                | root                  | 匹配元素的根元素，在 HTML 中，根元素永远是 HTML              |
+| :target              | #news:target          | 匹配当前活动的 #news 元素（单击包含该锚名称的 URL）          |
+| :valid               | input:valid           | 匹配所有具有有效值的 <input> 元素                            |
+| :visited             | a:visited             | 匹配所有已经访问过的链接                                     |

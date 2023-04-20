@@ -97,6 +97,7 @@ Git 使用 `git init` 命令来初始化一个 Git 仓库，Git 的很多命令�
 ```python
 git init	# 在当前目录生成一个 .git 目录
 git init newrepo	# 使用指定目录作为Git仓库
+ git remote add origin git@github.com:LeKZzzz/testgit.git # 关联远程仓库
 ```
 
 
