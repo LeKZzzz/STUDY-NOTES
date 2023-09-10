@@ -1,0 +1,205 @@
+# RISC-V
+
+---
+
+![image-20230909220947314](Pictures/image-20230909220947314.png)
+
+![image-20230910214328724](Pictures/image-20230910214328724.png)
+
+# R类指令
+
+![image-20230909220956768](Pictures/image-20230909220956768.png)
+
+
+
+## add
+
+![image-20230910213750142](Pictures/image-20230910213750142.png)
+
+
+
+## sub
+
+![image-20230910213814665](Pictures/image-20230910213814665.png)
+
+
+
+## and
+
+![image-20230910213834321](Pictures/image-20230910213834321.png)
+
+
+
+## or
+
+![image-20230910213846337](Pictures/image-20230910213846337-16943531271361.png)
+
+
+
+## xor
+
+![image-20230910214352481](Pictures/image-20230910214352481.png)
+
+## sll
+
+![image-20230910214416056](Pictures/image-20230910214416056.png)
+
+## srl
+
+![image-20230910214424555](Pictures/image-20230910214424555.png)
+
+## sra
+
+![image-20230910214432745](Pictures/image-20230910214432745.png)
+
+## slt
+
+![image-20230910214439537](Pictures/image-20230910214439537.png)
+
+## sltu
+
+![image-20230910214447901](Pictures/image-20230910214447901.png)
+
+# I类指令
+
+---
+
+![image-20230910214503751](Pictures/image-20230910214503751.png)
+
+## addi
+
+![image-20230910214512954](Pictures/image-20230910214512954.png)
+
+## ori
+
+![image-20230910214518100](Pictures/image-20230910214518100.png)
+
+## xori
+
+![image-20230910214521523](Pictures/image-20230910214521523.png)
+
+## slti
+
+![image-20230910214527113](Pictures/image-20230910214527113.png)
+
+## sltiu
+
+![image-20230910214531101](Pictures/image-20230910214531101.png)
+
+## slli
+
+![image-20230910214535049](Pictures/image-20230910214535049.png)
+
+## srli
+
+![image-20230910214539931](Pictures/image-20230910214539931.png)
+
+## srai
+
+![image-20230910214545793](Pictures/image-20230910214545793.png)
+
+# load指令
+
+---
+
+![image-20230910214551810](Pictures/image-20230910214551810.png)
+
+## lw
+
+![image-20230910214557035](Pictures/image-20230910214557035.png)
+
+## lb
+
+![image-20230910214600265](Pictures/image-20230910214600265.png)
+
+## lbu
+
+![image-20230910214604562](Pictures/image-20230910214604562.png)
+
+## lh
+
+![image-20230910214608502](Pictures/image-20230910214608502.png)
+
+## lhu
+
+![image-20230910214612081](Pictures/image-20230910214612081.png)
+
+# S类指令
+
+---
+
+![image-20230910214618486](Pictures/image-20230910214618486.png)
+
+## sw
+
+![image-20230910214623582](Pictures/image-20230910214623582.png)
+
+## sb
+
+![image-20230910214627007](Pictures/image-20230910214627007.png)
+
+## sh
+
+![image-20230910214632986](Pictures/image-20230910214632986.png)
+
+# U类指令
+
+---
+
+![image-20230910214638463](Pictures/image-20230910214638463.png)
+
+## lui
+
+![image-20230910214642138](Pictures/image-20230910214642138.png)
+
+## auipc
+
+![image-20230910214646116](Pictures/image-20230910214646116.png)
+
+# B类指令
+
+---
+
+![image-20230910214652167](Pictures/image-20230910214652167.png)
+
+## beq
+
+![image-20230910214655398](Pictures/image-20230910214655398.png)
+
+## bne
+
+![image-20230910214659167](Pictures/image-20230910214659167.png)
+
+## blt
+
+![image-20230910214702810](Pictures/image-20230910214702810.png)
+
+## bgeu
+
+![image-20230910214707108](Pictures/image-20230910214707108.png)
+
+# J类指令
+
+---
+
+![image-20230910214713067](Pictures/image-20230910214713067.png)
+
+## jal
+
+![image-20230910214716311](Pictures/image-20230910214716311.png)
+
+## jalr
+
+![image-20230910214720719](Pictures/image-20230910214720719.png)
+
+# 数据输入输出
+
+---
+
+![image-20230910214723670](Pictures/image-20230910214723670.png)
+
+![image-20230910214728218](Pictures/image-20230910214728218.png)
+
+![image-20230910214731233](Pictures/image-20230910214731233.png)
+
+![image-20230910214734850](Pictures/image-20230910214734850.png)
