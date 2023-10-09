@@ -94,10 +94,11 @@ Git 使用 `git init` 命令来初始化一个 Git 仓库，Git 的很多命令�
 
 在执行完成 `git init` 命令后，Git 仓库会生成一个 .git 隐藏目录，该目录包含了资源的所有元数据，其他的项目目录保持不变。
 
-```python
+```shell
 git init	# 在当前目录生成一个 .git 目录
 git init newrepo	# 使用指定目录作为Git仓库
- git remote add origin git@github.com:LeKZzzz/testgit.git # 关联远程仓库
+git remote add origin url # 关联远程仓库
+git remote set-url origin url	# 修改远程仓库
 ```
 
 
@@ -236,6 +237,18 @@ git init newrepo	# 使用指定目录作为Git仓库
 14. `git push <远程主机名> <本地分支名>:<远程分支名>`- 用于从将本地的分支版本上传到远程并合并，如果本地分支名与远程分支名相同，则可以省略冒号
 
     `git push --force <远程主机名> <本地分支名>:<远程分支名>`- 如果本地版本与远程版本有差异，但又要强制推送可以使用 --force 参数
+    
+17. ```shell
+    git clean -f -n：查看会删除哪些文件
+    
+    git clean -f：删除上一条命令显示出来的文件
+    
+    git clean -fd：删除文件夹
+    
+    git clean -fX：删除已被忽略的文件
+    
+    git clean -fx：删除已被忽略和未被忽略的文件
+    ```
 
 
 
