@@ -57,13 +57,24 @@ Junit的方法都是包含在包中，所以，要使用相关的方法，必须
    	}
    ```
 
-   使用限时测试，可以检测某个方法是否运行超时。在使用时，要加上（timeout=?）。这里指明了一个时限，要测试的方法超时，返回的是Eorror,而不是Failure.
+   使用限时测试，可以检测某个方法是否运行超时，多用于测试死循环。在使用时，要加上（timeout=?）。这里指明了一个时限，要测试的方法超时，返回的是Error,而不是Failure.
 
 2. 参数化测试
 
    参数化测试实际是把多个测试用例一次性测试，而不必一个一个地进行测试，这对于测试用例多的情况是很有利的。
 
    ```java
+   public class Prim2Test {
+   	Prim prim=new Prim();
+   	String result; int para;
+   	@Before
+   	public void setUp() throws Exception {
+   	}
+   
+   	@After
+   	public void tearDown() throws Exception {
+   	}
+   	
    	@Parameters
    	public static Collection data(){
    		return Arrays.asList(new Object[][]{
@@ -72,6 +83,18 @@ Junit的方法都是包含在包中，所以，要使用相关的方法，必须
    				{4,"Not Prime"}
    		});
    	}
+   	
+   	public Prim2Test(int para,String result){
+   		this.result=result;
+   		this.para=para;
+   	}
+   	
+   	@Test(timeout=1000)
+   	public void testJudgeNumber(){
+   		org.junit.Assert.assertEquals(result,prim.JudgePro(para));
+   	}
+   
+   }
    ```
 
    > 这里构造了一组的测试用例，并返回成Collection上转型。注意的是，这必须是两列的，一列是预期输出，一列是对应测试用例输入。
@@ -96,7 +119,7 @@ Junit的方法都是包含在包中，所以，要使用相关的方法，必须
    > 	}
    > ```
 
-   一个重要的问题是，参数化测试需要指定一个Runner，这个Runner指明了Junit应当怎么运行代码。每一个Runner都有自己的特殊功能，而在参数化测试中，需要指定Runner，利用语句@RunWith(Parameterized.class)，同时，还应引入相应的包
+   一个重要的问题是，参数化测试需要指定一个Runner，这个Runner指明了Junit应当怎么运行代码。每一个Runner都有自己的特殊功能，而在参数化测试中，需要指定Runner，利用语句`@RunWith(Parameterized.class)`，同时，还应引入相应的包
 
    ```java
    import org.junit.runner.RunWith;
@@ -108,4 +131,32 @@ Junit的方法都是包含在包中，所以，要使用相关的方法，必须
 
    当需要运行多个测试类的时候，我们希望人工一次运行，就需要测试打包。这同样需要指定一个Runner,并且加入自己要测试的测试类。
 
+    ```java
+    import static org.junit.Assert.*;
+    import org.junit.runner.RunWith;
+    import org.junit.runners.Suite;
+    import org.junit.After;
+    import org.junit.Before;
+    import org.junit.Test;
+    
+    @RunWith(Suite.class)
+    @Suite.SuiteClasses({PrimTest.class, Prim2Test.class})
+    
+    public class AllTest {
+    
+    }
+    ```
    
+   可以看到，类的主体为空即可，不需要任何操作。
+   `@Suite.SuiteClasses({PrimTest.class, Prim2Test.class})`这里指明了要运行哪些测试类。
+
+
+
+# 工具
+
+## evosuite
+
+```java
+java -jar evosuite-1.0.6.jar -projectCP ./ -prefix 存放.class的文件夹目录 
+```
+
