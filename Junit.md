@@ -132,6 +132,7 @@ Junit的方法都是包含在包中，所以，要使用相关的方法，必须
    当需要运行多个测试类的时候，我们希望人工一次运行，就需要测试打包。这同样需要指定一个Runner,并且加入自己要测试的测试类。
 
     ```java
+    package net.mooctest;
     import static org.junit.Assert.*;
     import org.junit.runner.RunWith;
     import org.junit.runners.Suite;
