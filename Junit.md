@@ -23,6 +23,21 @@ Junit的方法都是包含在包中，所以，要使用相关的方法，必须
 | @Parameters  | 指定测试类的测试数据集合                           |
 | @Rule        | 允许灵活添加或重新定义测试类中的每个测试方法的行为 |
 
+- @AfterClass:所修饰的方法会在所有方法运行结束后被执行，static修饰，只执行一次
+- @BeforeClass:所修饰的方法会在所有方法运行结束前被执行，static修饰，只执行一次
+- @Test:将一个普通方法修饰为测试方法
+  - @Test(timeout=毫秒)                        //可以作为性能测试
+  - @Test(expected=XX.class)
+    - @Test(expected=ArithmeticException.class):预期被测方法是否抛出对应的异常
+- @Before:会在每一个测试方法运行之前执行一次
+- @After:会在每一个测试方法运行之后测试一次
+- @Ignore:所修饰的测试方法会被测试运行器忽略
+- @RunWith:可以更改测试运行器org.junit.runner.Runner
+
+一个JUnit4大的单元测试用例执行顺序为：@BeforeClass > @Before > @Test > @After > @AfterClass
+
+每一个测试方法的调用顺序为：@Before -> @Test -> @After
+
 # 断言
 
 ---
