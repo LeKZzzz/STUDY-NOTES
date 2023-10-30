@@ -783,8 +783,10 @@ dataType arrayRefVar[];  // 效果相同，但不是首选方法
    ```java
    arrayName = new elementType[row][col];
    arrayName = new elementType[row][];	//需要后续继续为每一行分配空间
+   arrayName = {{},{},{}};
+   elementType[][] arrayName = {{},{},{}};
    ```
-
+   
    
 
 
@@ -2849,6 +2851,37 @@ cc.print();    // 调用继承的默认方法
 
 
 
+#### ArrayList(集合)
+
+>  ArrayList是集合中的一种，它支持索引。
+>
+>  集合中只能存储引用类型，不支持基本数据类型。
+
+1. 创建
+
+   ```java
+   ArrayList<type> name = new ArrayList<>();
+   ```
+
+2. 添加数据
+
+   ```java
+   public boolean add(E e);	//	将指定的元素追加到此集合的末尾
+   public void add(int index,E element);	//在此集合中的指定位置插入指定的元素
+   ```
+
+3. 常用API
+
+   - `public E get(int index)`	返回指定索引处的元素
+   - `public int size()`	返回集合中的元素的个数
+   - `public E remove(int index)`	删除指定索引处的元素，返回被删除的元素
+   - `public boolean remove(Object o)`	删除指定的元素，返回删除是否成功
+   - `public E set(int index,E element)`	修改指定索引处的元素，返回被修改的元素
+
+
+
+
+
 ### Set接口及实现类
 
 1. Set接口对象类似于数学上的集合概念，其中不允许有重复的元素，只包含从Collection接口继承的方法
@@ -3418,3 +3451,62 @@ synchronized, ReentrantLock, ReentrantReadWriteLock
 锁粗化：是指有些情况下我们反而希望把很多次锁的请求合并成一个请求，以降低短时间内大量锁请求、同步、释放带来的性能损耗
 
 Note： synchronized关键字，不仅实现同步，JMM中规定，synchronized要保证可见性（不能够被缓存）
+
+
+
+
+
+# 正则表达式
+
+---
+
+> 正则表达式（regex）是一个字符串，由字面值字符和特殊符号组成，是用来描述匹配一个字符串集合的模式，可以用来匹配、替换和拆分字符串。
+>
+> 例如可以检查一个字符串是否含有某种子字符串、将匹配的子字符串做替换或者从某个字符串中取出符合某个条件的子字符串等。
+
+## 语法
+
+| 字符       | 匹配                                                         | 示例                                    |
+| ---------- | ------------------------------------------------------------ | --------------------------------------- |
+| .          | 任意单个字符，除换行符外                                     | jav.匹配java                            |
+| [ ]        | [ ] 中的任意一个字符                                         | java匹配j[abc]va                        |
+| -          | [ ] 内表示字符范围                                           | java匹配[a-z]av[a-g]                    |
+| ^          | 在[ ]内的开头，匹配除[ ]内的字符之外的任意一个字符           | java匹配j[^b-f]va                       |
+| \|         | 或                                                           | x\|y匹配x或y                            |
+| \          | 将下一字符标记为特殊字符、文本、反向引用或八进制转义符       | \(匹配(                                 |
+| $          | 匹配输入字符串结尾的位置。如果设置了 **RegExp** 对象的 **Multiline** 属性，$ 还会与"\n"或"\r"之前的位置匹配。 | ;$匹配位于一行及外围的;号               |
+| *          | 零次或多次匹配前面的字符                                     | zo*匹配zoo或z                           |
+| +          | 一次或多次匹配前面的字符                                     | zo+匹配zo或zoo                          |
+| ?          | 零次或一次匹配前面的字符                                     | zo?匹配z或zo                            |
+| p{*n*}     | *n* 是非负整数。正好匹配 *n* 次                              | o{2}匹配food中的两个o                   |
+| p{*n*,}    | *n* 是非负整数。至少匹配 *n* 次                              | o{2}匹配foood中的所有o                  |
+| p{*n*,*m*} | *M* 和 *n* 是非负整数，其中 *n* <= *m*。匹配至少 *n* 次，至多 *m* 次 | o{1,3}匹配fooood中的三个o               |
+| \p{P}      | 一个标点字符 !"#$%&'()*+,-./:;<=>?@[\]^_'{\|}~               | J\p{P}a匹配J?a                          |
+| \b         | 匹配一个字边界                                               | va\b匹配java中的va，但不匹配javar中的va |
+| \B         | 非字边界匹配                                                 | va\B匹配javar中的va，但不匹配java中的va |
+| \d         | 数字字符匹配                                                 | 1[\\d]匹配13                            |
+| \D         | 非数字字符匹配                                               | [\\D]java匹配Jjava                      |
+| \w         | 单词字符                                                     | java匹配[\\w]ava                        |
+| \W         | 非单词字符                                                   | $java匹配[\\W]java                      |
+| \s         | 空白字符                                                     | Java 2匹配Java\\s2                      |
+| \S         | 非空白字符                                                   | java匹配 j[\\S]va                       |
+| \f         | 匹配换页符                                                   | 等效于\x0c和\cL                         |
+| \n         | 匹配换行符                                                   | 等效于\x0a和\cJ                         |
+
+> - 不要在重复词符中使用空白。如B{3,6} ，不能写成 B{3, 6}。
+> - 可以使用括号来将模式分组。(ab){3}匹配ababab , 而ab{3} 匹配 abbb。
+
+## 相关类
+
+>  Java的正则表达式是由java.util.regex的Pattern和Matcher类实现的。Pattern对象表示经编译的正则表达式。静态的compile( )方法负责将表示正则表达式的字符串编译成Pattern对象。
+
+```java
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+String example = "This is a small example string";
+Pattern pattern = Pattern.compile("\\w+");
+		Matcher matcher = pattern.matcher(example);
+```
+
