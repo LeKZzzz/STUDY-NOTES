@@ -57,7 +57,7 @@ Junit的方法都是包含在包中，所以，要使用相关的方法，必须
 | assertThat(actual,  matcher)           | 查看实际值是否满足指定的条件                             |
 | fail()                                 | 让测试失败                                               |
 
-
+> 已弃用的方法`assertEquals(double expected, double actual)`已替换为`assertEquals(double expected, double actual, double delta)`. 第三个参数`delta`是预期值与实际值之间允许的最大差异。这对于处理浮点精度问题很有用
 
 # 语法
 

@@ -394,3 +394,35 @@ git remote set-url origin url	# 修改远程仓库
 
 1. `Settings -》GitHub Pages`
 2. `Choose a theme` 按钮可以帮你选择一个网站主题
+
+
+
+## Github Gist
+
+Github Gist是Github提供的一个子服务，可以在线分享比较小的代码片段，同样的代码如果用传统创建仓库的方式分享可能就显得笨重了，可以说Gist就是一个精简版的Repository。
+
+**用法**
+
+1. 在页面中内嵌代码 
+
+   直接在 md 或 HTML 页面中，用 script 标签嵌入一个 js 地址：
+
+   `<script src="https://gist.github.com/xxx/yyy.js"></script>`
+
+   > js 文件链接本身即包含了足够的信息，它会先动态加载基本的类库，然后再把要加载的对象信息传递给类库，对象（我们分享的代码）加载完成之后，最后统一在页面上创建 HTML 元素并把代码渲染出来。
+
+2. 直接分享链接
+
+3. 提供一个 zip 下载链接 
+
+对于自己已经创建的历史 Gist，Github 都有记录，这个地址就是 Gist 地址加上自己的 Github ID，例如`https://gist.github.com/id`
+
+Gist 目前不能在线直接运行
+
+**使用场景**
+
+- 作为代码文件托管页面使用；
+- 作为代码教程的代码片段；
+- 作为展示 GitHub Git 特性的示例；
+- 作为一个信息片段存储库，包含有用的信息，如密码、证书等；
+- 作为编写编码请求的媒介。
