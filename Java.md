@@ -3418,3 +3418,11 @@ synchronized, ReentrantLock, ReentrantReadWriteLock
 锁粗化：是指有些情况下我们反而希望把很多次锁的请求合并成一个请求，以降低短时间内大量锁请求、同步、释放带来的性能损耗
 
 Note： synchronized关键字，不仅实现同步，JMM中规定，synchronized要保证可见性（不能够被缓存）
+
+
+
+# 流
+
+---
+
+![7559af84305b9836df63961dcb74f56](Pictures/7559af84305b9836df63961dcb74f56.jpg)
