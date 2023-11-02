@@ -2,6 +2,16 @@
 
 ---
 
+# SQL分类
+
+---
+
+**SQL 语句主要可以划分为以下 3 个类别**
+
+- **DDL（Data Definition Languages）语句：**数据定义语言，这些语句定义了不同的数据段、数据库、表、列、索引等数据库对象的定义。常用的语句关键字主要包括 create、drop、alter等。
+- **DML（Data Manipulation Language）语句：**数据操纵语句，用于添加、删除、更新和查询数据库记录，并检查数据完整性，常用的语句关键字主要包括 insert、delete、udpate 和select 等。(增添改查）
+- **DCL（Data Control Language）语句：**数据控制语句，用于控制不同数据段直接的许可和访问级别的语句。这些语句定义了数据库、表、字段、用户的访问权限和安全级别。主要的语句关键字包括 grant、revoke 等。
+
 # 数据库
 
 ----
@@ -98,6 +108,8 @@ create table TableName
 
 6. 默认约束（default constraint）
 
+   用于为数据表中的字段指定默认值，即当在表中插入一条新纪录时，如果没有给这个字段赋值，那么数据库系统会自动为这个字段插入默认值
+
 
 
 ## 表级约束
@@ -114,10 +126,10 @@ create table TableName
 - 检查
 
 ```mysql
-Constraint <约束名> Primary Key( <列名> [{<列名>}])
-Constraint <约束名> Foreign key  References <外表名>( <列名> [{<列名>}])
-Constraint <约束名>  Unique  ( <列名> [{<列名>}])
-Constraint <约束名>  Check (<条件>)
+[Constraint <约束名>] Primary Key( <列名> [{<列名>}])
+[Constraint <约束名>] Foreign key  References <外表名>( <列名> [{<列名>}])
+[Constraint <约束名>] Unique  ( <列名> [{<列名>}])
+[Constraint <约束名>] Check (<条件>)
 
 e.g.:
 　　create table student2(
@@ -154,7 +166,7 @@ e.g.:
 [Constraint <约束名>] Primary Key
 [Constraint <约束名>] Foreign key (列名)  References <外表名>(列名)
 [Constraint <约束名>] Unique
-[Constraint <约束名>]  Check (<条件>)
+[Constraint <约束名>] Check (<条件>)
 [Constraint <约束名>] Default  约束条件
 [Constraint <约束名>] Null | Not Null
 
@@ -198,8 +210,8 @@ ALTER TABLE 表名 ADD COLUMN 列名 属性 [约束]	#	增加列
 ALTER TABLE 表名 CHANGE COLUMN 列名 新列名	#修改列的类型信息
 ALTER TABLE 表名字 CHANGE COLUMN 列名 新列名 属性	# 重命名列
 ALTER TABLE 表名 RENAME TO 表新名	# 重命名表
-Alter TABLE 表名 DROP primary key	# 删除表中主键
-ALTER TABLE 表名 ADD CONSTRAINT 约束名 PRIMARY KEY (添加列)	# 添加主键
+Alter TABLE 表名 DROP CONSTRAINT 约束名	# 删除表中约束
+ALTER TABLE 表名 ADD CONSTRAINT 约束名 约束	# 添加约束
 ALTER TABLE 表名 ADD index 索引名 (列名)	# 添加索引
 ALTER TABLE 表名 MODIFY COLUMN 要修改属性的列名 新属性	# 修改列的属性
 ```
@@ -303,6 +315,182 @@ CLUSTER table_name USING index_name;
 >
 > 我们需要注意的是，在新插入数据时，PostgreSQL 并不会维护索引的正确性（即后续插入的数据并不是按照聚簇索引的顺序在物理上排序），我们需要再次使用 `CLUSTER` 命令来维护聚簇索引的正确性。
 
+
+
+# 触发器
+
+---
+
+> 系统为每一个触发器建立临时变量NEW和OLD
+>
+> - New.column_name：update或insert事件对应“新”元组，column_name对应新元组上的对应的列值
+> - OLD.column_name：update或insert事件对应“老”元组，column_name对应老元组上的对应的列值
+
+## **openGauss**
+
+1. 创建触发器
+
+   ```mysql
+   CREATE TRIGGER trigger_name { BEFORE | AFTER | INSTEAD OF } { event [ OR ... ] }
+       ON table_name
+       [ FOR [ EACH ] { ROW | STATEMENT } ]
+       [ WHEN ( condition ) ]
+       EXECUTE PROCEDURE function_name ( arguments );
+   ```
+
+   > - **trigger_name**
+   >
+   >    触发器名称。
+   >
+   > - **BEFORE**
+   >
+   >    触发器函数是在触发事件发生前执行。
+   >
+   > - **AFTER**
+   >
+   >    触发器函数是在触发事件发生后执行。
+   >
+   > - **INSTEAD OF**
+   >
+   >    触发器函数直接替代触发事件。
+   >
+   > - **event**
+   >
+   >    启动触发器的事件，取值范围包括：INSERT、UPDATE、DELETE或TRUNCATE，也可以通过OR同时指定多个触发事件。
+   >
+   > - **table_name**
+   >
+   >    触发器对应的表名称。
+   >
+   > - **FOR EACH ROW | FOR EACH STATEMENT**
+   >
+   >    触发器的触发频率。
+   >
+   >    - FOR EACH ROW是指该触发器是受触发事件影响的每一行触发一次。
+   >    - FOR EACH STATEMENT是指该触发器是每个SQL语句只触发一次。
+   >
+   >    未指定时默认值为FOR EACH STATEMENT。约束触发器只能指定为FOR EACH ROW。
+   >
+   > - **function_name**
+   >
+   >    用户定义的函数，必须声明为不带参数并返回类型为触发器，在触发器触发时执行。
+   >
+   > - **arguments**
+   >
+   >    执行触发器时要提供给函数的可选的以逗号分隔的参数列表。
+
+2. 修改触发器
+
+   ```mysql
+   ALTER TRIGGER trigger_name ON table_name RENAME TO new_trigger_name;
+   ```
+
+   > - **new_trigger_name**
+   >
+   >    修改后的新触发器名称。
+
+3. 删除触发器
+
+   ```mysql
+   DROP TRIGGER trigger_name ON table_name [ CASCADE | RESTRICT ];
+   ```
+
+4. 创建触发器函数
+
+   ```mysql
+   CREATE OR REPLACE FUNCTION function_name() RETURNS TRIGGER AS
+   	$$
+   	DECLARE
+   	BEGIN
+   		function_block;
+   		RETURN [NEW|OLD];
+   	END
+   	$$ LANGUAGE PLPGSQL;
+   ```
+
+   > OpenGuass在创建触发器之前，需要先创建一个函数，如果返回值是Trigger，那么该函数就是触发器函数，否则是普通函数。同一个触发器可以指定多个触发事件，每个事件发生时都能激活触发器来执行触发器的动作。
+   >
+   > `RETURN`语句的作用是触发器函数执行完成后返回`OLD`或`NEW`元组或NULL(异常)，`RETURN`语句只在`BEFORE`定义的触发器中有效，对于`AFTER`定义的触发器其返回值会被忽略；在 `DELETE` 触发器中，`NEW` 是空的，因此返回 `NEW` 通常没有意义，在 `DELETE` 触发器中，通常会返回 `OLD`，即被删除的行；对于 `AFTER INSERT` 和 `AFTER UPDATE` 触发器，它们的返回值会被忽略，因为在这些触发器执行完毕后，新行已经被插入或更新到数据库中了；返回`NULL`异常时，`INSERT`、`UPDATE` 和 `DELETE` 操作会被取消。
+
+**示例**
+
+```mysql
+# 创建源表及触发表
+	CREATE TABLE test_trigger_src_tbl(id1 INT, id2 INT, id3 INT);
+	CREATE TABLE test_trigger_des_tbl(id1 INT, id2 INT, id3 INT);
+
+# 创建触发器函数
+	CREATE OR REPLACE FUNCTION tri_insert_func() RETURNS TRIGGER AS
+           $$
+           DECLARE
+           BEGIN
+                   INSERT INTO test_trigger_des_tbl VALUES(NEW.id1, NEW.id2, NEW.id3);
+                   RETURN NEW;
+           END
+           $$ LANGUAGE PLPGSQL;
+
+	CREATE OR REPLACE FUNCTION tri_update_func() RETURNS TRIGGER AS
+           $$
+           DECLARE
+           BEGIN
+                   UPDATE test_trigger_des_tbl SET id3 = NEW.id3 WHERE id1=OLD.id1;
+                   RETURN OLD;
+           END
+           $$ LANGUAGE PLPGSQL;
+
+	CREATE OR REPLACE FUNCTION TRI_DELETE_FUNC() RETURNS TRIGGER AS
+           $$
+           DECLARE
+           BEGIN
+                   DELETE FROM test_trigger_des_tbl WHERE id1=OLD.id1;
+                   RETURN OLD;
+           END
+           $$ LANGUAGE PLPGSQL;
+
+# 创建INSERT触发器
+	CREATE TRIGGER insert_trigger
+           BEFORE INSERT ON test_trigger_src_tbl
+           FOR EACH ROW
+           EXECUTE PROCEDURE tri_insert_func();
+
+# 创建UPDATE触发器
+	CREATE TRIGGER update_trigger
+           AFTER UPDATE ON test_trigger_src_tbl  
+           FOR EACH ROW
+           EXECUTE PROCEDURE tri_update_func();
+
+# 创建DELETE触发器
+	CREATE TRIGGER delete_trigger
+           BEFORE DELETE ON test_trigger_src_tbl
+           FOR EACH ROW
+           EXECUTE PROCEDURE tri_delete_func();
+
+# 执行INSERT触发事件并检查触发结果
+	INSERT INTO test_trigger_src_tbl VALUES(100,200,300);
+	SELECT * FROM test_trigger_src_tbl;
+	SELECT * FROM test_trigger_des_tbl;
+
+# 执行UPDATE触发事件并检查触发结果
+	UPDATE test_trigger_src_tbl SET id3=400 WHERE id1=100;
+	SELECT * FROM test_trigger_src_tbl;
+	SELECT * FROM test_trigger_des_tbl;
+
+# 执行DELETE触发事件并检查触发结果
+	DELETE FROM test_trigger_src_tbl WHERE id1=100;
+	SELECT * FROM test_trigger_src_tbl;
+	SELECT * FROM test_trigger_des_tbl;
+
+# 修改触发器
+	ALTER TRIGGER delete_trigger ON test_trigger_src_tbl RENAME TO delete_trigger_renamed;
+
+# 删除触发器
+	DROP TRIGGER insert_trigger ON test_trigger_src_tbl;
+	DROP TRIGGER update_trigger ON test_trigger_src_tbl;
+	DROP TRIGGER delete_trigger_renamed ON test_trigger_src_tbl;
+```
+
+
+
 # 边边角角
 
 ---
@@ -375,7 +563,11 @@ EXPLAIN ANALYZE SELECT * FROM table_name WHERE column_name = 'value';
 
 
 
-# openGauss
+# 数据库特性
+
+---
+
+## openGauss
 
 ![image-20231029210043386](Pictures/image-20231029210043386.png)
 
