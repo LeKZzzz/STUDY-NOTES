@@ -317,6 +317,129 @@ CLUSTER table_name USING index_name;
 
 
 
+# 自定义函数
+
+---
+
+1. 标量型函数（Scalar functions）：返回一个标量值
+
+   ```mysql
+   CREATE FUNCTION function_name([paraments]) RETURNS type AS
+   BEGIN
+   	block
+   END
+   ```
+
+2. 表值函数
+
+   1. 内联表值型函数（Inline table-valued functions）
+
+      > 内联表值型函数以表的形式返回一个返回值，即它返回的是一个表内联表值型函数没有由BEGIN-END 语句括起来的函数体。其返回的表由一个位于RETURN 子句中的SELECT 命令段从数据库中筛选出来。内联表值型函数功能相当于一个参数化的视图。
+
+      ```mysql
+      CREATE FUNCTION function_name([paraments]) RETURNS table AS
+      RETURN(SQL_expression)
+      ```
+
+   2. 多声明表值型函数（Multi-statement table-valued functions）
+
+      > 多声明表值型函数可以看作标量型和内联表值型函数的结合体。它的返回值是一个表，但它和标量型函数一样有一个用BEGIN-END 语句括起来的函数体，返回值的表中的数据是由函数体中的语句插入的。由此可见，它可以进行多次查询，对数据进行多次筛选与合并，弥补了内联表值型函数的不足。 　
+
+      ```mysql
+      CREATE FUNCTION function_name([paraments]) RETURNS table_name(column_name) AS
+      BEGIN
+      	block
+      END
+      ```
+
+3. MySQL语法
+
+   1. 局部变量
+
+      > 局部变量是定义在sql语句块中的变量，常见于存储过程和函数的 begin ... end 中，语句块执行完后局部变量则结束生命周期
+
+      1. 声明` DECLARE @localVar dataType;`
+
+      > - `@localVar`是变量名
+      > - `dataType`是变量的数据类型
+      >
+      > declare声明定义语句，必须放在begin...end函数体中最前面的位置
+
+      1. 赋值
+
+      ```mysql
+          set var = expression [, var = expression, ...];
+          set var := expression [, var = expression, ...];
+          select filed1 [, ...] into var1 [, ...] from tableName where conditon
+      ```
+
+      >  sql下的 **=** 操作符是比较(判定是否相等)操作符，只有在**set**语句中可作为赋值操作符使用。故在其他语句中，赋值操作应该使用 **:=** 操作符
+      >
+      > 通过select语句将所查询出的字段数据依次赋值到 **into** 后的变量中。值得一提的是，当select查询结果为空时(即，无记录)，则不对变量进行赋值操作；当select查询的结果不止一条时，MySQL将报错，函数执行失败
+
+   2. 用户变量
+
+      > 定义在当前客户端的连接下的变量，其作用域在当前客户端连接下均有效，当当前客户端断开连接后则该变量结束生命周期。其对其他客户端连接不可见
+
+      1. 声明
+
+         用户变量无需先行声明创建，直接赋值使用即可。赋值时，当前客户端下若无该用户变量，则会自动创建并完成赋值；查看一个不存在的用户变量时(e.g., select @foo)返回null。需要注意的是，用户变量的变量名必须以 **@** 开头
+
+      2. 赋值
+
+         ```mysql
+         set @varName = val;     # 对名为 @varName 用户变量赋值
+         set @varName := val;    # 对名为 @varName 用户变量赋值
+         select @varName:=field [as field] [, ...] from tableName where condition;
+         select @varName:=Val;
+         ```
+
+         > 通过select语句将所查询出的字段数据赋值到变量中，只能使用 **:=** 操作符赋值
+
+   3. 判断语句
+
+      ```mysql
+          if condition then
+              statements
+          [ elseif condition then
+              statements ]
+          [ else
+              statements ]
+          end if;
+      ```
+
+   4. 循环语句
+
+      ```mysql
+          [label:] while condition do
+              statments
+          end while [label]
+      ```
+
+      > ```mysql
+      >     leave label;    # 跳出label所标注的循环结构
+      >     iterate label;  # 跳过循环体的剩余部分，直接开始label所标注的下一次循环
+      > ```
+
+   5. 其他操作
+
+      ```mysql
+      show function status [like functionName];	# 查看函数状态
+      show create function functionName;	# 查看函数定义
+      alter function functionName [characteristic ...];	# 修改函数特性
+      drop function [if exists] functionName;	# 删除函数
+      ```
+
+      > - 通过show status 命令查看函数的相关信息。可以在其后面使用 like 语句进行函数名匹配，其中functionName同样支持 **%** 进行模糊匹配
+      > - 通过alter function实现对函数特性characteristic的修改，注意，不是对函数定义内容的修改
+      > - 通过drop function 删除函数。当指定函数不存在时，会报错，可以添加 **if exists** 避免出现报错
+
+   6. 修改结束符
+
+      > 在命令行中其默认将 **;** 符号作为结束符来执行语句。所以如果我们在命令行中创建函数，需要使用 delimiter 命令重定义结束符。先通过 **delimiter $$** 将结束符更改为 **$$** (可随意更改，一般常用\$\$)再创建函数。函数创建完毕后，通过我们重定义后的结束符结束(即 **$$** )。最后不要忘记，通过 **delimiter ;** 将结束符重新修改为 **;**
+
+
+
 # 触发器
 
 ---
@@ -404,13 +527,14 @@ CLUSTER table_name USING index_name;
    	BEGIN
    		function_block;
    		RETURN [NEW|OLD];
+   		[raise exception 'message';]
    	END
    	$$ LANGUAGE PLPGSQL;
    ```
-
+   
    > OpenGuass在创建触发器之前，需要先创建一个函数，如果返回值是Trigger，那么该函数就是触发器函数，否则是普通函数。同一个触发器可以指定多个触发事件，每个事件发生时都能激活触发器来执行触发器的动作。
    >
-   > `RETURN`语句的作用是触发器函数执行完成后返回`OLD`或`NEW`元组或NULL(异常)，`RETURN`语句只在`BEFORE`定义的触发器中有效，对于`AFTER`定义的触发器其返回值会被忽略；在 `DELETE` 触发器中，`NEW` 是空的，因此返回 `NEW` 通常没有意义，在 `DELETE` 触发器中，通常会返回 `OLD`，即被删除的行；对于 `AFTER INSERT` 和 `AFTER UPDATE` 触发器，它们的返回值会被忽略，因为在这些触发器执行完毕后，新行已经被插入或更新到数据库中了；返回`NULL`异常时，`INSERT`、`UPDATE` 和 `DELETE` 操作会被取消。
+   > `RETURN`语句的作用是触发器函数执行完成后返回`OLD`或`NEW`元组或NULL(异常)，`RETURN`语句只在`BEFORE`定义的触发器中有效，对于`AFTER`定义的触发器其返回值会被忽略；在 `DELETE` 触发器中，`NEW` 是空的，因此返回 `NEW` 通常没有意义，在 `DELETE` 触发器中，通常会返回 `OLD`，即被删除的行；对于 `AFTER INSERT` 和 `AFTER UPDATE` 触发器，它们的返回值会被忽略，因为在这些触发器执行完毕后，新行已经被插入或更新到数据库中了；返回`NULL`异常时，`INSERT`、`UPDATE` 和 `DELETE` 操作会被取消；使用raise可以抛出异常。
 
 **示例**
 
