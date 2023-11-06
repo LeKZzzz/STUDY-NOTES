@@ -781,7 +781,6 @@ Java可以使用修饰符来修饰类中方法和属性，通常放在语句的�
 ```java
 dataType[] arrayRefVar;   // 首选的方法
  
- 
 dataType arrayRefVar[];  // 效果相同，但不是首选方法
 ```
 
@@ -842,11 +841,30 @@ dataType arrayRefVar[];  // 效果相同，但不是首选方法
 
 #### java.util.Arrays类
 
-1. `sort()`：对数组排序，该方法的排序是稳定的，默认为升序
-2. `binarySearch()`：在已排序的数组中查找指定元素
-3. `copyOf()  copyOfRange()`：数组元素的拷贝
+> Arrays类中的方法都是static修饰的静态方法，在使用时可以直接使用类名进行调用
+
+1. `sort(arr [,int fromIndex,int toIndex,Comparator<? super T> c])`：对数组排序，该方法的排序是稳定的，默认为升序，排序后 数组中存放的是排序后的结果
+
+2. `binarySearch(arr [,int fromIndex,int toIndex])`：在已排序的数组中使用二分查找指定元素，可以在整个数组中查找，也可以在某个范围内查找
+
+3. `copyOf(original [,int length])`：将原始数组的元素复制到新的数组中，可以设置复制的长度
+
+   `copyOfRange(original,int from,int to)`：将某个范围内的元素复制到新的数组中
+
 4. `equals()`：比较两个数组是否相等
-5. `fill()`：将一个值填充到数组的每个元素中或几个连续元素中
+
+5. `fill(arr [,int fromIndex,int toIndex],value)`：将一个值填充到数组的每个元素中或几个连续元素中
+
+6. `toString(arr)` 将数组元素作为字符串返回
+
+7. `asList(T… a)`以数组创建List对象
+
+   该方法适用于对象型数据的数组（String、Integer…）
+   该方法不建议使用于基本数据类型的数组（byte,short,int,long,float,double,boolean）
+   该方法将数组与List列表链接起来：当更新其一个时，另一个自动更新
+   不支持add()、remove()、clear()等方法
+
+8. `equals(arr1,arr2)`判断两个数组中的元素是否一一对应相等
 
 
 
@@ -869,7 +887,33 @@ dataType arrayRefVar[];  // 效果相同，但不是首选方法
    elementType[][] arrayName = {{},{},{}};
    ```
    
+3. 遍历
+
+   ```java
+   for (type[] arr : arrs)
+       for (type val : arr)
+           block
    
+   for (int i=0; i<arrs.length; i++)
+       for (int j=0; j<arrs[i].length; j++)
+           block
+   ```
+
+   
+
+
+
+#### 稀疏数组
+
+> 当一个数组中大部分元素为0，或者为同一值的数组时，可以使用稀疏数组来保存该数组
+>
+> 稀疏数组的处理方式是:
+> 	记录数组一共有几行几列有多少个不同值
+> 	把具有不同值的元素和行列及值记录在一个小规模的数组中，从而缩小程序的规模
+>
+> ![image-20231104012115724](Pictures/image-20231104012115724.png)
+
+
 
 
 
