@@ -693,7 +693,7 @@ LIMIT	分页参数
 >
 > - 脏读：一个事务读到另外一个事务还没有提交的数据
 > - 不可重复读：一个事务先后读取同一条记录，但两次读取的数据不同，称之为不可重复读
-> - 幻读：一事务按照条件查询数据时没有对应的数据行，但是在插入数据时又发现这行数据已经存在
+> - 幻读：一个事务按照条件查询数据时没有对应的数据行，但是在插入数据时又发现这行数据已经存在
 >
 > **事务隔离级别**
 >
@@ -1035,38 +1035,70 @@ DROP VIEW [IF EXISTS] 视图名称;	# 删除视图
 
 ## 自定义函数
 
-### <a id='gramma'>MySQL</a>
+### MySQL
 
-> 1. 标量型函数（Scalar functions）：返回一个标量值
+#### **函数定义**
+
+> 存储函数是有返回值的存储过程，存储函数的参数只能是IN类型的。
+
+```mysql
+    CREATE  
+        [DEFINER = { user | CURRENT_USER }]
+        FUNCTION functionName ( varName varType [, ... ] )
+        RETURNS returnVarType
+        [characteristic ...] 
+        routine_body;
+```
+
+> - functionName：函数名，同MySQL内置函数一样，大小写不敏感
+> - varName: 形参名
+> - varType: 形参类型，其与varName配对使用。形参数量不限( $\geq 0$)
+> - returnVarType: 返回值类型。函数**必须有且只能有一个**返回值
+> - characteristic：函数特性
+> - routine_body：函数体。函数体中必须含有 **return** 语句，当函数体为复合结构时，需要使用begin ... end 语句
 >
->    ```mysql
->    CREATE FUNCTION function_name([paraments]) RETURNS type AS
->    BEGIN
->    	block
->    END
->    ```
->
-> 2. 表值函数
->
->    1. 内联表值型函数（Inline table-valued functions）
->
->       > 内联表值型函数以表的形式返回一个返回值，即它返回的是一个表内联表值型函数没有由BEGIN-END 语句括起来的函数体。其返回的表由一个位于RETURN 子句中的SELECT 命令段从数据库中筛选出来。内联表值型函数功能相当于一个参数化的视图。
->
->       ```mysql
->       CREATE FUNCTION function_name([paraments]) RETURNS table AS
->       RETURN(SQL_expression)
->       ```
->
->    2. 多声明表值型函数（Multi-statement table-valued functions）
->
->       > 多声明表值型函数可以看作标量型和内联表值型函数的结合体。它的返回值是一个表，但它和标量型函数一样有一个用BEGIN-END 语句括起来的函数体，返回值的表中的数据是由函数体中的语句插入的。由此可见，它可以进行多次查询，对数据进行多次筛选与合并，弥补了内联表值型函数的不足。 　
->
->       ```mysql
->       CREATE FUNCTION function_name([paraments]) RETURNS table_name(column_name) AS
->       BEGIN
->       	block
->       END
->       ```
+> | characteristic值                                             | 说明                                                         |
+> | ------------------------------------------------------------ | ------------------------------------------------------------ |
+> | `language sql `                                              | 指明函数体的语言类型, 目前仅支持sql                          |
+> | `[not] deterministic `                                       | **deterministic** 指明函数的结果是确定的，即相同的输入会得到相同的输出；**not deterministic**意为结果不确定。默认为 **not deterministic** |
+> | `{ contains sql |no sql |reads sql data |modifies sql data }` | 指明函数体使用sql语句的限制。**contains sql**意为函数体包含sql语句，但不包含读写数据的sql语句；**no sql**意为函数体不包含sql语句；**reads sql data**意为函数体包含读数据sql语句；**modifies sql data**意为函数体包含写数据的sql语句。默认为**contains sql** |
+> | `sql security { definer |invoker } `                         | 指明谁有权限执行该函数。**definer**意为只有定义者才能执行；**invoker**意为拥有权限的调用者可以执行。默认为**definer** |
+> | `comment 'message' `                                         | 函数的注释信息，指明函数的功能                               |
+
+1. 标量型函数（Scalar functions）：返回一个标量值
+
+   ```mysql
+   CREATE FUNCTION function_name([paraments]) RETURNS type
+   BEGIN
+   	block
+   END
+   ```
+
+2. 表值函数
+
+   1. 内联表值型函数（Inline table-valued functions）
+
+      > 内联表值型函数以表的形式返回一个返回值，即它返回的是一个表。内联表值型函数没有由BEGIN-END 语句括起来的函数体。其返回的表由一个位于RETURN 子句中的SELECT 命令段从数据库中筛选出来。内联表值型函数功能相当于一个参数化的视图。
+
+      ```mysql
+      CREATE FUNCTION function_name([paraments]) RETURNS table
+      RETURN(SQL_expression)
+      ```
+
+   2. 多声明表值型函数（Multi-statement table-valued functions）
+
+      > 多声明表值型函数可以看作标量型和内联表值型函数的结合体。它的返回值是一个表，但它和标量型函数一样有一个用BEGIN-END 语句括起来的函数体，返回值的表中的数据是由函数体中的语句插入的。由此可见，它可以进行多次查询，对数据进行多次筛选与合并，弥补了内联表值型函数的不足。
+
+      ```mysql
+      CREATE FUNCTION function_name([paraments]) RETURNS table_name(column_name)
+      BEGIN
+      	block
+      END
+      ```
+
+
+
+#### <a id='gramma'>语法</a>
 
 1. 系统变量
 
@@ -1130,30 +1162,104 @@ DROP VIEW [IF EXISTS] 视图名称;	# 删除视图
       
       > 通过select语句将所查询出的字段数据赋值到变量中，只能使用 **:=** 操作符赋值
 
-3. 判断语句
+4. 参数
+
+   | 类型  | 含义                                                       |
+   | ----- | ---------------------------------------------------------- |
+   | IN    | 该类参数作为输入，也就是需要调用时传入值，是参数的默认类型 |
+   | OUT   | 该类参数作为输出，也就是该参数可以作为返回值               |
+   | INOUT | 既可以作为输入参数，也可以作为输出参数                     |
 
    ```mysql
-       if condition then
+   ([ IN|OUT|INOUT 参数名 参数类型])
+   ```
+
+5. 判断语句
+
+   ```mysql
+   # if语句
+   	if condition then
            statements
        [ elseif condition then
            statements ]
        [ else
            statements ]
        end if;
+       
+   # case语句
+   CASE case_value
+   WHEN when_value1 THEN statement_list1
+   [ WHEN when_value2 THEN statement_list2]
+   [ ELSE statement_list ]
+   END CASE;
+   
+   CASE
+   WHEN search_condition1 THEN statement_list1
+   [WHEN search_condition2 THEN statement_list2] 
+   ...
+   [ELSE statement_list]
+   END CASE;
    ```
 
-4. 循环语句
+6. 循环语句
 
    ```mysql
-       [label:] while condition do
+   # while语句
+   	[label:] while condition do
            statments
        end while [label]
+   
+   # repeat语句(do-while)
+   REPEAT
+   	statments;
+   	UNTIL conditon;
+   END REPEAT;
+   
+   # loop语句
+   [begin_label] LOOP
+   	statments;
+   END LOOP [end_label];
    ```
 
+   > LOOP实现简单的循环，如果不在SQL逻辑中增加退出循环的条件可以用其来实现简单的死循环。LOOP可以配合以下两个语句使用:
+   >
    > ```mysql
-   >     leave label;    # 跳出label所标注的循环结构
-   >     iterate label;  # 跳过循环体的剩余部分，直接开始label所标注的下一次循环
+   >  leave label;    # 跳出label所标注的循环结构
+   >  iterate label;  # 跳过循环体的剩余部分，直接开始label所标注的下一次循环
    > ```
+
+7. 游标
+
+   > 游标(CURSOR)是用来存储查询结果集的数据类型，在存储过程和函数中可以使用游标对结果集进行循环的处理。游标的使用包括游标的声明、OPEN、FETCH 和 CLOSE。
+   >
+   > 直接通过select语句返回的结果集是一个临时表，临时表无法循环遍历所有元组，此时可以使用游标暂存数据再使用循环语句对其遍历操作。
+
+   ```mysql
+   DECLARE cursor_name CURSOR FOR 查询语句;	# 声明游标
+   OPEN cursor_name;	# 打开游标
+   FETCH cursor_name INTO var_list;	# 获取游标记录
+   CLOSE cursor_name;	# 关闭游标
+   ```
+
+   > 游标的声明必须在局部变量之后
+
+8. 条件处理程序
+
+   > 条件处理程序(Handler)可以用来定义在流程控制结构执行过程中遇到问题时相应的处理步骤
+
+   ```mysql
+   DECLARE handler_action HANDLER FOR condition_value [, condition_value] statement ;
+   
+   -- 参数
+   # handler_action
+   CONTINUE # 继续执行当前程序
+   EXIT # 终止执行当前程序
+   
+   # condition_value
+   SQLSTATE 'sqlstate_value' # 状态码，如02000
+   SQLWARNING	# 所有以01开头的SQLSTATE代码的简写
+   NOT FOUND # 所有以02开头的SQLSTATE代码的简写
+   SQLEXCEPTION	# 所有没有被 SQLWARNING 或 NOT FOUND捕的SQLSTATE代码的简写
 
 5. 其他操作
 
@@ -1176,6 +1282,8 @@ DROP VIEW [IF EXISTS] 视图名称;	# 删除视图
 
 ## 触发器
 
+> 触发器是与表有关的数据库对象，指在 insert/update/delete 之前或之后，触发并执行触发器中定义的SQL语句集合。触发器的这种特性可以协助应用在数据库端确保数据的完整性，日志记录，数据校验等操作。
+>
 > 系统为每一个触发器建立临时变量NEW和OLD
 >
 > - New.column_name：update或insert事件对应“新”元组，column_name对应新元组上的对应的列值
@@ -1347,6 +1455,27 @@ DROP VIEW [IF EXISTS] 视图名称;	# 删除视图
 
 
 
+### MySQL
+
+> MySQL中只支持行级触发，不支持语句级触发
+
+```mysql
+# 创建触发器
+CREATE TRIGGER trigger_name
+BEFORE|AFTER INSERT|UPDATE|DELETE
+ON table_name FOR EACH ROW
+BEGIN
+	statment;
+END;
+
+SHOW TRIGGERS;	# 查看触发器
+DROP TRIGGER [schema_name.]trigger_name;	# 删除触发器
+```
+
+
+
+
+
 ## 存储过程
 
 > 存储过程是事先经过编译并存储在数据库中的一段 SQL语句的集合，调用存储过程可以简化应用开发人员的很多工作，减少数据在数据库和应用服务器之间的传输，对于提高数据处理的效率是有好处的。
@@ -1386,6 +1515,8 @@ DROP PROCEDURE [IF EXISTS] 存储过程名;	# 删除存储过程
 
 ----
 
+## MySQL
+
 > MySQL中的数据用各种不同的技术存储在文件(或者内存)中。每一种技术都使用不同的存储机制、索引技巧、锁定水平并且最终提供广泛的不同的功能和能力。通过选择不同的技术，你能够获得额外的速度或者功能，从而改善你的应用的整体功能。例如，如果你在研究大量的临时数据，你也许需要使用内存MySQL存储引擎。内存存储引擎能够在内存中存储所有的表格数据。又或者，你也许需要一个支持事务处理的数据库(以确保事务处理不成功时数据的回退能力)。
 >
 > 这些不同的技术以及配套的相关功能在 MySQL中被称作存储引擎(也称作表类型)。 MySQL默认配置了许多不同的存储引擎，可以预先设置或者在MySQL服务器中启用。你可以选择适用于服务器、数据库和表格的存储引擎，以便在选择如何存储你的信息、如何检索这些信息以及你需要你的数据结合什么性能和功能的时候为你提供最大的灵活性。
@@ -1418,6 +1549,132 @@ CREATE TABLE table_name(
 >    ![image-20231105153409927](Pictures/image-20231105153409927.png)
 
 
+
+# 锁
+
+---
+
+> 锁是计算机协调多个进程或线程并发访问某一资源的机制。在数据库中，除传统的计算资源(CPU、RAM、I/O)的争用以外，数据也是一种供许多用户共享的资源。如何保证数据并发访问的一致性、有效性是所有数据库必须解决的一个问题，锁冲突也是影响数据库并发访问性能的一个重要因素。从这个角度来说，锁对数据库而言显得尤其重要，也更加复杂。
+
+## MySQL
+
+> MySQL中的锁，按照锁的粒度分为以下三类:
+>
+> 1. 全局锁:锁定数据库中的所有表
+> 2. 表级锁:每次操作锁住整张表
+> 3. 行级锁:每次操作锁住对应的行数据
+
+1. 全局锁
+
+   全局锁就是对整个数据库实例加锁，加锁后整个实例就处于只读状态，后续的DML的写语句，DDL语句，已经更新操作的事条提交语句都将被阻塞。
+   其典型的使用场景是做全库的逻辑备份，对所有的表进行锁定，从而获取一致性视图，保证数据的完整性。+
+
+   ```mysql
+   flush tables with read lock;	# 添加全局锁
+   mysqldump [-h host] -u user_name -p password db_name>sql_name;	# 将数据库内容导出到sql文件中
+   unlock tables;	# 释放全局锁
+   ```
+
+   > 在InnoDB引擎中，我们可以在备份时加上参数 --single-transaction 参数来完成不加锁的一致性数据备份
+
+2. 表级锁
+
+   > 表级锁，每次操作锁住整张表。锁定粒度大，发生锁冲突的概率最高，并发度最低。应用在MylSAM、InnoDB、BDB等存储引擎中
+
+   1. 表锁
+
+      - 表共享读锁(read lock)：对所有连接允许DQL，不允许DDL和DML
+      - 表独占写锁(write lock)：对当前连接允许DQL/DDL/DML，对其他连接不允许任何操作
+
+      ```mysql
+      lock tables table_name read|write;	# 加锁
+      unlock tables; # 解锁，断开客户端连接也可以解锁
+      ```
+
+   2. 元数据锁(meta data lock，MDL)
+
+      MDL加锁过程是系统自动控制，无需显式使用，在访问一张表的时候会自动加上。MDL锁主要作用是维护表元数据的数据一致性，在表上有活动事务的时候，不可以对元数据进行写入操作。
+
+      元数据锁的引入是为了避免DML与DDL冲突，保证读写的正确性。
+
+      在MySQL5.5中引入了MDL，当对一张表进行增删改查的时候，加MDL读锁(共享);当对表结构进行变更操作的时候，加MDL写锁(排他)。
+
+      ![image-20231108174015742](Pictures/image-20231108174015742.png)
+
+      ```mysql
+      # 查看元数据锁
+      select object_type,object_schema,object_name,lock_type,lock_duration from performance_schema.metadata_locks;
+
+   3. 意向锁
+
+      为了避免DML在执行时行锁与表锁的冲突，在InnoDB中引入了意向锁，使得表锁不用检查每行数据是否加锁，使用意向锁来减少表锁的检查。
+
+      1. 意向共享锁(IS)
+
+         与表锁共享锁(read)兼容，与表锁排他锁(write)互斥
+
+         由语句`select ... lock in share mode;`添加
+
+      2. 意向排他锁(IX)
+
+         与表锁共享锁(read)及排他锁(write)都互斥
+
+         由语句insert、update、delete、select...for update添加
+
+      3. 意向锁之间不会互斥
+
+      ```mysql
+      # 查看意向锁及行锁
+      select object_schema,object_name,index_name,lock_type,lock_mode,lock_data from performance_schema.data_locks;
+      ```
+
+3. 行级锁
+
+   每次操作锁住对应的行数据。锁定粒度最小，发生锁冲突的概率最低，并发度最高。应用在InnoDB存储引擎中
+
+   lnnoDB的数据是基于索引组织的，行锁是通过对索引上的索引项加锁来实现的，而不是对记录加的锁
+
+   1. 行锁(Record Lock)
+
+      锁定单个行记录的锁，防止其他事务对此行进行update和delete。在RC、RR隔离级别下都支持。
+
+      ![image-20231109003335854](Pictures/image-20231109003335854.png)
+
+      1. 共享锁(S)
+
+         允许一个事务去读一行，阻止其他事务获得相同数据集的排它锁。
+
+      2. 排他锁(X)
+
+         允许获取排他锁的事务更新数据，阻止其他事务获得相同数据集的共享锁和排他锁。
+
+      ![image-20231109003445624](Pictures/image-20231109003445624.png)
+
+      ```mysql
+      # 查看意向锁及行锁
+      select object_schema,object_name,index_name,lock_type,lock_mode,lock_data from performance_schema.data_locks;
+
+   2. 间隙锁(Gap Lock)
+
+      锁定索引记录间隙(不含该记录)，确保索引记录间隙不变，防止其他事务在这个间隙进行insert，产生幻读。在RR隔离级别下都支持。
+
+      间隙锁唯一目的是防止其他事务插入间隙。间隙锁可以共存，一个事务采用的间隙锁不会阻止另一个事务在同一间隙上采用间隙锁。
+
+   3. 临键锁(Next-Key Lock)
+
+      行锁和间隙锁组合，同时锁住数据和数据前面的间隙Gap。在RR隔离级别下支持。
+
+   > 默认情况下，InnoDB在 `REPEATABLE READ`事务隔离级别运行，InnoDB使用 next-key 锁进行搜索和索引扫描，以防止幻读。
+   >
+   > 1.针对唯一索引进行检索时，对已存在的记录进行等值匹配时，将会自动优化为行锁。
+   >
+   > 2.索引上的等值查询(唯一索引)，给不存在的记录加锁时，优化为间隙锁
+   >
+   > 3.索引上的等值查询(普通索引)，向右遍历时最后一个值不满足查询需求时，next-key lock 退化为间隙锁
+   >
+   > 4.索引上的范围查询(唯一索引)--会访问到不满足条件的第一个值为止。
+   >
+   > InnoDB的**行锁是针对于索引加的锁**，不通过索引条件检索数据，那么InnoDB将对表中的所有记录加锁，此时就会**升级为表锁**
 
 # 性能优化
 
@@ -1666,3 +1923,13 @@ VARCHAR类型用于存储可变长字符串，**存储时，如果字符没有�
 > 存储引擎真正的负责了MSOL中数据的存储和提取，服务器通过AP和存储引擎进行通信。不同的存储引警具有不同的功能，这样我们可以根据自己的需要，来选取合适的存储引擎。
 > 存储层
 > 主要是将数据存储在文件系统之上，并完成与存储引擎的交互。
+
+小技巧
+
+1. 在SQL语句之后加上`\G`会将结果的表格形式转换成行文本形式
+
+2. 查看Mysql数据库占用空间：
+
+   ```mysql
+   SELECT table_schema "Database Name"  , SUM(data_length + index_length) / (1024 * 1024) "Database Size in MB"FROM information_schema.TABLESGROUP BY table_schema;
+   ```
