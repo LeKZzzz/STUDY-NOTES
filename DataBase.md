@@ -116,10 +116,37 @@ SQL 语句主要可以划分为以下 3 个类别
 
 ### 进入数据库控制台
 
+#### MySQL
+
 ```mysql
 mysql -u <user_name> [-p] [-h host] [-P port]	# 进入MySQL
-gsql [-U user_name][-p port][-d database_name][-r]	# docker环境下进入OpenGauss
 ```
+
+#### OpenGauss
+
+```mysql
+gsql [-U user_name][-W password][-p port][-d dbname][-f filename][-h host][-r][-C]
+```
+
+> gsql是openGauss提供的在命令行下运行的数据库连接工具。此工具除了具备操作数据库的基本功能，还提供了若干高级特性，便于用户使用。
+>
+> 禁止使用omm用户进行远程连接数据库。
+>
+> - **dbname**
+>
+>    指定想要连接的数据库名称。
+>
+> - **port**
+>
+>    指定数据库服务器的端口号。
+>
+> - **-f filename**
+>
+>    使用文件作为命令源而不是交互式输入。该参数指定读取文本文件的路径以及名称。
+>
+> - **-C**
+>
+>    表示密态数据库开启，可以创建密钥和加密表。
 
 
 
@@ -138,7 +165,11 @@ SHOW VARIABLES LIKE 'sort_buffer_size'; # 查看file sort缓冲区大小
 ### 创建数据库
 
 ```mysql
+-- MySQL
 CREATE DATABASE [IF NOT EXISTS] database_name [DEFAULT CHARSET 字符集] [COLLATE 排序规则];
+
+-- OpenGauss
+CREATE DATABASE database_name;
 ```
 
 > 字符集：
@@ -149,10 +180,11 @@ CREATE DATABASE [IF NOT EXISTS] database_name [DEFAULT CHARSET 字符集] [COLLA
 ### 查看数据库
 
 ```mysql
+-- MySQL
 SHOW DATABASES; # 查询所有数据库
 SELECT DATABASE();	# 查询当前数据库
 
-# OpenGauss
+-- OpenGauss
 SELECT datname FROM pg_database; # 查看所有数据库,使用'\l'亦可
 \c dbname;	# OpenGauss 连接数据库
 ```
@@ -162,6 +194,7 @@ SELECT datname FROM pg_database; # 查看所有数据库,使用'\l'亦可
 ### 删除数据库
 
 ```mysql
+-- MySQL/OpenGauss
 DROP DATABASE [IF EXISTS] database_name;
 ```
 
@@ -170,7 +203,10 @@ DROP DATABASE [IF EXISTS] database_name;
 ### 进入数据库
 
 ```mysql
+-- MySQL
 USE database_name;
+-- OpenGauss
+\c dbname;
 ```
 
 
@@ -182,7 +218,27 @@ USE database_name;
 ### 创建模式
 
 ```mysql
-create schema schema_name
+-- OpenGauss
+CREATE SCHEMA schema_name 
+    [ AUTHORIZATION user_name ] ;
+```
+
+> 模式名不能和当前数据库里其他的模式重名。 模式的名称不可以“pg_”开头。
+>
+> 当不指定schema_name时，把user_name当作模式名，此时user_name只能是角色名。
+
+
+
+### 修改模式
+
+```mysql
+-- OpenGauss
+# 重命名
+ALTER SCHEMA schema_name 
+    RENAME TO new_name;
+# 修改所有者
+ALTER SCHEMA schema_name 
+    OWNER TO new_owner;
 ```
 
 
@@ -190,7 +246,6 @@ create schema schema_name
 ### 查看模式
 
 ```mysql
-
 # OpenGauss
 set search_path to schema_name;	# 指定模式位置，默认的模式为public
 show search_path; # 查看当前模式位置
@@ -206,7 +261,7 @@ show search_path; # 查看当前模式位置
 DROP SCHEMA schema_name [CASCADE|RESTRICT];
 ```
 
-
+> 不要随意删除pg_temp或pg_toast_temp开头的模式，这些模式是系统内部使用的，如果删除，可能导致无法预知的结果。
 
 
 
@@ -220,6 +275,10 @@ create table TableName
 	ColName1 type [NOT NULL] [UNIQUE] [PRIMARY KEY] [COMMENT 字段注释],
     [FOREIGN KEY () REFERENCES TableName(ColName)]
 )[COMMENT 表注释];
+
+-- OpenGauss
+CREATE TABLE table_name 
+    (column_name data_type [, ... ]);
 ```
 
 
@@ -275,6 +334,10 @@ TRUNCATE TABLE 表名;	# 删除指定表并重新创建该表
 
    用于两表间建立连接，需要指定引用主表的哪一列
 
+   > OpenGauss的FOREIGN Key在MySQL兼容性下，外键可以关联非唯一性索引。即一个表中的FOREIGN Key指向另一个表中的 Non-unique KEY（非唯一约束的键）。 
+   >
+   > 如果在MySQL兼容性下，定义外键指定ON UPDATE | DELETE CASCADE时，在非唯一性索引中，非唯一索引字段存在多个元组时，只要dml其中一行数据，则会触发外键表里关联的字段全部修改。但如果字段为NULL时，则不触发外键关联的字段做对应的修改，MySQL兼容性需要安装dolphin插件才可生效。
+
 4. 检查约束（check constraint）
 
    某列取值范围限制，格式限制等，如有关年龄的约束
@@ -304,7 +367,7 @@ TRUNCATE TABLE 表名;	# 删除指定表并重新创建该表
 
 ```mysql
 [Constraint <约束名>] Primary Key( <列名> [{<列名>}])
-[Constraint <约束名>] Foreign key  References <外表名>( <列名> [{<列名>}])
+[Constraint <约束名>] Foreign key (列名)  References <外表名>(<列名> [{<列名>}])
 [Constraint <约束名>] Unique  ( <列名> [{<列名>}])
 [Constraint <约束名>] Check (<条件>)
 
@@ -379,6 +442,10 @@ e.g.:
 
 ### 外键删除/更新行为
 
+```mysql
+... on delete|update actions;
+```
+
 | 行为        | 说明                                                         |
 | ----------- | ------------------------------------------------------------ |
 | NO ACTION   | 当在父表中删除/更新对应记录时，首先检查该记录是否有对应外键，如果有则不允许删除/更新。(与 RESTRICT一致) |
@@ -397,7 +464,7 @@ e.g.:
 
 ```mysql
 ALTER TABLE 表名 DROP COLUMN 列名	# 删除列
-ALTER TABLE 表名 ADD COLUMN 列名 属性 [COMMENT 注释] [约束]	#	增加列
+ALTER TABLE 表名 ADD [COLUMN] 列名 属性 [COMMENT 注释] [约束]	#	增加列
 ALTER TABLE 表名 CHANGE COLUMN 列名 新列名	#修改列的类型信息
 ALTER TABLE 表名字 CHANGE COLUMN 列名 新列名 属性	# 重命名列
 ALTER TABLE 表名 RENAME TO 表新名	# 重命名表
@@ -417,6 +484,13 @@ ALTER TABLE 表名 ADD CONSTRAINT 外键名 FOREIGN KEY (外键字段名) REFERE
 ALTER TABLE 表名 DROP FOREIGN KEY 外键名	# 删除外键
 # 设置外键删除/更新行为
 ALTER TABLE 表名 ADD CONSTRAINT 外键名 FOREIGN KEY (外键字段名) REFERENCES 主表(主表列名) ON 权限1 行为1 [ON 权限2 行为2];
+
+-- OpenGauss
+ALTER DATABASE database_name RENAME TO new_name;	# 重命名数据库
+ALTER TABLE  table_name ADD column_name data_type;	# 在一张已经存在的表上添加列
+ALTER TABLE table_name DROP COLUMN column_name;	# 在一张已经存在的表上删除列
+ALTER TABLE  table_name MODIFY column_name data_type;	# 修改表的字段类型
+ALTER TABLE table_name RENAME  column_name TO new_column_name;	# 重命名表中指定的列
 ```
 
 
@@ -427,6 +501,11 @@ ALTER TABLE 表名 ADD CONSTRAINT 外键名 FOREIGN KEY (外键字段名) REFERE
 
    ```mysql
    INSERT INTO table_name[(字段名1，字段名2)] VALUES(val1,val2,...)[,(val1,val2,...)]; 
+   
+   -- OpenGauss
+   INSERT INTO table_name [ ( column_name [, ...] ) ]
+       { DEFAULT VALUES
+       | VALUES {( { expression | DEFAULT } [, ...] ) }[, ...] };
    ```
 
    > - 插入数据时，指定的字段顺序需要与值的顺序是一一对应的
@@ -476,7 +555,7 @@ LIMIT	分页参数
 
    ```mysql
    SELECT [DISTINCT] 字段1[[AS] 别名1],字段2[[AS] 别名2], ... 
-   FROM 表名[别名];
+   FROM 表名[[AS] 别名];
    
    SELECT [DISTINCT] *
    FROM 表名;
@@ -542,18 +621,24 @@ LIMIT	分页参数
 
 6. 多表查询
 
+   - 交叉连接：笛卡儿乘积，指两个关系中所有元组的任意组合
+
+      ```mysql
+      SELECT FROM 表1 CROSS JOIN 表2;	# OpenGauss交叉连接
+      
    - 内连接：查询两张表的交集部分数据
 
       ```mysql
       SELECT 字段列表 FROM 表1，表2 WHERE 条件...; # 隐式内连接
-      SELECT 字段列表 FROM 表1 [INNER] JOIN 表2 ON 连接条件; # 显式内连接
+      SELECT 字段列表 FROM 表1 INNER JOIN 表2 ON 连接条件; # 显式内连接
       ```
-
+   
    - 外连接：保留表中的悬浮元组，将悬浮元组的其他属性设置为NULL
 
       ```mysql
-      SELECT 字段列表 FROM 表1 LEFT [OUTER] JOIN 表2 ON 条件 ...; # 左外连接
-      SELECT 字段列表 FROM 表1 RIGHT [OUTER] JOIN 表2 ON 条件 ...; # 右外连接
+      SELECT 字段列表 FROM 表1 LEFT OUTER JOIN 表2 ON 条件 ...; # 左外连接
+      SELECT 字段列表 FROM 表1 RIGHT OUTER JOIN 表2 ON 条件 ...; # 右外连接
+      SELECT 字段列表 FROM 表1 FULL OUTER JOIN 表2 ON 条件 ...; # OpenGauss全外连接
       ```
 
    - 自连接：当前表与自身的连接查询，自连接必须使用表别名
@@ -561,11 +646,11 @@ LIMIT	分页参数
       ```mysql
       SELECT 字段列表 FROM 表A 别名A JOIN 表A 别名B ON 条件...;
       ```
-
+   
    - [联合查询](#set)
-
+   
    - 子查询
-
+   
       - 根据子查询结果不同，分为:
          - 标量子查询(子查询结果为单个值)
          - 列子查询(子查询结果为一列)
@@ -598,7 +683,10 @@ LIMIT	分页参数
    DROP USER '用户名'@'主机名';
    
    -- OpenGauss
+   # 创建用户
    CREATE USER user_name [ [ WITH ] option [ ... ] ] [ ENCRYPTED | UNENCRYPTED ] { PASSWORD | IDENTIFIED BY } { 'password' [EXPIRED] | DISABLE };
+   # 修改密码
+    ALTER ROLE user_name IDENTIFIED BY '$$$$$$$$' REPLACE 'XXXXXXXX';
    ```
 
    > 若主机号为'%'则表示任意主机
@@ -700,6 +788,18 @@ LIMIT	分页参数
 > - MySQL
 >
 >    ![image-20231105145824934](Pictures/image-20231105145824934.png)
+>    
+> - openGauss
+>
+>    - **READ COMMITTED**：读已提交隔离级别，事务只能读到已提交的数据而不会读到未提交的数据，这是缺省值。
+>
+>       实际上，SELECT查询会查看到在查询开始运行的瞬间该数据库的一个快照。不过，SELECT能查看到其自身所在事务中先前更新的执行结果。即使先前更新尚未提交。请注意，在同一个事务里两个相邻的SELECT命令可能会查看到不同的快照，因为其它事务会在第一个SELECT执行期间提交。
+>
+>       因为在读已提交模式里，每个新的命令都是从一个新的快照开始的，而这个快照包含所有到该时刻为止已提交的事务，因此同一事务中后面的命令将看到任何已提交的其它事务的效果。这里关心的问题是在单个命令里是否看到数据库里绝对一致的视图。
+>
+>       读已提交模式提供的部分事务隔离对于许多应用而言是足够的，并且这个模式速度快，使用简单。不过，对于做复杂查询和更新的应用，可能需要保证数据库有比读已提交模式更加严格的一致性视图。
+>
+>    - **REPEATABLE READ**：事务可重复读隔离级别，事务只能读到事务开始之前已提交的数据，不能读到未提交的数据以及事务执行期间其它并发事务提交的修改（但是，查询能查看到自身所在事务中先前更新的执行结果，即使先前更新尚未提交）。这个级别和读已提交是不一样的，因为可重复读事务中的查询看到的是事务开始时的快照，不是该事务内部当前查询开始时的快照，就是说，单个事务内部的select命令总是查看到同样的数据，查看不到自身事务开始之后其他并发事务修改后提交的数据。使用该级别的应用必须准备好重试事务，因为可能会发生串行化失败。
 
 ```mysql
 -- MySQL
@@ -716,9 +816,70 @@ BEGIN;
 
 SELECT @@TRANSACTION_ISOLATION; # 查看事务隔离级别
 SET [SESSION|GLOBAL] TRANSACTION ISOLATION LEVEL {READ UNCOMMITTED|READ COMMITTED|REPEATABLE READ|SERIALIZABLE}; # 设置事务隔离级别
+
+-- OpenGauss
+# 启动事务
+BEGIN [ WORK | TRANSACTION ]
+  [ 
+    { 
+       ISOLATION LEVEL { READ COMMITTED | SERIALIZABLE | REPEATABLE READ }
+       | { READ WRITE | READ ONLY }
+      } [, ...] 
+  ];
+START TRANSACTION
+  [ 
+    { 
+       ISOLATION LEVEL { READ COMMITTED | SERIALIZABLE | REPEATABLE READ }
+       | { READ WRITE | READ ONLY }
+     } [, ...] 
+  ];
+# 设置事务特性
+{ SET [ LOCAL ] TRANSACTION|SET SESSION CHARACTERISTICS AS TRANSACTION }
+  { ISOLATION LEVEL { READ COMMITTED | SERIALIZABLE | REPEATABLE READ }
+  | { READ WRITE | READ ONLY } } [, ...];
+# 提交事务
+{ COMMIT | END } [ WORK | TRANSACTION ] ;
+# 回滚事务
+ROLLBACK [ WORK | TRANSACTION ]; 
 ```
 
-
+> 
+>
+> **OpenGauss**
+>
+> - **WORK | TRANSACTION**
+>
+>    BEGIN格式中的可选关键字，没有实际作用。
+>
+> - **ISOLATION LEVEL**
+>
+>    指定事务隔离级别，它决定当一个事务中存在其他并发运行事务时它能够看到什么数据。
+>
+>    > **说明：** 在事务中第一个数据修改语句（SELECT, INSERT，DELETE，UPDATE，FETCH，COPY)执行之后，事务隔离级别就不能再次设置。
+>
+>    取值范围：
+>
+>    - READ COMMITTED：读已提交隔离级别，只能读到已经提交的数据，而不会读到未提交的数据。这是缺省值。
+>    - REPEATABLE READ： 可重复读隔离级别，仅仅看到事务开始之前提交的数据，它不能看到未提交的数据，以及在事务执行期间由其它并发事务提交的修改。
+>    - SERIALIZABLE：目前功能上不支持此隔离级别，等价于REPEATABLE READ。
+>
+> - **READ WRITE | READ ONLY**
+>
+>    指定事务访问模式（读/写或者只读）。
+>
+> - **LOCAL**
+>
+>    声明该命令只在当前事务中有效。
+>
+> - **SESSION**
+>
+>    声明这个命令只对当前会话起作用。
+>
+>    取值范围：字符串，要符合标识符的命名规范。
+>
+> - **COMMIT | END**
+>
+>    提交当前事务，让所有当前事务的更改为其他事务可见。
 
 
 
@@ -789,9 +950,19 @@ ON table_name (col_name[length][ASC | DESC],...);
 SHOW INDEX FROM table_name[\G];	# 查看索引
 DROP INDEX index_name ON table_name;	# 删除索引
 
-# OpenGauss创建聚簇索引
+-- OpenGauss
+# 创建索引
+CREATE [UNIQUE] INDEX index_name ON table_name (col_name,...);
+# 局部索引
+CREATE INDEX [ [schema_name.]index_name ] ON table_name  (expression);
+# 部分索引
+CREATE INDEX [ [schema_name.]index_name ] ON table_name  (column_name) 
+   [ WHERE predicate ]；
+# 聚簇索引
 CREATE INDEX index_name ON table_name(col_name);
 CLUSTER table_name USING index_name;
+# 删除索引
+DROP INDEX index_name;
 ```
 
 > - `UNIQUE`：创建的索引应该包含唯一的值。如果表中有重复的值，那么这个索引将会失败。
@@ -876,6 +1047,10 @@ SELECT * FROM 视图名称;	# 查看视图数据
 CREATE [OR REPLACE] VIEW 视图名称[(列名列表)] AS SELECT语句 [WITH [CASCADED|LOCAL] CHECK OPTION];
 ALTER VIEW VIEW 视图名称[(列名列表)] AS SELECT语句 [WITH [CASCADED|LOCAL] CHECK OPTION];
 DROP VIEW [IF EXISTS] 视图名称;	# 删除视图
+
+-- OpenGauss
+CREATE [ TEMP | TEMPORARY ] VIEW view_name [ ( column_name [, ...] ) ]
+     AS query;
 ```
 
 > 当使用`WITH CHECK OPTION`子句创建视图时，MySQL会通过视图检查在更改的每个行，例如 插入，更新，删除，以使其符合视图的定义。MySQL允许基于另一个视图创建视图，它还会检查依赖视图中的规则以保持一致性。为了确定检查的范围，MySQL提供了两个选项：`CASCADED `和`LOCAL` ，默认值为 `CASCADED`。
@@ -1280,6 +1455,151 @@ DROP VIEW [IF EXISTS] 视图名称;	# 删除视图
 
 
 
+### OpenGauss
+
+#### 语法
+
+1. 游标
+
+   > 为了处理SQL语句，存储过程进程分配一段内存区域来保存上下文联系。游标是指向上下文区域的句柄或指针。借助游标，存储过程可以控制上下文区域的变化。
+
+   ```mysql
+   # 定义游标
+   CURSOR cursor_name
+       [ BINARY ]  [ NO SCROLL ]  [ { WITH | WITHOUT } HOLD ]
+       FOR query ;
+   # 通过已经创建的游标检索数据
+   FETCH [ direction { FROM | IN } ] cursor_name;
+   # 在不检索数据的情况下重新定位一个游标
+   MOVE [ direction [ FROM | IN ] ] cursor_name;
+   # 关闭游标，释放和一个游标关联的所有资源
+   CLOSE { cursor_name | ALL } ;
+   ```
+
+   > - **cursor_name**
+   >
+   >    将要创建、关闭的游标名。
+   >
+   > - **BINARY**
+   >
+   >    指明游标以二进制而不是文本格式返回数据。
+   >
+   > - **NO SCROLL**
+   >
+   >    声明游标检索数据行的方式。
+   >
+   >    - NO SCROLL：声明该游标不能用于以倒序的方式检索数据行。
+   >    - 未声明：根据执行计划的不同，自动判断该游标是否可以用于以倒序的方式检索数据行。
+   >
+   > - **WITH HOLD | WITHOUT HOLD**
+   >
+   >    声明当创建游标的事务结束后，游标是否能继续使用。
+   >
+   >    - WITH HOLD：声明该游标在创建它的事务结束后仍可继续使用。
+   >    - WITHOUT HOLD：声明该游标在创建它的事务之外不能再继续使用，此游标将在事务结束时被自动关闭。
+   >    - 如果不指定WITH HOLD或WITHOUT HOLD，默认行为是WITHOUT HOLD。
+   >    - 跨节点事务不支持WITH HOLD（例如在多DBnode部署openGauss中所创建的含有DDL的事务属于跨节点事务）。
+   >
+   > - **query**
+   >
+   >    使用SELECT或VALUES子句指定游标返回的行。
+   >
+   >    取值范围：SELECT或VALUES子句。
+   >
+   > - **direction_clause**
+   >
+   >    定义抓取数据的方向。
+   >
+   >    取值范围：
+   >
+   >    - NEXT（缺省值）
+   >
+   >       从当前关联位置开始，抓取下一行。
+   >
+   >    - PRIOR
+   >
+   >       从当前关联位置开始，抓取上一行。
+   >
+   >    - FIRST
+   >
+   >       抓取查询的第一行（和ABSOLUTE 1相同）。
+   >
+   >    - LAST
+   >
+   >       抓取查询的最后一行（和ABSOLUTE -1相同）。
+   >
+   >    - ABSOLUTE count
+   >
+   >       抓取查询中第count行。
+   >
+   >       ABSOLUTE抓取不会比用相对位移移动到需要的数据行更快，因为下层的实现必须遍历所有中间的行。
+   >
+   >       count取值范围：有符号的整数
+   >
+   >       - count为正数，就从查询结果的第一行开始，抓取第count行。
+   >       - count为负数，就从查询结果末尾抓取第abs(*count*)行。
+   >       - count为0时，定位在第一行之前。
+   >
+   >    - RELATIVE count
+   >
+   >       从当前关联位置开始，抓取随后或前面的第count行。
+   >
+   >       取值范围：有符号的整数
+   >
+   >       - count为正数就抓取当前关联位置之后的第count行。
+   >       - count为负数就抓取当前关联位置之前的第abs(count)行。
+   >       - 如果当前行没有数据的话，RELATIVE 0返回空。
+   >
+   >    - count
+   >
+   >       抓取随后的count行（和FORWARD count一样）。
+   >
+   >    - ALL
+   >
+   >       从当前关联位置开始，抓取所有剩余的行（和FORWARD ALL一样）。
+   >
+   >    - FORWARD
+   >
+   >       抓取下一行（和NEXT一样）。
+   >
+   >    - FORWARD count
+   >
+   >       从当前关联位置开始，抓取随后或前面的count行。
+   >
+   >    - FORWARD ALL
+   >
+   >       从当前关联位置开始，抓取所有剩余行。
+   >
+   >    - BACKWARD
+   >
+   >       从当前关联位置开始，抓取前面一行(和PRIOR一样) 。
+   >
+   >    - BACKWARD count
+   >
+   >       从当前关联位置开始，抓取前面的count行（向后扫描）。
+   >
+   >       取值范围：有符号的整数
+   >
+   >       - count为正数就抓取当前关联位置之前的count行。
+   >       - count为负数就抓取当前关联位置之后的abs（count）行。
+   >       - 如果有数据的话，BACKWARD 0重新抓取当前行。
+   >
+   >    - BACKWARD ALL
+   >
+   >       从当前关联位置开始，抓取所有前面的行（向后扫描） 。
+   >
+   > - **{ FROM | IN } cursor_name**
+   >
+   >    使用关键字FROM或IN指定游标名称。
+   >
+   >    取值范围：已创建的游标的名称。
+   >
+   > - **ALL**
+   >
+   >    关闭所有已打开的游标。
+
+
+
 ## 触发器
 
 > 触发器是与表有关的数据库对象，指在 insert/update/delete 之前或之后，触发并执行触发器中定义的SQL语句集合。触发器的这种特性可以协助应用在数据库端确保数据的完整性，日志记录，数据校验等操作。
@@ -1488,6 +1808,8 @@ DROP TRIGGER [schema_name.]trigger_name;	# 删除触发器
 > - 可以接收参数，也可以返回数据
 > - 减少网络交互，效率提升
 
+### MySQL
+
 ```mysql
 -- MySQL
 # 创建存储过程
@@ -1507,9 +1829,75 @@ SHOW CREATE PROCEDURE 存储过程名称;
 DROP PROCEDURE [IF EXISTS] 存储过程名;	# 删除存储过程
 ```
 
-> 在命令行中，执行创建存储过程的SQL时需要通过[关键字delimiter](#end) 指定SQL语句的结束符
+> 在MySQL命令行中，执行创建存储过程的SQL时需要通过[关键字delimiter](#end) 指定SQL语句的结束符
 >
 > 存储过程[语法](#gramma)
+
+### OpenGauss
+
+```mysql
+-- OpenGauss
+# 创建存储过程
+CREATE PROCEDURE procedure_name
+    [ ( {[ argname ] [ argmode ] argtype [ = expression ]}[,...]) ]
+    { IS | AS } 
+    BEGIN
+      procedure_body
+    END
+/
+# 调用存储过程
+CALL procedure_name ( param_expr );
+# 删除存储过程
+DROP PROCEDURE procedure_name ;
+```
+
+> - **procedure_name**
+>
+>    创建的存储过程名称。
+>
+> - **argname**
+>
+>    参数的名称。
+>
+> - **argmode**
+>
+>    参数的模式。取值范围： IN，OUT，INOUT或VARIADIC。VARIADIC用于声明数组类型的参数。缺省值是IN。
+>
+>    - **IN**
+>
+>       输入参数。表示该参数的值必须在调用存储过程时指定，在存储过程中修改该参数的值不能被返回。
+>
+>    - **OUT**
+>
+>       输出参数。该值可在存储过程内部被改变，并可返回
+>
+>    - **INOUT**
+>
+>       输入输出参数。调用时指定，并且可被改变和返回
+>
+> - **argtype**
+>
+>    参数的数据类型。
+>
+> - **expression**
+>
+>    设定缺省值。
+>
+> - **IS、AS**
+>
+>    语法格式要求，必须写其中一个。两个相同。
+>
+> - **BEGIN、END**
+>
+>    语法格式要求，必须写。
+>
+> - **procedure_body**
+>
+>    存储过程内容。
+>
+> - **param_expr**
+>
+>    参数列表。参数间用符号“,”隔开；参数名和参数值用符号 “:=”或者“=>”隔开。
 
 # 存储引擎
 
@@ -1908,6 +2296,15 @@ VARCHAR类型用于存储可变长字符串，**存储时，如果字符没有�
 ![image-20231030184519358](Pictures/image-20231030184519358.png)
 
 ![image-20231030184525431](Pictures/image-20231030184525431.png)
+
+| 指令         | 操作                     |
+| ------------ | ------------------------ |
+| \l           | 查看已经存在的数据库     |
+| \c dbname    | 进入已存在数据库         |
+| \h [NAME]    | 查看命令帮助信息         |
+| \dt          | 查询当前数据库中的所有表 |
+| \d tablename | 查看表结构               |
+| \q           | 退出数据库               |
 
 
 
