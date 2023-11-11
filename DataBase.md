@@ -1210,36 +1210,6 @@ CREATE [ TEMP | TEMPORARY ] VIEW view_name [ ( column_name [, ...] ) ]
 
 ## 自定义函数
 
-### MySQL
-
-#### **函数定义**
-
-> 存储函数是有返回值的存储过程，存储函数的参数只能是IN类型的。
-
-```mysql
-    CREATE  
-        [DEFINER = { user | CURRENT_USER }]
-        FUNCTION functionName ( varName varType [, ... ] )
-        RETURNS returnVarType
-        [characteristic ...] 
-        routine_body;
-```
-
-> - functionName：函数名，同MySQL内置函数一样，大小写不敏感
-> - varName: 形参名
-> - varType: 形参类型，其与varName配对使用。形参数量不限( $\geq 0$)
-> - returnVarType: 返回值类型。函数**必须有且只能有一个**返回值
-> - characteristic：函数特性
-> - routine_body：函数体。函数体中必须含有 **return** 语句，当函数体为复合结构时，需要使用begin ... end 语句
->
-> | characteristic值                                             | 说明                                                         |
-> | ------------------------------------------------------------ | ------------------------------------------------------------ |
-> | `language sql `                                              | 指明函数体的语言类型, 目前仅支持sql                          |
-> | `[not] deterministic `                                       | **deterministic** 指明函数的结果是确定的，即相同的输入会得到相同的输出；**not deterministic**意为结果不确定。默认为 **not deterministic** |
-> | `{ contains sql |no sql |reads sql data |modifies sql data }` | 指明函数体使用sql语句的限制。**contains sql**意为函数体包含sql语句，但不包含读写数据的sql语句；**no sql**意为函数体不包含sql语句；**reads sql data**意为函数体包含读数据sql语句；**modifies sql data**意为函数体包含写数据的sql语句。默认为**contains sql** |
-> | `sql security { definer |invoker } `                         | 指明谁有权限执行该函数。**definer**意为只有定义者才能执行；**invoker**意为拥有权限的调用者可以执行。默认为**definer** |
-> | `comment 'message' `                                         | 函数的注释信息，指明函数的功能                               |
-
 1. 标量型函数（Scalar functions）：返回一个标量值
 
    ```mysql
@@ -1272,6 +1242,36 @@ CREATE [ TEMP | TEMPORARY ] VIEW view_name [ ( column_name [, ...] ) ]
       ```
 
 
+
+### MySQL
+
+#### **函数定义**
+
+> 存储函数是有返回值的存储过程，存储函数的参数只能是IN类型的。
+
+```mysql
+    CREATE  
+        [DEFINER = { user | CURRENT_USER }]
+        FUNCTION functionName ( varName varType [, ... ] )
+        RETURNS returnVarType
+        [characteristic ...] 
+        routine_body;
+```
+
+> - functionName：函数名，同MySQL内置函数一样，大小写不敏感
+> - varName: 形参名
+> - varType: 形参类型，其与varName配对使用。形参数量不限( $\geq 0$)
+> - returnVarType: 返回值类型。函数**必须有且只能有一个**返回值
+> - characteristic：函数特性
+> - routine_body：函数体。函数体中必须含有 **return** 语句，当函数体为复合结构时，需要使用begin ... end 语句
+>
+> | characteristic值                                             | 说明                                                         |
+> | ------------------------------------------------------------ | ------------------------------------------------------------ |
+> | `language sql `                                              | 指明函数体的语言类型, 目前仅支持sql                          |
+> | `[not] deterministic `                                       | **deterministic** 指明函数的结果是确定的，即相同的输入会得到相同的输出；**not deterministic**意为结果不确定。默认为 **not deterministic** |
+> | `{ contains sql |no sql |reads sql data |modifies sql data }` | 指明函数体使用sql语句的限制。**contains sql**意为函数体包含sql语句，但不包含读写数据的sql语句；**no sql**意为函数体不包含sql语句；**reads sql data**意为函数体包含读数据sql语句；**modifies sql data**意为函数体包含写数据的sql语句。默认为**contains sql** |
+> | `sql security { definer |invoker } `                         | 指明谁有权限执行该函数。**definer**意为只有定义者才能执行；**invoker**意为拥有权限的调用者可以执行。默认为**definer** |
+> | `comment 'message' `                                         | 函数的注释信息，指明函数的功能                               |
 
 #### <a id='gramma'>语法</a>
 
@@ -1381,18 +1381,18 @@ CREATE [ TEMP | TEMPORARY ] VIEW view_name [ ( column_name [, ...] ) ]
    ```mysql
    # while语句
    	[label:] while condition do
-           statments
+           statements
        end while [label]
    
    # repeat语句(do-while)
    REPEAT
-   	statments;
+   	statements;
    	UNTIL conditon;
    END REPEAT;
    
    # loop语句
    [begin_label] LOOP
-   	statments;
+   	statements;
    END LOOP [end_label];
    ```
 
@@ -1457,9 +1457,34 @@ CREATE [ TEMP | TEMPORARY ] VIEW view_name [ ( column_name [, ...] ) ]
 
 ### OpenGauss
 
+#### 函数定义
+
+```mysql
+CREATE [OR REPLACE] FUNCTION name ([[argmode] [argname] argtype [{DEFAULT|=}default_expr] [,...]]) 
+[RETURNS retype | RETURNS TABLE (column_name column_type [,...]) |RETURNS TRIGGER]
+AS $$
+DECLARE
+--声明段
+BEGIN
+--过程化语句
+END;
+$$ LANGUAGE lang_name;
+```
+
+> - argmode：`IN | OUT | INOUT`
+> - lang_name：`PLPGSQL`
+
+
+
 #### 语法
 
-1. 游标
+1. 变量
+
+   1. 变量必须在declare部分声明，即必须建立BEGIN-END块。块结构也强制变量必须先声明后使用，即变量在过程内有不同作用域、不同的生存期。
+   2. 同一变量可以在不同的作用域内定义多次，内层的定义会覆盖外层的定义。
+   3. 在外部块定义的变量，可以在嵌套块中使用。但外部块不能访问嵌套块中的变量。
+   
+2. 游标
 
    > 为了处理SQL语句，存储过程进程分配一段内存区域来保存上下文联系。游标是指向上下文区域的句柄或指针。借助游标，存储过程可以控制上下文区域的变化。
 
@@ -1598,6 +1623,181 @@ CREATE [ TEMP | TEMPORARY ] VIEW view_name [ ( column_name [, ...] ) ]
    >
    >    关闭所有已打开的游标。
 
+3. 返回语句
+
+   1. `RETURN X;`
+
+   2. > 当需要函数返回一个集合时，使用RETURN NEXT或者RETURN QUERY向结果集追加结果，然后继续执行函数的下一条语句。随着后续的RETURN NEXT或RETURN QUERY命令的执行，结果集中会有多个结果。函数执行完成后会一起返回所有结果。
+
+      RETURN NEXT可用于标量和复合数据类型。
+
+      RETURN QUERY有一种变体RETURN QUERY EXECUTE，后面还可以增加动态查询，通过USING向查询插入参数。
+
+4. 条件语句
+
+   ```mysql
+   IF condition THEN
+       statement;
+   [{ELSIF|ELSEIF} condition THEN 
+       statement;]
+   [ELSE
+       statement;]
+   END IF;
+   ```
+
+   > ELSEIF是ELSIF的别名。
+
+5. 循环语句
+
+   1. ```mysql
+      # 简单LOOP语句
+      LOOP
+      	statement;
+      	EXIT;
+      END LOOP
+      ```
+
+      > 必须要结合EXIT使用，否则将陷入死循环
+
+   2. ```mysql
+      # WHILE_LOOP语句
+      WHILE condition LOOP
+      	statement;
+      END LOOP;
+      ```
+
+   3. ```mysql
+      # FOR_LOOP（integer变量）语句
+      FOR name IN [REVERSE] lower_bound...upper_bound [BY step] LOOP
+      	statement;
+      END LOOP;
+      ```
+
+      > - 变量name会自动定义为integer类型并且只在此循环里存在。变量name介于lower_bound和upper_bound之间。
+      > - 当使用REVERSE关键字时，lower_bound必须大于等于upper_bound，否则循环体不会被执行。
+
+   4. ```mysql
+      # FOR_LOOP查询语句
+      FOR target IN query LOOP
+      	statement;
+      END LOOP;
+      ```
+
+      > 变量target会自动定义，类型和query的查询结果的类型一致，并且只在此循环中有效。target的取值就是query的查询结果。
+
+   5. ```mysql
+      # FORALL批量查询语句
+      FORALL index IN lower_bound...upper_bound [SAVE EXCEPTIONS]
+      	DML;
+      ```
+
+      > - 变量index会自动定义为integer类型并且只在此循环里存在。index的取值介于low_bound和upper_bound之间。
+      > - 如果声明了SAVE EXCEPTIONS，则会将循环体DML执行过程中每次遇到的异常保存在SQL&BULK_EXCEPTIONS中，并在执行结束后统一抛出一个异常，循环过程中没有异常的执行的结果在当前子事务内不会回滚。
+
+   6. ```mysql
+      # LABEL_LOOP语句
+      [label_begin:] LOOP
+          statements
+      END LOOP [label_end]
+      ```
+
+      > 在简单loop语句的基础上增加了label标签的用法，标签规则如下：
+      >
+      > - label_begin可以单独出现（不加label_end)，但是使用label_end，就必须有与之相同的label_begin。
+      > - 标签可以被continue或exit语句引用，特别的是，在数据库模式为'B'时，也可用iterate或leave语句。
+      >
+      > 该循环只在数据库兼容模式为'B'时使用，其他模式下报错。必须要结合EXIT使用（’B‘模式下可使用’LEAVE‘,与EXIT效果相同；’B‘模式下可使用'ITERATE',与CONTINUE效果相同)，否则将陷入死循环。
+
+   7. ```mysql
+      # WHILE_DO语句
+      [label_begin:] WHILE condition DO
+      statements
+      END WHILE [label_end]
+      ```
+
+      > 只要条件表达式为真，WHILE语句就会不停的在一系列语句上进行循环，在每次进入循环体的时候进行条件判断。
+      >
+      > 标签规则如下：
+      >
+      > - label_begin可以单独出现（不加label_end)，但是使用label_end，就必须有与之相同的label_begin。
+      > - 标签可以被continue或exit语句引用，特别的是，在数据库模式为'B'时，也可用iterate或leave语句。
+      >
+      > 该循环只在数据库兼容模式为'B'时使用，其他模式下报错。
+
+   8. ```mysql
+      # REPEAT语句
+      [label_begin:] REPEAT
+      statements
+      UNTIL condition
+      END REPEAT [label_end]
+      ```
+
+      > 只要条件表达式为真，WHILE语句就会停止在一系列语句上进行循环，在每次进入循环体的时候进行条件判断。
+      >
+      > 标签规则如下：
+      >
+      > - label_begin可以单独出现（不加label_end)，但是使用label_end，就必须有与之相同的label_begin。
+      > - 标签可以被continue或exit语句引用，特别的是，在数据库模式为'B'时，也可用iterate或leave语句。
+      >
+      >  该循环只在数据库兼容模式为'B'时使用，其他模式下报错。
+
+6. 分支语句
+
+   ```mysql
+   # case_when
+   CASE case_expression
+   WHEN when_expression THEN
+   	statement;
+   [ELSE 
+   	statement;]
+   END CASE;
+   ```
+
+7. 在PL/SQL程序中，可以用NULL语句来说明“不用做任何事情”，相当于一个占位符，可以使某些语句变得有意义，提高程序的可读性。
+
+8. 调试
+
+   ```mysql
+   # format
+   raise level 'format' [using option=expression];
+   # conditon
+   raise level conditon_name [using option=expression];
+   # sqlstate
+   raise level sqlstate 'sqlstate' [using option=expression];
+   # option
+   raise [level] using option=expression;
+   # 不接任何参数，仅用于一个BEGIN块中的EXCEPTION语句，它使得错误重新被处理。
+   raise;
+   ```
+
+   > - level选项用于指定错误级别，有DEBUG，LOG，INFO，NOTICE，WARNING以及EXCEPTION（默认值）。EXCEPTION抛出一个正常终止当前事务的异常，其他的仅产生不同异常级别的信息。特殊级别的错误信息是否报告到客户端、写到服务器日志由[log_min_messages](https://docs.opengauss.org/zh/docs/5.0.0-lite/docs/DatabaseReference/记录日志的时间.html#zh-cn_topic_0283137528_zh-cn_topic_0237124722_zh-cn_topic_0059778452_sc6c47ec8cc1b47e28be98dbb24b1b39a)和[client_min_messages](https://docs.opengauss.org/zh/docs/5.0.0-lite/docs/DatabaseReference/记录日志的时间.html#zh-cn_topic_0283137528_zh-cn_topic_0237124722_zh-cn_topic_0059778452_s2955da1f1cb24b0aa68ddc77700233e0)这两个配置参数控制。
+   >
+   > - format：格式字符串，指定要报告的错误消息文本。格式字符串后可跟表达式，用于向消息文本中插入。在格式字符串中，%由format后面跟着的参数的值替换，%%用于打印出%。例如：
+   >
+   >    ```lua
+   >    --v_job_id 将替换字符串中的 %：
+   >    RAISE NOTICE 'Calling cs_create_job(%)',v_job_id;
+   >    ```
+   >
+   > - option = expression：向错误报告中添加另外的信息。关键字option可以是MESSAGE、DETAIL、HINT以及ERRCODE，并且每一个expression可以是任意的字符串。
+   >
+   >    - MESSAGE，指定错误消息文本，这个选项不能用于在USING前包含一个格式字符串的RAISE语句中。
+   >    - DETAIL，说明错误的详细信息。
+   >    - HINT，用于打印出提示信息。
+   >    - ERRCODE，向报告中指定错误码（SQLSTATE）。可以使用条件名称或者直接用五位字符的SQLSTATE错误码。
+   >
+   > - condition_name：错误码对应的条件名。
+   >
+   > - sqlstate：错误码。
+   >
+   >    如果在RAISE EXCEPTION命令中既没有指定条件名也没有指定SQLSTATE，默认用RAISE EXCEPTION (P0001)。如果没有指定消息文本，默认用条件名或者SQLSTATE作为消息文本。
+   >
+   >    当由SQLSTATE指定了错误码，则不局限于已定义的错误码，可以选择任意包含五个数字或者大写的ASCII字母的错误码，而不是00000。建议避免使用以三个0结尾的错误码，因为这种错误码是类别码，会被整个种类捕获。
+   >
+   >    兼容O模式下，SQLCODE等于SQLSTATE。
+
+
+
 
 
 ## 触发器
@@ -1686,8 +1886,7 @@ CREATE [ TEMP | TEMPORARY ] VIEW view_name [ ( column_name [, ...] ) ]
    	DECLARE
    	BEGIN
    		function_block;
-   		RETURN [NEW|OLD];
-   		[raise exception 'message';]
+   		RETURN [NEW|OLD|N];
    	END
    	$$ LANGUAGE PLPGSQL;
    ```
@@ -1785,7 +1984,7 @@ CREATE TRIGGER trigger_name
 BEFORE|AFTER INSERT|UPDATE|DELETE
 ON table_name FOR EACH ROW
 BEGIN
-	statment;
+	statement;
 END;
 
 SHOW TRIGGERS;	# 查看触发器
