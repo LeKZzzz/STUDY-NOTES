@@ -168,6 +168,12 @@ Xcode 目前可从 https://developer.apple.com/download 上下载，需要使用
 
 
 
+## 头文件存放路径
+
+- Linux下：/usr/include
+
+
+
 #	关键字
 
 | asm          | else      | new              | this     |
@@ -972,3 +978,25 @@ return_type function_name( parameter list );
 # 位字段
 
 在 C++ 中，使用 | 分隔函数参数可以将多个参数作为一个参数传递给函数。这种方式传递的参数称为位字段（Bit Field），用于在一个整数中存储多个值，可以有效地节省内存空间。通常，在函数调用中使用位字段传递参数时，还需要使用结构体或联合体来定义位字段的名称和数据类型，这样才能正确地传递和解析参数。
+
+
+
+# 特殊宏
+
+1. `__THROW`：用于标记函数不会抛出异常。在 C 语言中，`__THROW` 不会产生任何作用，但在 C++ 中，被 `__THROW` 修饰的函数将支持 C++ 抛出异常的功能。这是因为在 C++ 中，函数可以抛出异常，但是在 C 语言中，函数不能抛出异常。`__THROW` 的定义可以在 GNU C 语言的头文件中找到，如 `include/sys/cdefs.h`，`__THROW`宏定义只在GCC下有效
+
+   在一般C环境中此宏是没有意义的；在GNUC版本高于3.2时，库用函数属性将C函数标记为`__nothrow__`；而如果代码定义了`__cplusplus`则表示为C++代码，且GNUC版本为2.8.x，此时才有意思，为C++程序加入`throw()`以优化函数调用。
+
+2. `__nonnull ((1))`：这是一个函数属性，用于指定函数的某些参数必须是非空指针。`__nonnull ((1))` 表示函数的第一个参数必须是非空指针。如果传入空指针到标记为非空的参数，且使用了 `-Wnonnull`，编译器会报 warning。如果不指定`nonnull`属性的参数索引号，则所有指针参数都被标记为非空。
+
+   `__nonnull`的宏定义在`/usr/include/sys/cdefs.h`里面，如果当前版本低于3.3，则`__nonnull`实际就是`__nonnull__`属性，
+
+3. `__wur`：这是一个函数属性，用于指定函数的返回值被使用。如果函数的返回值被忽略，编译器会发出警告。这个属性可以帮助开发者发现可能的错误，比如忘记处理函数的返回值。
+
+   `__wur`的宏定义在`/usr/include/sys/cdefs.h`里面，在GCC版本小于3.4且`__USE_FORTIFY_LEVEL`>0时，`__wur`就是`__attribute__ ((__warn_unused_result__))`
+
+
+
+# 特殊关键字
+
+1. `__attribute__`是一个编译属性，用于向编译器描述特殊的标识、错误检查或高级优化。它是GNU C特色之一，系统中有许多地方使用到。`__attribute__`可以设置函数属性（Function Attribute）、变量属性（Variable Attribute）和类型属性（Type Attribute）等。

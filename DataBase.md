@@ -2097,6 +2097,8 @@ DROP PROCEDURE procedure_name ;
 > - **param_expr**
 >
 >    参数列表。参数间用符号“,”隔开；参数名和参数值用符号 “:=”或者“=>”隔开。
+>
+> 对存储过程来说，没有DECLARE，AS相当于DECLARE。即便没有变量声明的部分，关键字AS也必须保留。
 
 # 存储引擎
 
