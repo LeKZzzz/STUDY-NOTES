@@ -1,0 +1,35 @@
+# DataKit
+
+----
+
+# 简介
+
+![image-20231205190529258](DataKit/image-20231205190529258.png)
+
+![image-20231205190721255](DataKit/image-20231205190721255.png)
+
+![image-20231205191316105](DataKit/image-20231205191316105.png)
+
+
+
+# 部署
+
+> DataKit的搭建依赖于iava 11+服务，所以在安装之前需要先安装openJDK11，并下载相应的DataKit安装包
+
+![image-20231205191834885](DataKit/image-20231205191834885.png)
+
+![image-20231205192039036](DataKit/image-20231205192039036.png)
+
+
+
+# 插件
+
+![image-20231205192223155](DataKit/image-20231205192223155.png)
+
+![image-20231205192515732](DataKit/image-20231205192515732.png)
+
+![image-20231205192701211](DataKit/image-20231205192701211.png)
+
+![image-20231205193112881](DataKit/image-20231205193112881.png)
+
+![image-20231205193330563](DataKit/image-20231205193330563.png)
