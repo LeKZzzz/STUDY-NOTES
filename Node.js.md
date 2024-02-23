@@ -51,3 +51,25 @@ NVM：Node Version Manage，即Node的版本管理工具。使用NVM，可以很
    ```
 
    
+
+
+
+# npm
+
+1. 安装包
+
+    ```bash
+    npm install xxx
+    ```
+
+2. 查看已安装包
+
+    ```bash
+    npm ls # 查看当前项目已安装
+    -g	# 全局已安装
+    --depth 0	# 限制深度
+    --prod	# 只想显示生产环境依赖的包
+    --dev	# 只显示开发环境依赖的包
+    ```
+
+    

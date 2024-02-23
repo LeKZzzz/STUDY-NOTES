@@ -221,3 +221,20 @@ conn.close();
    >
    > - int：列的编号，从1开始
    > - String：列名
+
+
+
+# 数据库连接池
+
+标准接口：DataSource，官方(sun)提供的数据库连接池接口，由第三方组织实现此接口。
+
+```java
+Connection getConnection() throws SQLException;	// 获取连接
+```
+
+常用产品：
+
+- C3P0
+- DBCP
+- Druid
+- Hikari (SpringBoot默认)
