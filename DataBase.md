@@ -121,7 +121,7 @@ SQL 语句主要可以划分为以下 3 个类别
 #### MySQL
 
 ```mysql
-mysql -u <user_name> [-p] [-h host] [-P port]	# 进入MySQL
+mysql -u<user_name> [-p] [-h host] [-P port]	# 进入MySQL
 ```
 
 #### OpenGauss
@@ -2533,3 +2533,16 @@ VARCHAR类型用于存储可变长字符串，**存储时，如果字符没有�
    ```mysql
    SELECT table_schema "Database Name"  , SUM(data_length + index_length) / (1024 * 1024) "Database Size in MB"FROM information_schema.TABLESGROUP BY table_schema;
    ```
+
+
+
+# 数据库连接池
+
+1. 数据库连接池是个容器，负责分配、管理数据库连接(Connection)
+2. 它允许应用程序重复使用一个现有的数据库连接，而不是再重新建立一个
+3. 释放空闲时间超过最大空闲时间的连接，来避免因为没有释放连接而引起的数据库连接遗漏
+4. 优势
+    - 资源重用
+    - 提升系统响应速度
+    - 避免数据库连接遗漏
+

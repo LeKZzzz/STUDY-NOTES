@@ -591,10 +591,15 @@ HTML 表单表示文档中的一个区域，此区域包含交互控件，将用
 
 在表单域中可以定义各种表单元素，这些表单元素就是允许用户在表单中输入或者选择的内容控件
 
-1.  input输入表单元素
+1. input输入表单元素
 
    ```html
    <input type="属性值" name="元素名称" value="元素值"/ >
+   
+   <!--上传文件-->
+   <form action="/upload" method="post" enctype="multipart/form-data">
+       <input type="file" name="image"></input>
+   </form>
    ```
 
    `<input />`是单标签
@@ -698,51 +703,6 @@ HTML 表单表示文档中的一个区域，此区域包含交互控件，将用
 
 - en定义语言为英语
 - zh-CN定义语言为中文
-
-
-
-
-
-# 使用CSS
-
----
-
-CSS 是在 HTML 4 开始使用的,是为了更好的渲染HTML元素而引入的.
-
-CSS 可以通过以下方式添加到HTML中:
-
-- 内联样式- 在HTML元素中使用"style" **属性**
-- 内部样式表 -在HTML文档头部 <head> 区域使用<style> **元素** 来包含CSS
-- 外部引用 - 使用外部 CSS **文件**
-
-最好的方式是通过外部引用CSS文件.
-
-1. 内联样式
-
-   ```html
-   <body style="background-color:yellow;">
-   ```
-
-2. 内部样式表
-
-   ```html
-   <head>
-   <style type="text/css">
-   body {background-color:yellow;}
-   p {color:blue;}
-   </style>
-   </head>
-   ```
-
-3. 外部样式表
-
-   ```html
-   <head>
-   <link rel="stylesheet" type="text/css" href="mystyle.css">
-   </head>
-   ```
-
-   
 
 
 

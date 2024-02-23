@@ -36,6 +36,48 @@ CSS 主要用于设置HTML 页面中的文本内容(字体、大小、对齐方�
    - 选择器相同则执行层叠性
    - 选择器不同则根据选择器权重执行
 
+
+
+# 使用CSS
+
+---
+
+CSS 是在 HTML 4 开始使用的,是为了更好的渲染HTML元素而引入的.
+
+CSS 可以通过以下方式添加到HTML中:
+
+- 内联样式- 在HTML元素中使用"style" **属性**
+- 内部样式表 -在HTML文档头部 <head> 区域使用<style> **元素** 来包含CSS
+- 外部引用 - 使用外部 CSS **文件**
+
+最好的方式是通过外部引用CSS文件.
+
+1. 内联样式
+
+    ```html
+    <body style="background-color:yellow;">
+    ```
+
+2. 内部样式表
+
+    ```html
+    <head>
+    <style type="text/css">
+    body {background-color:yellow;}
+    p {color:blue;}
+    </style>
+    </head>
+    ```
+
+3. 外部样式表
+
+    ```html
+    <head>
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+    </head>
+    ```
+
+
 # 多重样式优先级
 
 ---

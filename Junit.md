@@ -4,7 +4,7 @@
 
 Junit的方法都是包含在包中，所以，要使用相关的方法，必须包含必要的包。例如，断言的方法就要加入语句**import static org.junit.Assert.***。注意，static关键字是不可少的。
 
-
+![image-20240125153416835](Junit/image-20240125153416835.png)
 
 # 注解
 
