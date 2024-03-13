@@ -418,7 +418,7 @@ public:
 
 ## Q2208	将数组和减半的最少操作次数	-M
 
-贪心+优先队列
+> 贪心+优先队列
 
 ```c++
 class Solution {
@@ -469,7 +469,203 @@ public:
 
 
 
+## Q453 最小操作次数使数组元素相等 -M
 
+> n-1个数同时+1，相当于每次有1个数自身-1，因为只能做减法，所以数组最后的数只能是最小值，这样的话每个元素减去最小值求其和就是答案。
+
+```c++
+class Solution {
+public:
+
+    int min;
+    int minIndex;
+    int n;
+
+    int minMoves(vector<int> &nums) {
+        int result = 0;
+        n = nums.size();
+        min = nums[0];
+        minIndex = 0;
+        for (int i = 1; i < n; ++i) {
+            if (nums[i] < min) {
+                min = nums[i];
+                minIndex = i;
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (i != minIndex && nums[i] != min)
+                result += (nums[i] - min);
+        }
+        return result;
+    }
+};
+```
+
+
+
+## Q665 非递减数列 -M
+
+> 要满足题意，我们能够在数组中找到这两个数`[x, y]`，其中`y < x`。很明显`[..., x]`和`[y, ...]`满足非递减条件，如果不满足则说明修改次数必然超过1次。接下来我们再考虑边界问题：
+>
+> - 如果数组内元素数量n<=2，必然能够通过修改1次元素使数列满足非递减
+> - 如果x是最左侧元素，则通过修改x使其小于y就能使数列满足非递减
+> - 如果x是最右侧元素，则通过修改y使其大于x就能使数列满足非递减
+> - 设x的上一个数为k，y的下一个数为t
+>     - `k <= y`通过修改x可满足
+>     - `t >= x`通过修改y可满足
+
+```C++
+class Solution {
+public:
+
+    bool checkIncremental(vector<int> nums, int beginIndex, int endIndex) {
+        int begin = beginIndex < 0 ? 0 : beginIndex;
+        int end = endIndex >= nums.size() ? nums.size() : endIndex;
+        for (int i = begin + 1; i < end; ++i) {
+            if (nums[i] < nums[i - 1])
+                return false;
+        }
+        return true;
+    }
+
+    bool checkPossibility(vector<int> &nums) {
+        if (nums.size() <= 2)
+            return true;
+        for (int i = 1; i < nums.size(); ++i) {
+            if (nums[i] >= nums[i - 1])
+                continue;
+
+            if (!checkIncremental(nums, i,nums.size()))
+                return false;
+            if ((i + 1) < nums.size()) {
+                if (nums[i + 1] > nums[i - 1])
+                    return true;
+                if ((i - 2) < 0)
+                    return true;
+                else if (nums[i] >= nums[i - 2])
+                    return true;
+                else
+                    return false;
+            } else
+                return true;
+        }
+        return true;
+    }
+};
+```
+
+
+
+## Q283 移动零 -E
+
+> 遍历数组，查找所有非零的元素并将其放置到数组前，使用双指针即可，左指针指向下一个待放置的位置，右指针寻找非0的元素
+
+```cpp
+class Solution {
+public:
+    int count = 0;
+    int left = 0, right;
+
+    void moveZeroes(vector<int> &nums) {
+        for (right = 0; right < nums.size(); right++) {
+            if (nums[right] != 0) {
+                nums[left] = nums[right];
+                left++;
+            } else
+                count++;
+        }
+        for (int i = nums.size() - count; i < nums.size(); ++i)
+            nums[i] = 0;
+    }
+};
+```
+
+
+
+## Q189 旋转数组 -M
+
+> **关键点：元素旋转后的位置 = (index+k)%n**
+>
+> - 方法一：使用额外的数组
+>
+> - 方法二：数组翻转
+>
+>     > ```
+>     > nums = "----->-->"; k =3
+>     > result = "-->----->";
+>     > 
+>     > reverse "----->-->" we can get "<--<-----"
+>     > reverse "<--" we can get "--><-----"
+>     > reverse "<-----" we can get "-->----->"
+>     > this visualization help me figure it out :)
+>     > ```
+>     >
+>     > https://leetcode.com/problems/rotate-array/solutions/54250/Easy-to-read-Java-solution/
+>
+> - 方法三：环状替换，只使用一个中间变量而不需要开辟新的数组
+
+```cpp
+class Solution {
+public:
+//    vector<int> tmp;
+//    int n;
+
+    void rotate(vector<int> &nums, int k) {
+// 方法一
+/*        n = nums.size();
+        tmp.resize(n);
+        for (int i = 0; i < nums.size(); ++i)
+            tmp[(i + k) % n] = nums[i];
+        nums.assign(tmp.begin(), tmp.end());*/
+// 方法二
+      k %= nums.size();
+        reverse(nums.begin(), nums.end());
+        reverse(nums.begin(), nums.begin() + k);
+        reverse(nums.begin() + k, nums.end());
+//方法三
+/*        int n = nums.size();
+        k = k % n;
+        int count = gcd(k, n);
+        for (int start = 0; start < count; ++start) {
+            int current = start;
+            int prev = nums[start];
+            do {
+                int next = (current + k) % n;
+                swap(nums[next], prev);
+                current = next;
+            } while (start != current);
+        }*/
+    }
+};
+```
+
+
+
+## Q396 旋转函数 -M
+
+> ![image-20240313122340381](LeetCode/image-20240313122340381.png)
+
+```cpp
+class Solution {
+public:
+
+    int maxRotateFunction(vector<int> &nums) {
+        int n = nums.size();
+        int sum = 0, res, tmp = 0;
+        for (int i = 0; i < n; ++i)
+            sum += nums[i];
+        for (int i = 0; i < n; ++i) {
+            tmp += i * nums[i];
+            res = tmp;
+        }
+        for (int i = 1; i < n; ++i) {
+            tmp = tmp + sum - n * nums[n - i];
+            res = max(res, tmp);
+        }
+        return res;
+    }
+};
+```
 
 
 
