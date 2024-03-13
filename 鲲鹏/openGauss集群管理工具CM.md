@@ -52,6 +52,8 @@
 
 ![image-20231224195040152](openGauss集群管理工具CM/image-20231224195040152.png)
 
+![image-20240228193447851](openGauss集群管理工具CM/image-20240228193447851.png)
+
 ![image-20231224195117835](openGauss集群管理工具CM/image-20231224195117835.png)
 
 ![image-20231224195130278](openGauss集群管理工具CM/image-20231224195130278.png)
