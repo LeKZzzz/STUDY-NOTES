@@ -669,6 +669,473 @@ public:
 
 
 
+## Q245 错误的集合 -M
+
+```cpp
+/*
+ * 方法一
+ * 先排序
+ * 如果相邻两个数相差2则说明丢失的数在这两个数中间
+ * 如果相邻两个数相等则说明这是重复的数
+ * 特别的，如果最后一个数不是n则丢失的数是n
+ */
+//class Solution {
+//public:
+//    vector<int> findErrorNums(vector<int> &nums) {
+//        vector<int> errorNums(2);
+//        sort(nums.begin(), nums.end());
+//        int pre = 0;
+//        int n = nums.size();
+//        for (int i = 0; i < n; ++i) {
+//            if (nums[i] == pre) {
+//                errorNums[0] = pre;
+//            } else if (nums[i] - pre > 1)
+//                errorNums[1] = pre + 1;
+//            pre = nums[i];
+//        }
+//        if (nums[n - 1] != n)
+//            errorNums[1] = n;
+//        return errorNums;
+//    }
+//};
+
+/*
+ * 使用哈希表
+ */
+class Solution {
+public:
+    vector<int> findErrorNums(vector<int> &nums) {
+        vector<int> errorNums(2);
+        int n = nums.size();
+        unordered_map<int, int> mp;
+        for (int i = 0; i < n; ++i)
+            mp[nums[i]]++;
+        for (int i = 1; i <= n; ++i) {
+            if (mp[i] == 0)
+                errorNums[1] = i;
+            else if (mp[i] == 2)
+                errorNums[0] = i;
+        }
+        return errorNums;
+    }
+};
+
+/*
+ *位运算
+ */
+class Solution {
+public:
+    vector<int> findErrorNums(vector<int>& nums) {
+        int n = nums.size();
+        int xorSum = 0;
+        for (int num : nums) {
+            xorSum ^= num;
+        }
+        for (int i = 1; i <= n; i++) {
+            xorSum ^= i;
+        }
+        int lowbit = xorSum & (-xorSum);
+        int num1 = 0, num2 = 0;
+        for (int &num : nums) {
+            if ((num & lowbit) == 0) {
+                num1 ^= num;
+            } else {
+                num2 ^= num;
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            if ((i & lowbit) == 0) {
+                num1 ^= i;
+            } else {
+                num2 ^= i;
+            }
+        }
+        for (int num : nums) {
+            if (num == num1) {
+                return vector<int>{num1, num2};
+            }
+        }
+        return vector<int>{num2, num1};
+    }
+};
+```
+
+
+
+## Q697 数组的度 -E
+
+```cpp
+/*
+ * 使用哈希表
+ */
+class Solution {
+public:
+    int findShortestSubArray(vector<int> &nums) {
+        unordered_map<int, vector<int>> mp;
+        int maxNum = 0, minLen = 1;
+        int n = nums.size();
+        for (int i = 0; i < n; ++i) {
+            if (mp.count(nums[i])) {
+                mp[nums[i]][0]++;
+                mp[nums[i]][2] = i;
+            } else {
+                mp[nums[i]] = {1, i, i};
+            }
+        }
+        for (auto it = mp.begin(); it != mp.end(); it++) {
+            if (it->second[0] > maxNum) {
+                maxNum = it->second[0];
+                minLen = it->second[2] - it->second[1] + 1;
+            } else if (it->second[0] == maxNum) {
+                if (minLen > (it->second[2] - it->second[1] + 1))
+                    minLen = it->second[2] - it->second[1] + 1;
+            }
+        }
+        return minLen;
+    }
+};
+```
+
+
+
+## Q448 找到所有数组中消失的数字 -E
+
+```cpp
+/*
+ * 方法一：使用额外标志数组
+ */
+//class Solution {
+//public:
+//    vector<int> findDisappearedNumbers(vector<int> &nums) {
+//        vector<int> result;
+//        int n = nums.size();
+//        vector<int> flag(n + 1);
+//        for (int i = 0; i < n; ++i) {
+//            flag[nums[i]] = 1;
+//        }
+//        for (int i = 1; i <= n; ++i) {
+//            if (!flag[i])
+//                result.push_back(i);
+//        }
+//        return result;
+//    }
+//};
+/*
+ * 方法二：哈希表
+ */
+//class Solution {
+//public:
+//    vector<int> findDisappearedNumbers(vector<int> &nums) {
+//        vector<int> result;
+//        int n = nums.size();
+//        unordered_map<int, int> mp;
+//        for (int i = 0; i < n; ++i) {
+//            mp[nums[i]] = 1;
+//        }
+//        for (int i = 1; i <= n; ++i) {
+//            if (!mp.count(i))
+//                result.push_back(i);
+//        }
+//        return result;
+//    }
+//};
+
+/*
+ * 方法三：原地修改
+ * 利用所有数都在[1, n]中的特性
+ */
+class Solution {
+public:
+    vector<int> findDisappearedNumbers(vector<int> &nums) {
+        vector<int> result;
+        int n = nums.size();
+
+        for (int i = 0; i < n; ++i) {
+            int x = (nums[i] - 1) % n;
+            nums[x] += n;
+        }
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] <= n)
+                result.push_back(i + 1);
+        }
+        return result;
+    }
+};
+```
+
+
+
+## Q442 数组中重复的数据 -M
+
+```cpp
+/*
+ * 方法一：哈希表
+ */
+//class Solution {
+//public:
+//    vector<int> findDuplicates(vector<int> &nums) {
+//        vector<int> result;
+//        unordered_map<int, int> mp;
+//        for (int i = 0; i < nums.size(); ++i) {
+//            if (!mp.count(nums[i]))
+//                mp[nums[i]] = 1;
+//            else
+//                mp[nums[i]]++;
+//        }
+//        for (auto it = mp.begin(); it != mp.end(); it++) {
+//            if (it->second == 2)
+//                result.push_back(it->first);
+//        }
+//        return result;
+//    }
+//};
+/*
+ * 方法二：与448相同，加n
+ */
+//class Solution {
+//public:
+//    vector<int> findDuplicates(vector<int> &nums) {
+//        vector<int> result;
+//        int n = nums.size();
+//        for (int i = 0; i < n; ++i) {
+//            int idx = (nums[i] - 1) % n;
+//            nums[idx] += n;
+//        }
+//        for (int i = 0; i < n; ++i) {
+//            if (nums[i] > (2 * n))
+//                result.push_back(i + 1);
+//        }
+//        return result;
+//    }
+//};
+/*
+ * 方法三：使用正负号
+ */
+//class Solution {
+//public:
+//    vector<int> findDuplicates(vector<int> &nums) {
+//        vector<int> result;
+//        int n = nums.size();
+//        for (int i = 0; i < n; ++i) {
+//            int idx = abs(nums[i]) - 1;
+//            if (nums[idx] < 0)
+//                result.push_back(idx + 1);
+//            else
+//                nums[idx] = -nums[idx];
+//        }
+//
+//        return result;
+//    }
+//};
+/*
+ * 方法四：交换元素
+ */
+class Solution {
+public:
+    vector<int> findDuplicates(vector<int>& nums) {
+        int n = nums.size();
+        for (int i = 0; i < n; ++i) {
+            while (nums[i] != nums[nums[i] - 1]) {
+                swap(nums[i], nums[nums[i] - 1]);
+            }
+        }
+        vector<int> ans;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] - 1 != i) {
+                ans.push_back(nums[i]);
+            }
+        }
+        return ans;
+    }
+};
+```
+
+
+
+## Q41 缺失的第一个正数 -H
+
+> 在一个长度为n的数组中，如果[1, n]中的所有数都出现在数组中，则最小正整数为n+1，反之，如果[1, n]中有数未出现在数组中，则最小正整数一定在[1, n]中，因为[1, n]是正数的最小片段。这样，我们就可以用这个长度为n的数组来记录[1, n]中的正数是否出现，出现则将对应索引的元素设置为负数，最终遍历数组，第一个出现的正数对应的索引+1即为最小正数。
+
+```cpp
+class Solution {
+public:
+    int firstMissingPositive(vector<int> &nums) {
+        int n = nums.size();
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] <= 0)
+                nums[i] = n + 1;
+        }
+        for (int i = 0; i < n; ++i) {
+            if (abs(nums[i]) <= n) {
+                int idx = abs(nums[i]) - 1;
+                if (nums[idx] > 0)
+                    nums[idx] = -nums[idx];
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] > 0)
+                return i + 1;
+        }
+        return n + 1;
+    }
+};
+```
+
+
+
+## Q485 最大连续1的个数 -E
+
+```cpp
+/*
+ * 遇1则加，遇0重置，比较大小，注意结尾
+ */
+class Solution {
+public:
+    int findMaxConsecutiveOnes(vector<int> &nums) {
+        int count = 0, n = nums.size(), max = 0;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] == 1) {
+                count++;
+            } else if (nums[i] != 1) {
+                max = max > count ? max : count;
+                count = 0;
+            }
+        }
+        max = max > count ? max : count;
+        return max;
+    }
+};
+```
+
+
+
+## Q495 提莫攻击 -E
+
+```cpp
+/*
+ * 方法一
+ */
+//class Solution {
+//public:
+//    int findPoisonedDuration(vector<int> &timeSeries, int duration) {
+//        int end = -1, count = 0, n = timeSeries.size();
+//        for (int i = 0; i < n; ++i) {
+//            int step = timeSeries[i] + duration - 1;
+//                if (timeSeries[i] > end)
+//                    count += duration;
+//                else
+//                    count += (step - end);
+//                end = step;
+//        }
+//        return count;
+//    }
+//};
+/*
+ * 方法二
+ */
+class Solution {
+public:
+    int findPoisonedDuration(vector<int> &timeSeries, int duration) {
+        auto res = 0;
+        for (auto i = 1; i < timeSeries.size(); ++i) {
+            res += min(timeSeries[i] - timeSeries[i - 1], duration);
+        }
+        return res + duration;
+    }
+};
+```
+
+
+
+## Q414 第三大的数 -E
+
+```cpp
+/*
+ * 方法一：排序
+ */
+//class Solution {
+//public:
+//    int thirdMax(vector<int> &nums) {
+//        int count = 0, n = nums.size(), res;
+//        sort(nums.begin(), nums.end(), greater<>());
+//        for (int i = 0, pre = nums[i] - 1; i < n; ++i) {
+//            if (count == 3)
+//                break;
+//            if (nums[i] != pre) {
+//                count++;
+//                res = nums[i];
+//                pre = nums[i];
+//            }
+//        }
+//        return count == 3 ? res : nums[0];
+//    }
+//};
+/*
+ * 方法二：有序集合
+ */
+//class Solution {
+//public:
+//    int thirdMax(vector<int> &nums) {
+//        set<int> s;
+//        for (int num : nums) {
+//            s.insert(num);
+//            if (s.size() > 3) {
+//                s.erase(s.begin());
+//            }
+//        }
+//        return s.size() == 3 ? *s.begin() : *s.rbegin();
+//    }
+//};
+/*
+ * 方法三：一次遍历(依赖元素范围)
+ */
+class Solution {
+public:
+    int thirdMax(vector<int> &nums) {
+        long a = LONG_MIN, b = LONG_MIN, c = LONG_MIN;
+        for (long num : nums) {
+            if (num > a) {
+                c = b;
+                b = a;
+                a = num;
+            } else if (a > num && num > b) {
+                c = b;
+                b = num;
+            } else if (b > num && num > c) {
+                c = num;
+            }
+        }
+        return c == LONG_MIN ? a : c;
+    }
+};
+/*
+ * 方法四：一次遍历(不依赖元素范围)
+ */
+class Solution {
+public:
+    int thirdMax(vector<int> &nums) {
+        int *a = nullptr, *b = nullptr, *c = nullptr;
+        for (int &num : nums) {
+            if (a == nullptr || num > *a) {
+                c = b;
+                b = a;
+                a = &num;
+            } else if (*a > num && (b == nullptr || num > *b)) {
+                c = b;
+                b = &num;
+            } else if (b != nullptr && *b > num && (c == nullptr || num > *c)) {
+                c = &num;
+            }
+        }
+        return c == nullptr ? *a : *c;
+    }
+};
+```
+
+
+
+
+
 # 树
 
 ---
@@ -678,5 +1145,101 @@ public:
 线段树
 
 ```c++
+```
+
+
+
+
+
+
+
+# Q146 LRU缓存 -M
+
+```cpp
+struct DLinkedNode {
+    int key, value;
+    DLinkedNode* prev;
+    DLinkedNode* next;
+    DLinkedNode(): key(0), value(0), prev(nullptr), next(nullptr) {}
+    DLinkedNode(int _key, int _value): key(_key), value(_value), prev(nullptr), next(nullptr) {}
+};
+ 
+class LRUCache {
+private:
+    unordered_map<int, DLinkedNode*> cache;
+    DLinkedNode* head;
+    DLinkedNode* tail;
+    int size;
+    int capacity;
+ 
+public:
+    LRUCache(int _capacity): capacity(_capacity), size(0) {
+        // 使用伪头部和伪尾部节点
+        head = new DLinkedNode();
+        tail = new DLinkedNode();
+        head->next = tail;
+        tail->prev = head;
+    }
+    
+    int get(int key) {
+        if (!cache.count(key)) {
+            return -1;
+        }
+        // 如果 key 存在，先通过哈希表定位，再移到头部
+        DLinkedNode* node = cache[key];
+        moveToHead(node);
+        return node->value;
+    }
+    
+    void put(int key, int value) {
+        if (!cache.count(key)) {
+            // 如果 key 不存在，创建一个新的节点
+            DLinkedNode* node = new DLinkedNode(key, value);
+            // 添加进哈希表
+            cache[key] = node;
+            // 添加至双向链表的头部
+            addToHead(node);
+            ++size;
+            if (size > capacity) {
+                // 如果超出容量，删除双向链表的尾部节点
+                DLinkedNode* removed = removeTail();
+                // 删除哈希表中对应的项
+                cache.erase(removed->key);
+                // 防止内存泄漏
+                delete removed;
+                --size;
+            }
+        }
+        else {
+            // 如果 key 存在，先通过哈希表定位，再修改 value，并移到头部
+            DLinkedNode* node = cache[key];
+            node->value = value;
+            moveToHead(node);
+        }
+    }
+ 
+    void addToHead(DLinkedNode* node) {
+        node->prev = head;
+        node->next = head->next;
+        head->next->prev = node;
+        head->next = node;
+    }
+    
+    void removeNode(DLinkedNode* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+ 
+    void moveToHead(DLinkedNode* node) {
+        removeNode(node);
+        addToHead(node);
+    }
+ 
+    DLinkedNode* removeTail() {
+        DLinkedNode* node = tail->prev;
+        removeNode(node);
+        return node;
+    }
+};
 ```
 
