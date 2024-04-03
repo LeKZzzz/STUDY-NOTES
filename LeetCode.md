@@ -1243,3 +1243,277 @@ public:
 };
 ```
 
+
+
+
+
+# 剑指Offer
+
+## LCR120 寻找文件副本 -E
+
+```cpp
+class Solution {
+public:
+    int findRepeatDocument(vector<int> &documents) {
+        int res = 0, n = documents.size();
+        for (int i = 0; i < n; ++i) {
+            int idx = documents[i] % n;
+            documents[idx] += n;
+            if (documents[idx] >= (2 * n)) {
+                res = idx;
+                return res;
+            }
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR121 寻找目标值 - 二维数组 -M
+
+> 旋转后形成二叉搜索树
+>
+> ![image-20240328131016668](LeetCode/image-20240328131016668.png)
+
+```cpp
+class Solution {
+public:
+    bool findTargetIn2DPlants(vector<vector<int>> &plants, int target) {
+        if (plants.size() == 0)
+            return false;
+        int i = plants[0].size() - 1, j = 0;    // j行 i列
+        while (i >= 0 && j < plants.size()) {
+            if (plants[j][i] == target)
+                return true;
+            if (plants[j][i] < target)
+                j++;
+            else
+                i--;
+        }
+        return false;
+    }
+};
+```
+
+
+
+## LCR122 路径加密 -E
+
+> 原题为替换空格为%20
+>
+> https://blog.csdn.net/2301_78694061/article/details/134123895
+
+```cpp
+class Solution {
+public:
+    string pathEncryption(string path) {
+        string res;
+        for (auto ch: path) {
+            if (ch == '.')
+                res += ' ';
+            else
+                res += ch;
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR123 图书整理 I -E
+
+> 翻转链表
+>
+> 栈
+
+```cpp
+class Solution {
+public:
+    vector<int> reverseBookList(ListNode *head) {
+        ListNode *pre = nullptr, *cur = head, *tmp;
+        vector<int> res;
+        while (cur != nullptr) {
+            tmp = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = tmp;
+        }
+        ListNode *p = pre;
+        while (p != nullptr) {
+            res.push_back(p->val);
+            p = p->next;
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR124 推理二叉树 -M
+
+> 使用前序遍历确定(子)树根节点，再根据中序遍历确定该树的左右子树范围，因此需要通过left和right两个值来记录整棵树的范围，使用分治法和递归实现这个思想。
+>
+> ![image-20240402153604353](LeetCode/image-20240402153604353.png)
+>
+> 前序遍历的左子树的根节点一定是**根节点的下一个**，右子树的根节点在**根节点+左子树节点数+1**
+
+```cpp
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+
+
+class Solution {
+private:
+    vector<int> my_preorder;
+    unordered_map<int, int> mp;
+
+    TreeNode *recur(int root, int left, int right) {
+        if (left > right) return nullptr;
+        TreeNode *node = new TreeNode(my_preorder[root]);
+        int idx = mp[my_preorder[root]];
+        node->left = recur(root + 1, left, idx - 1);
+        node->right = recur(root + (idx - left + 1), idx + 1, right);
+        return node;
+    }
+
+public:
+    TreeNode *deduceTree(vector<int> &preorder, vector<int> &inorder) {
+        TreeNode *root;
+        my_preorder = preorder;
+        for (int i = 0; i < inorder.size(); ++i) {
+            mp[inorder[i]] = i;
+        }
+        root = recur(0, 0, preorder.size() - 1);
+        return root;
+    }
+};
+```
+
+
+
+## LCR125 图书整理 II -E
+
+```cpp
+class CQueue {
+private:
+    stack<int> master, tmp;
+public:
+    CQueue() {
+
+    }
+
+    void appendTail(int value) {
+        master.push(value);
+    }
+
+    int deleteHead() {
+        int res;
+        if (!tmp.empty()) { // tmp栈为master栈的逆序，实现队列
+            res = tmp.top();
+            tmp.pop();
+            return res;
+        }
+        if (master.empty()) return -1;  // 如果tmp和master均为空则说明没有可删除的元素
+        while (!master.empty()) {   // master不为空则将master中元素放入tmp实现逆序
+            tmp.push(master.top());
+            master.pop();
+        }
+        res = tmp.top();
+        tmp.pop();
+        return res;
+    }
+};
+```
+
+
+
+## LCR126 斐波那契数 -E
+
+> ![image-20240402165245582](LeetCode/image-20240402165245582.png)
+
+```cpp
+class Solution {
+public:
+    int fib(int n) {
+        if (n < 2)
+            return n;
+        bool flag = true;
+        int a = 0, b = 1, sum;
+        for (int i = 1; i < n; ++i) {
+            sum = (a + b) % 1000000007;
+            if (flag)
+                a = sum;
+            else
+                b = sum;
+            flag = !flag;
+        }
+        return sum;
+    }
+};
+```
+
+
+
+## LCR127 跳跃训练 -E
+
+> ![image-20240402173443647](LeetCode/image-20240402173443647.png)
+
+```cpp
+class Solution {
+public:
+    int trainWays(int num) {
+        if (num < 2)
+            return 1;
+        bool flag = true;
+        int a = 1, b = 1, sum;
+        for (int i = 1; i < num; ++i) {
+            sum = (a + b) % 1000000007;
+            if (flag)
+                a = sum;
+            else
+                b = sum;
+            flag = !flag;
+        }
+        return sum;
+    }
+};
+```
+
+
+
+## LCR128 库存管理 I
+
+> ![image-20240403182917882](LeetCode/image-20240403182917882.png)
+>
+> 当stock[m]=stock[j]时，如果m在左排序数组，因为左排序数组的元素大于等于右排序数组的元素且[m+1, j]的最大元素为stock[j]，所以[0:m]的元素都等于stock[m]；如果m在右排序数组，则因为单调递增的原则[m+1, j]均为stock[m]
+
+```cpp
+class Solution {
+public:
+    int stockManagement(vector<int> &stock) {
+        int left = 0, right = stock.size() - 1;
+        int mid;
+        while (left < right) {
+            if (left == right) break;
+            mid = (left + right) / 2;
+            if (stock[mid] > stock[right]) left = mid + 1;
+            else if (stock[mid] < stock[right]) right = mid;
+            else right -= 1;
+        }
+        return stock[left];
+    }
+};
+```
