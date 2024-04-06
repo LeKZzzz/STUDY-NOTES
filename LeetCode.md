@@ -1498,7 +1498,10 @@ public:
 
 > ![image-20240403182917882](LeetCode/image-20240403182917882.png)
 >
-> 当stock[m]=stock[j]时，如果m在左排序数组，因为左排序数组的元素大于等于右排序数组的元素且[m+1, j]的最大元素为stock[j]，所以[0:m]的元素都等于stock[m]；如果m在右排序数组，则因为单调递增的原则[m+1, j]均为stock[m]
+> - stock[j]是右排序数组中的最大值，左排序数组中的任意元素都大于等于stock[j]
+> - 当stock[m]=stock[j]时，如果m在左排序数组，因为左排序数组的元素大于等于右排序数组的元素且[m+1, j]的最大元素为stock[j]，所以[0:m]的元素都等于stock[m]；如果m在右排序数组，则因为单调递增的原则[m+1, j]均为stock[m]
+> - 由于重复元素的存在，我们并不能确定 stock[m]究竟在最小值的左侧还是右侧，因此我们不能莽撞地忽略某一部分的元素。我们唯一可以知道的是，由于它们的值相同，所以无论stock[j]是不是最小值，都有一个它的「替代品」stock[m]，因此我们可以忽略二分查找区间的右端点。
+> - 旋转数组，左排序数组与右排序数组的连接点即为stock[j]，将左排序数组和右排序数组拼接即可还原为一个单调递增的数组，那么二分查找的mid只需要比较与连接点j的大小关系。
 
 ```cpp
 class Solution {
@@ -1508,7 +1511,7 @@ public:
         int mid;
         while (left < right) {
             if (left == right) break;
-            mid = (left + right) / 2;
+            mid = left + (right - left) / 2;
             if (stock[mid] > stock[right]) left = mid + 1;
             else if (stock[mid] < stock[right]) right = mid;
             else right -= 1;
@@ -1517,3 +1520,56 @@ public:
     }
 };
 ```
+
+
+
+## LCR129 字母迷宫 -M
+
+> DFS + 回溯 + 剪枝
+
+```cpp
+class Solution {
+private:
+    bool check(vector<vector<char>>& grid, vector<vector<bool>>& visited, int i,
+               int j, string str, int idx) {
+        if (grid[i][j] != str[idx])
+            return false;
+        else if (idx == str.length() - 1)
+            return true;
+
+        visited[i][j] = true;
+        vector<pair<int, int>> dirs{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        bool result = false;
+        for (auto dir : dirs) {
+            int newi = i + dir.first;
+            int newj = j + dir.second;
+            if (0 <= newi && newi < grid.size() && 0 <= newj &&
+                newj < grid[0].size()) {
+                if (!visited[newi][newj]) {
+                    bool flag = check(grid, visited, newi, newj, str, idx + 1);
+                    if (flag) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        visited[i][j] = false;
+        return result;
+    }
+
+public:
+    bool wordPuzzle(vector<vector<char>>& grid, string target) {
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<bool>> visited(m, vector<bool>(n));
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (check(grid, visited, i, j, target, 0))
+                    return true;
+            }
+        }
+        return false;
+    }
+};
+```
+
