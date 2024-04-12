@@ -1573,3 +1573,75 @@ public:
 };
 ```
 
+
+
+## LCR131 砍竹子 I -M
+
+> 动态规划
+>
+> ![image-20240412083830747](LeetCode/image-20240412083830747.png)
+>
+> 数学推导
+>
+> ![image-20240412090358915](LeetCode/image-20240412090358915.png)
+
+```cpp
+class Solution {
+public:
+    int cuttingBamboo(int bamboo_len) {
+        vector<int> dp(bamboo_len + 1);
+        int max, tmp;
+        for (int i = 2; i < bamboo_len + 1; ++i) {
+            max = 0;
+            for (int j = 1; j < i; ++j) {
+                tmp = std::max(j * (i - j), j * dp[i - j]);
+                max = max > tmp ? max : tmp;
+            }
+            dp[i] = max;
+        }
+        return dp[bamboo_len];
+    }
+};
+
+class Solution {
+public:
+    int cuttingBamboo(int bamboo_len) {
+        if(bamboo_len <= 3) return bamboo_len - 1;
+        int a = bamboo_len / 3, b = bamboo_len % 3;
+        if(b == 0) return pow(3, a);
+        if(b == 1) return pow(3, a - 1) * 4;
+        return pow(3, a) * 2;
+    }
+};
+```
+
+
+
+## LCR132 砍竹子 II -M
+
+> 循环求余
+>
+> ![image-20240412102119020](LeetCode/image-20240412102119020.png)
+>
+> 快速幂求余
+>
+> ![image-20240412102139831](LeetCode/image-20240412102139831.png)
+
+```cpp
+class Solution {
+public:
+    int cuttingBamboo(int bamboo_len) {
+        if(bamboo_len <= 3) return bamboo_len - 1;
+        int b = bamboo_len % 3, p = 1000000007;
+        long rem = 1, x = 3;
+        for(int a = bamboo_len / 3 - 1; a > 0; a /= 2) {
+            if(a % 2 == 1) rem = (rem * x) % p;
+            x = (x * x) % p;
+        }
+        if(b == 0) return (int)(rem * 3 % p);
+        if(b == 1) return (int)(rem * 4 % p);
+        return (int)(rem * 6 % p);
+    }
+};
+```
+
