@@ -1245,6 +1245,29 @@ public:
 
 
 
+# 位运算
+
+---
+
+> - 向下整除 n//2 等价于n右移一位 n>>1
+> - 取余数 n mod  2等价于判断二进制最右位 n&1
+> - n-1会使n的1变0,1右侧的0都变成1
+
+## Q231 2的幂 -E
+
+```cpp
+class Solution {
+public:
+    bool isPowerOfTwo(int n) {
+        if(n<=0 || n&(n-1))
+            return false;
+        return true;
+    }
+};
+```
+
+
+
 
 
 # 剑指Offer
@@ -1628,19 +1651,201 @@ public:
 > ![image-20240412102139831](LeetCode/image-20240412102139831.png)
 
 ```cpp
+// 循环求余
+//class Solution {
+//public:
+//    int cuttingBamboo(int bamboo_len) {
+//        if (bamboo_len <= 3) return bamboo_len - 1;
+//        int p = 1000000007, b = bamboo_len % 3;
+//        long res = 1;
+//        for (int i = 0; i < bamboo_len / 3 - 1; ++i) {
+//            res = res * 3 % p;
+//        }
+//        if (b == 0) return (int) (res * 3 % p);
+//        else if (b == 1) return (int) (res * 2 * 2 % p);
+//        else return (int) (res * 3 * 2 % p);
+//    }
+//};
+
+//快速幂求余
 class Solution {
 public:
     int cuttingBamboo(int bamboo_len) {
-        if(bamboo_len <= 3) return bamboo_len - 1;
-        int b = bamboo_len % 3, p = 1000000007;
-        long rem = 1, x = 3;
-        for(int a = bamboo_len / 3 - 1; a > 0; a /= 2) {
-            if(a % 2 == 1) rem = (rem * x) % p;
-            x = (x * x) % p;
+        if (bamboo_len <= 3) return bamboo_len - 1;
+        int p = 1000000007, b = bamboo_len % 3;
+        long res = 1, x = 3;
+
+        for (int i = bamboo_len / 3 - 1; i > 0; i /= 2) {
+            if (i % 2 == 1) res = res * x % p;
+            x = x * x % p;
         }
-        if(b == 0) return (int)(rem * 3 % p);
-        if(b == 1) return (int)(rem * 4 % p);
-        return (int)(rem * 6 % p);
+
+        if (b == 0) return (int) (res * 3 % p);
+        else if (b == 1) return (int) (res * 2 * 2 % p);
+        else return (int) (res * 3 * 2 % p);
+    }
+};
+```
+
+
+
+## LCR133 位1的个数 -E
+
+> ![image-20240415205529078](LeetCode/image-20240415205529078.png)
+
+```cpp
+// n&1
+//class Solution {
+//public:
+//    int hammingWeight(uint32_t n) {
+//        int res = 0;
+//        while (n != 0) {
+//            res += n & 1;
+//            n >>= 1;
+//        }
+//        return res;
+//    }
+//};
+
+// n&(n-1)
+//class Solution {
+//public:
+//    int hammingWeight(uint32_t n) {
+//        int res = 0;
+//        while (n != 0) {
+//            res++;
+//            n = n & (n - 1);
+//        }
+//        return res;
+//    }
+//};
+
+// bitset
+//class Solution {
+//public:
+//    int hammingWeight(uint32_t n) {
+//        return bitset<32>(n).count();
+//    }
+//};
+
+// 短除法思想，除以2取余
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int cnt = 0;
+        while(n != 0){
+            cnt += n % 2;
+            n /= 2;
+        }
+        return cnt;
+    }
+};
+```
+
+
+
+## LCR134 Pow(x, n) -M
+
+> 快速幂
+>
+> ![image-20240415215217611](LeetCode/image-20240415215217611.png)
+
+```cpp
+// 快速幂
+class Solution {
+public:
+    double myPow(double x, int n) {
+        double res = 1;
+        long a = n;
+        if (n < 0) {
+            a = -a;
+            x = 1 / x;
+        }
+        for (long i = a; i > 0;) {
+            if (i & 1) res = res * x;  // 如果指数是基数，则将多出来的一个x乘入res中
+            x = x * x;  // 将底数平方
+            i >>= 1; // 指数除以2取整
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR135 报数 -E
+
+```cpp
+class Solution {
+public:
+    vector<int> countNumbers(int cnt) {
+        vector<int> res;
+        for (int i = 1; i < pow(10, cnt); ++i) {
+            res.push_back(i);
+        }
+        return res;
+    }
+};
+```
+
+大数形式
+
+```cpp
+class Solution {
+public:
+    string res;
+    char *num;
+    int length;
+    char chs[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+    string countNumbers(int cnt) {
+        length = cnt;
+        num = new char[cnt];
+        dfs(0);
+        res=res.substr(0,res.length()-1);
+        return res;
+    }
+
+    void dfs(int idx) {
+        if (idx == length) {
+            res = res + num + ',';
+            return;
+        }
+        for (auto ch: chs) {
+            num[idx] = ch;
+            dfs(idx + 1);
+        }
+    }
+};
+```
+
+
+
+LCR136 删除链表节点 -E
+
+```cpp
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteNode(ListNode* head, int val) {
+        ListNode newHead = ListNode(0);
+        newHead.next = head;
+        ListNode* p = &newHead;
+        while (p->next != NULL) {
+            if (p->next->val == val) {
+                p->next = p->next->next;
+                break;
+            }
+            p = p->next;
+        }
+        return newHead.next;
     }
 };
 ```
