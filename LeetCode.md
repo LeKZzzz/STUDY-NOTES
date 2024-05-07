@@ -1134,6 +1134,127 @@ public:
 
 
 
+## Q5 最长回文字符串 -M
+
+> ![image-20240418093146260](LeetCode/image-20240418093146260.png)
+
+```cpp
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n = s.length();
+        if (n < 2) return s;
+
+        vector<vector<bool>> dp(n, vector<bool>(n, false));
+        for (int i = 0; i < n; ++i) {
+            dp[i][i] = true;
+        }
+
+        int left, right;
+        int maxLen = 0;
+        string result;
+
+        for (int length = 2; length <= n; ++length) {
+            for (left = 0; left < n; left++) {
+                right = left + length - 1;
+                if (right >= n) break;
+                if (length <= 3) {
+                    if (s[left] == s[right])
+                        dp[left][right] = true;
+                } else {
+                    if (s[left] == s[right] && dp[left + 1][right - 1])
+                        dp[left][right] = true;
+                }
+
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (dp[i][j] && (j - i + 1) > maxLen) {
+                    maxLen = j - i + 1;
+                    result = s.substr(i, j - i + 1);
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
+
+
+## Q20 有效的括号 -E
+
+```cpp
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> stk;
+        unordered_map<char, char> mp;
+        mp['('] = ')';
+        mp['['] = ']';
+        mp['{'] = '}';
+        for (int i = 0; i < s.length(); i++) {
+            if (s[i] == '(' || s[i] == '[' || s[i] == '{')
+                stk.push(s[i]);
+            else if (!stk.empty() && mp[stk.top()] == s[i]) {
+                stk.pop();
+            } else {
+                return false;
+            }
+        }
+        if (stk.empty())
+            return true;
+        else
+            return false;
+    }
+};
+```
+
+
+
+## Q343 整数拆分 -M
+
+> 剑指Offer LCR131
+
+```cpp
+//class Solution {
+//public:
+//    int integerBreak(int n) {
+//        if (n <= 3) return n - 1;
+//        int res = 1, b = n % 3;
+//        for (int i = 0; i < n / 3 - 1; ++i)
+//            res *= 3;
+//        if (b == 0) res *= 3;
+//        else if (b == 1) res *= 4;
+//        else res *= 6;
+//        return res;
+//    }
+//};
+
+class Solution {
+public:
+    int integerBreak(int n) {
+        if (n <= 3) return n - 1;
+        vector<int> dp(n + 1);
+        int right, max;
+        dp[1] = 1;
+        dp[2] = 1;
+        dp[3] = 2;
+        for (int i = 4; i <= n; ++i) {
+            max = 0;
+            for (int j = 1; j < i; ++j) {
+                right = i - j;
+                int tmp = std::max(j * right, j * dp[right]);
+                max = max > tmp ? max : tmp;
+            }
+            dp[i] = max;
+        }
+        return dp[n];
+    }
+};
+```
+
 
 
 # 树
@@ -1268,9 +1389,120 @@ public:
 
 
 
+# 单调栈
+
+---
+
+## LCR038 每日温度 -M
+
+```cpp
+class Solution {
+public:
+    vector<int> dailyTemperatures(vector<int> &temperatures) {
+        int n = temperatures.size();
+        stack<int> st;
+        vector<int> res(n, 0);
+        for (int i = 0; i < n; ++i) {
+            while (!st.empty() && temperatures[st.top()] < temperatures[i]) {
+                res[st.top()] = i - st.top();
+                st.pop();
+            }
+            st.push(i);
+        }
+        return res;
+    }
+};
+```
+
+
+
+## Q42 接雨水 -H
+
+> 当前遍历的元素与栈顶元素相同时，如果栈顶元素不出栈，则计算时当前柱子的高度为0结果也会为0，与出栈结果相同。
+
+```cpp
+//相同高度出栈
+class Solution {
+public:
+    int trap(vector<int> &height) {
+        int n = height.size();
+        int res = 0;
+        stack<int> stk;
+        for (int i = 0; i < n; ++i) {
+            while (!stk.empty() && height[i] > height[stk.top()]) {
+                int tmp = height[stk.top()];
+                stk.pop();
+                if (stk.empty())
+                    break;
+                int min = std::min(height[stk.top()], height[i]);
+                res += (min - tmp) * (i - stk.top() - 1);
+            }
+            while (!stk.empty() && height[i] == height[stk.top()])
+                stk.pop();
+            stk.push(i);
+        }
+        return res;
+    }
+};
+
+//相同高度不出栈
+class Solution {
+public:
+    int trap(vector<int> &height) {
+        int n = height.size();
+        int res = 0;
+        stack<int> stk;
+        for (int i = 0; i < n; ++i) {
+            while (!stk.empty() && height[i] > height[stk.top()]) {
+                int tmp = height[stk.top()];
+                stk.pop();
+                if (stk.empty())
+                    break;
+                int min = std::min(height[stk.top()], height[i]);
+                res += (min - tmp) * (i - stk.top() - 1);
+            }
+                stk.push(i);
+        }
+        return res;
+    }
+};
+```
+
+
+
+# 字符串
+
+---
+
+## Q415 字符串相加 -E
+
+```cpp
+class Solution {
+public:
+    string addStrings(string num1, string num2) {
+        int m = num1.length() - 1, n = num2.length() - 1;
+        string res = "";
+        int x, y, c = 0, tmp;
+        while (m >= 0 || n >= 0 || c) {
+            x = m >= 0 ? (num1[m] - '0') : 0;
+            y = n >= 0 ? (num2[n] - '0') : 0;
+            tmp = x + y + c;
+            c = tmp >= 10 ? 1 : 0;
+            res.push_back(tmp % 10 + '0');
+            m--;
+            n--;
+        }
+        std::reverse(res.begin(), res.end());
+        return res;
+    }
+};
+```
+
 
 
 # 剑指Offer
+
+---
 
 ## LCR120 寻找文件副本 -E
 
@@ -1348,26 +1580,23 @@ public:
 
 ## LCR123 图书整理 I -E
 
-> 翻转链表
+> 辅助栈
 >
-> 栈
 
 ```cpp
 class Solution {
 public:
     vector<int> reverseBookList(ListNode *head) {
-        ListNode *pre = nullptr, *cur = head, *tmp;
+        ListNode *p = head;
+        stack<int> stk;
         vector<int> res;
-        while (cur != nullptr) {
-            tmp = cur->next;
-            cur->next = pre;
-            pre = cur;
-            cur = tmp;
-        }
-        ListNode *p = pre;
         while (p != nullptr) {
-            res.push_back(p->val);
+            stk.push(p->val);
             p = p->next;
+        }
+        while (!stk.empty()) {
+            res.push_back(stk.top());
+            stk.pop();
         }
         return res;
     }
@@ -1821,7 +2050,7 @@ public:
 
 
 
-LCR136 删除链表节点 -E
+## LCR136 删除链表节点 -E	
 
 ```cpp
 /**
@@ -1848,5 +2077,975 @@ public:
         return newHead.next;
     }
 };
+```
+
+
+
+## LCR137 模糊搜索验证 -H
+
+> ![image-20240418170437884](LeetCode/image-20240418170437884.png)
+
+```cpp
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        if (s == "")
+            return false;
+        if (s == p)
+            return true;
+        else if (p == ".")
+            return true;
+        else
+            return false;
+    }
+
+    bool articleMatch(string s, string p) {
+        int m = s.size(), n = p.size();
+        vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
+        dp[0][0] = true;
+        for (int i = 0; i <= m; ++i) {
+            for (int j = 1; j <= n; ++j) {
+                string curs = (i == 0) ? "" : s.substr(i - 1, 1);
+
+                if (p[j - 1] == '*') {
+                    if (isMatch(curs, p.substr(j - 2, 1)))
+                        dp[i][j] = (dp[i - 1][j] || dp[i][j - 2]);
+                    else
+                        dp[i][j] = dp[i][j - 2];
+                } else {
+                    if (isMatch(curs, p.substr(j - 1, 1)))
+                        dp[i][j] = dp[i - 1][j - 1];
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
+```
+
+
+
+## LCR138 有效数字 -M
+
+> 有限状态自动机
+
+```cpp
+class Solution {
+public:
+    enum State {
+        STATE_INITIAL,
+        STATE_INT_SIGN,
+        STATE_INTEGER,
+        STATE_POINT,
+        STATE_POINT_WITHOUT_INT,
+        STATE_FRACTION,
+        STATE_EXP,
+        STATE_EXP_SIGN,
+        STATE_EXP_NUMBER,
+        STATE_END
+    };
+
+    enum CharType {
+        CHAR_NUMBER,
+        CHAR_EXP,
+        CHAR_POINT,
+        CHAR_SIGN,
+        CHAR_SPACE,
+        CHAR_ILLEGAL
+    };
+
+    CharType toCharType(char ch) {
+        if (ch >= '0' && ch <= '9') {
+            return CHAR_NUMBER;
+        } else if (ch == 'e' || ch == 'E') {
+            return CHAR_EXP;
+        } else if (ch == '.') {
+            return CHAR_POINT;
+        } else if (ch == '+' || ch == '-') {
+            return CHAR_SIGN;
+        } else if (ch == ' ') {
+            return CHAR_SPACE;
+        } else {
+            return CHAR_ILLEGAL;
+        }
+    }
+
+    bool validNumber(string s) {
+        unordered_map<State, unordered_map<CharType, State>> transfer{
+                {
+                        STATE_INITIAL,           {
+                                                         {CHAR_SPACE,  STATE_INITIAL},
+                                                         {CHAR_NUMBER, STATE_INTEGER},
+                                                         {CHAR_POINT, STATE_POINT_WITHOUT_INT},
+                                                         {CHAR_SIGN,  STATE_INT_SIGN}
+                                                 }
+                },
+                {
+                        STATE_INT_SIGN,          {
+                                                         {CHAR_NUMBER, STATE_INTEGER},
+                                                         {CHAR_POINT,  STATE_POINT_WITHOUT_INT}
+                                                 }
+                },
+                {
+                        STATE_INTEGER,           {
+                                                         {CHAR_NUMBER, STATE_INTEGER},
+                                                         {CHAR_EXP,    STATE_EXP},
+                                                         {CHAR_POINT, STATE_POINT},
+                                                         {CHAR_SPACE, STATE_END}
+                                                 }
+                },
+                {
+                        STATE_POINT,             {
+                                                         {CHAR_NUMBER, STATE_FRACTION},
+                                                         {CHAR_EXP,    STATE_EXP},
+                                                         {CHAR_SPACE, STATE_END}
+                                                 }
+                },
+                {
+                        STATE_POINT_WITHOUT_INT, {
+                                                         {CHAR_NUMBER, STATE_FRACTION}
+                                                 }
+                },
+                {
+                        STATE_FRACTION,
+                                                 {
+                                                         {CHAR_NUMBER, STATE_FRACTION},
+                                                         {CHAR_EXP,    STATE_EXP},
+                                                         {CHAR_SPACE, STATE_END}
+                                                 }
+                },
+                {
+                        STATE_EXP,
+                                                 {
+                                                         {CHAR_NUMBER, STATE_EXP_NUMBER},
+                                                         {CHAR_SIGN,   STATE_EXP_SIGN}
+                                                 }
+                },
+                {
+                        STATE_EXP_SIGN,          {
+                                                         {CHAR_NUMBER, STATE_EXP_NUMBER}
+                                                 }
+                },
+                {
+                        STATE_EXP_NUMBER,        {
+                                                         {CHAR_NUMBER, STATE_EXP_NUMBER},
+                                                         {CHAR_SPACE,  STATE_END}
+                                                 }
+                },
+                {
+                        STATE_END,               {
+                                                         {CHAR_SPACE,  STATE_END}
+                                                 }
+                }
+        };
+
+        int len = s.length();
+        State st = STATE_INITIAL;
+
+        for (int i = 0; i < len; i++) {
+            CharType typ = toCharType(s[i]);
+            if (transfer[st].find(typ) == transfer[st].end()) {
+                return false;
+            } else {
+                st = transfer[st][typ];
+            }
+        }
+        return st == STATE_INTEGER || st == STATE_POINT || st == STATE_FRACTION || st == STATE_EXP_NUMBER ||
+               st == STATE_END;
+    }
+};
+
+class Solution {
+public:
+    bool isNumber(string s) {
+        //去掉首尾空格
+        int i = 0;
+        while (i < s.size() && s[i] == ' ')
+            i++;
+        s = s.substr(i);
+        while (s.back() == ' ')
+            s.pop_back();
+            
+        bool numFlag = false;
+        bool dotFlag = false;
+        bool eFlag = false;
+        for (int i = 0; i < s.size(); i++) {
+            // 判定为数字，则标记numFlag
+            if (isdigit(s[i])) {
+                numFlag = true;
+            }
+            // 判定为'.'需要没出现过'.'并且没出现过'e'
+            else if (s[i] == '.' && !dotFlag && !eFlag) {
+                dotFlag = true;
+            }
+            // 判定为'e'，需要没出现过'e'，并且出现过数字
+            else if ((s[i] == 'e' || s[i] == 'E') && !eFlag && numFlag) {
+                eFlag = true;
+                numFlag = false; // 'e'后面必须跟着一个整数，所以出现'e'之后就标志为false
+            }
+            // 判定为'+''-'符号，只能出现在第一位或者紧接'e'后面
+            else if ((s[i] == '+' || s[i] == '-') && (i == 0 || s[i - 1] == 'e' || s[i - 1] == 'E')) {
+                
+            } 
+            // 其他情况，都是非法的
+            else {
+                return false;
+            }
+        }
+        return numFlag;
+    }
+};
+
+```
+
+
+
+## LCR139 训练计划 I -E
+
+```cpp
+class Solution {
+public:
+    vector<int> trainingPlan(vector<int> &actions) {
+        int left = 0, right = actions.size() - 1;
+        while (left < right) {
+            while (left <= right && actions[left] % 2 == 1)
+                left++;
+            while (left <= right && actions[right] % 2 == 0)
+                right--;
+            if (left <= right)
+                swap(actions[left], actions[right]);
+            left++;
+            right--;
+        }
+        return actions;
+    }
+};
+```
+
+
+
+## LCR140 训练计划 II -E
+
+> 链表中倒数第k个节点，使用快慢指针
+
+```cpp
+class Solution {
+public:
+    ListNode* trainingPlan(ListNode* head, int cnt) {
+        ListNode *left = head, *right = head;
+        for (int i = 0; i < cnt; i++)
+            right = right->next;
+        while (right != nullptr) {
+            left = left->next;
+            right = right->next;
+        }
+        return left;
+    }
+};
+```
+
+
+
+## LCR141 训练计划 III -E
+
+> 反转链表
+
+```cpp
+class Solution {
+public:
+    ListNode *trainningPlan(ListNode *head) {
+        ListNode *pre = nullptr, *cur = head, *tmp;
+        while (cur != nullptr) {
+            tmp = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = tmp;
+        }
+        return pre;
+    }
+};
+```
+
+
+
+## LCR142 训练计划 IV -E
+
+> 合并两个排序的链表
+
+```cpp
+class Solution {
+public:
+    ListNode* trainningPlan(ListNode* l1, ListNode* l2) {
+        ListNode* res = new ListNode();
+        ListNode* cur = res;
+        while(l1 != nullptr && l2 != nullptr) {
+            if(l1->val < l2->val) {
+                cur->next = l1;
+                l1 = l1->next;
+            }
+            else {
+                cur->next = l2;
+                l2 = l2->next;
+            }
+            cur = cur->next;
+        }
+        cur->next = (l1 != nullptr) ? l1 : l2;
+        return res->next;
+    }
+};
+```
+
+
+
+## LCR143 子结构判断 -M
+
+> 遍历
+
+````cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSubStructure(TreeNode *A, TreeNode *B) {
+        if (!A || !B)
+            return false;
+        if (A->val != B->val) {
+            return isSubStructure(A->left, B) || isSubStructure(A->right, B);
+        } else {
+            if (preorder(A, B))
+                return true;
+            else
+                return isSubStructure(A->left, B) ||
+                       isSubStructure(A->right, B);
+        }
+    }
+
+private:
+    bool preorder(TreeNode *A, TreeNode *B) {
+        if (B == NULL)
+            return true;
+        if (A == NULL || A->val != B->val)
+            return false;
+        return preorder(A->left, B->left) && preorder(A->right, B->right);
+    }
+};
+````
+
+
+
+## LCR144 翻转二叉树 -E
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+private:
+    void swap(TreeNode *root) {
+        TreeNode *tmp = root->left;
+        root->left = root->right;
+        root->right = tmp;
+    }
+
+public:
+    TreeNode *mirrorTree(TreeNode *root) {
+        if (root == NULL)
+            return NULL;
+        swap(root);
+        mirrorTree(root->left);
+        mirrorTree(root->right);
+        return root;
+    }
+};
+```
+
+
+
+## LCR145 判断对称二叉树 -E
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+private:
+    bool recur(TreeNode *leftNode, TreeNode *rightNode) {
+        if (leftNode == nullptr && rightNode == nullptr)
+            return true;
+        if (leftNode == nullptr || rightNode == nullptr ||
+            leftNode->val != rightNode->val)
+            return false;
+        return recur(leftNode->left, rightNode->right) &&
+               recur(leftNode->right, rightNode->left);
+    }
+
+public:
+    bool checkSymmetricTree(TreeNode *root) {
+        if (root == nullptr)
+            return true;
+        else
+            return recur(root->left, root->right);
+    }
+};
+```
+
+
+
+## LCR146 螺旋遍历二维数组 -E
+
+```cpp
+class Solution {
+public:
+    vector<int> spiralArray(vector<vector<int>> &array) {
+        vector<int> res;
+        if (array.empty()) return res;
+        int left = 0, right = array[0].size() - 1, top = 0, bottom = array.size() - 1;
+        while (true) {
+            for (int i = left; i <= right; i++) res.push_back(array[top][i]); // left to right
+            if (++top > bottom) break;
+            for (int i = top; i <= bottom; i++) res.push_back(array[i][right]); // top to bottom
+            if (left > --right) break;
+            for (int i = right; i >= left; i--) res.push_back(array[bottom][i]); // right to left
+            if (top > --bottom) break;
+            for (int i = bottom; i >= top; i--) res.push_back(array[i][left]); // bottom to top
+            if (++left > right) break;
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR147 最小栈 -E
+
+> 维护一个辅助栈，栈中维护一个主栈的非严格单调递减子序列，最小值即辅助栈的栈顶元素。入栈时如果该元素大于辅助栈的栈顶元素，说明这个元素出栈时不会对最小值有影响，所以可以放心出栈而不用添加到辅助栈。入辅助栈的元素代表着主栈某一段中的最小值。
+
+```cpp
+class MinStack {
+public:
+    /** initialize your data structure here. */
+    stack<int> master, assist;
+
+    MinStack() {
+    }
+
+    void push(int x) {
+        master.push(x);
+        if (assist.empty() || x <= assist.top())
+            assist.push(x);
+    }
+
+    void pop() {
+        int tmp = master.top();
+        master.pop();
+        if (tmp == assist.top())
+            assist.pop();
+    }
+
+    int top() {
+        return master.top();
+    }
+
+    int getMin() {
+        return assist.top();
+    }
+};
+```
+
+
+
+## LCR148 验证图书取出顺序 -M
+
+```cpp
+class Solution {
+public:
+    bool validateBookSequences(vector<int>& putIn, vector<int>& takeOut) {
+        stack<int> stk;
+        int i = 0;
+        for(int num : putIn) {
+            stk.push(num); // num 入栈
+            while(!stk.empty() && stk.top() == takeOut[i]) { // 循环判断与出栈
+                stk.pop();
+                i++;
+            }
+        }
+        return stk.empty();
+    }
+};
+```
+
+
+
+## LCR149 彩灯装饰记录 I -M
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> decorateRecord(TreeNode* root) {
+        vector<int> res;
+        queue<TreeNode*> q;
+        if (!root)
+            return res;
+        q.push(root);
+        while (!q.empty()) {
+            TreeNode* cur = q.front();
+            res.push_back(cur->val);
+            if (cur->left)
+                q.push(cur->left);
+            if (cur->right)
+                q.push(cur->right);
+            q.pop();
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR150 彩灯装饰记录 II -E
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> decorateRecord(TreeNode* root) {
+        vector<vector<int>> res;
+        queue<TreeNode*> q;
+        TreeNode* cur;
+        int n;
+        if (!root)
+            return res;
+        q.push(root);
+        while (!q.empty()) {
+            n = q.size();
+            vector<int> tmp;
+            for (int i = 0; i < n; i++) {
+                cur = q.front();
+                tmp.push_back(cur->val);
+                if (cur->left)
+                    q.push(cur->left);
+                if (cur->right)
+                    q.push(cur->right);
+                q.pop();
+            }
+            res.push_back(tmp);
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR151 彩灯装饰记录 III -M
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+
+// 层序遍历 + 倒序
+class Solution {
+public:
+    vector<vector<int>> decorateRecord(TreeNode* root) {
+        bool flag = false;
+        vector<vector<int>> res;
+        queue<TreeNode*> q;
+        TreeNode* cur;
+        int n;
+        if (!root)
+            return res;
+        q.push(root);
+        while (!q.empty()) {
+            n = q.size();
+            vector<int> tmp;
+            for (int i = 0; i < n; i++) {
+                cur = q.front();
+                tmp.push_back(cur->val);
+                if (cur->left)
+                    q.push(cur->left);
+                if (cur->right)
+                    q.push(cur->right);
+                q.pop();
+            }
+            if (flag)
+                std::reverse(tmp.begin(), tmp.end());
+            res.push_back(tmp);
+            flag = !flag;
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR152  验证二叉搜索树的后序遍历序列 -M
+
+```cpp
+// 分治
+class Solution {
+private:
+    bool recur(vector<int> &postorder, int begin, int end) {
+        if (begin >= end)
+            return true;
+        int firstMax = end;
+        for (int i = begin; i < end; ++i) {
+            if (postorder[i] < postorder[end])
+                continue;
+            firstMax = i;
+            break;
+        }
+        for (int i = firstMax; i < end; ++i) {
+            if (postorder[i] > postorder[end])
+                continue;
+            return false;
+        }
+        return recur(postorder, begin, firstMax - 1) && recur(postorder, firstMax, end - 1);
+    }
+
+public:
+    bool verifyTreeOrder(vector<int> &postorder) {
+        return recur(postorder, 0, postorder.size() - 1);
+    }
+};
+```
+
+
+
+## LCR153 二叉树中和为目标值的路径 -M
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+private:
+    vector<vector<int>> res;
+    vector<int> tmp;
+    int cur = 0;
+
+    void recur(TreeNode *root, int target) {
+        if (root == nullptr)
+            return;
+        cur += root->val;
+        tmp.push_back(root->val);
+        if (cur == target && root->left == nullptr && root->right == nullptr) {
+            res.push_back(tmp);
+            cur -= root->val;
+            tmp.pop_back();
+            return;
+        }
+        recur(root->left, target);
+        recur(root->right, target);
+        cur -= root->val;
+        tmp.pop_back();
+    }
+
+public:
+    vector<vector<int>> pathTarget(TreeNode *root, int target) {
+        recur(root, target);
+        return res;
+    }
+};
+```
+
+
+
+## LCR154 复杂链表的复制 -M
+
+```cpp
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* next;
+    Node* random;
+
+    Node(int _val) {
+        val = _val;
+        next = NULL;
+        random = NULL;
+    }
+};
+*/
+// 哈希表
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        if(head == nullptr) return nullptr;
+        Node* cur = head;
+        unordered_map<Node*, Node*> mp;
+        // 3. 复制各节点，并建立 “原节点 -> 新节点” 的 mp 映射
+        while(cur != nullptr) {
+            mp[cur] = new Node(cur->val);
+            cur = cur->next;
+        }
+        cur = head;
+        // 4. 构建新链表的 next 和 random 指向
+        while(cur != nullptr) {
+            mp[cur]->next = mp[cur->next];
+            mp[cur]->random = mp[cur->random];
+            cur = cur->next;
+        }
+        // 5. 返回新链表的头节点
+        return mp[head];
+    }
+};
+
+// 拼接+拆分
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        if (head == nullptr)
+            return nullptr;
+        Node *p = head, *tmp;
+        while (p != NULL) {
+            tmp = new Node(p->val);
+            tmp->next = p->next;
+            p->next = tmp;
+            p = tmp->next;
+        }
+        p = head;
+        while (p != NULL) {
+            tmp = p->next;
+            if (p->random != NULL)
+                tmp->random = p->random->next;
+            p = tmp->next;
+        }
+        p = head;
+        tmp = p->next;
+        Node* res = tmp;
+        while (tmp->next != NULL) {
+            p->next = tmp->next;
+            tmp->next = tmp->next->next;
+            p = p->next;
+            tmp = tmp->next;
+        }
+        p->next = NULL;
+        return res;
+    }
+};
+```
+
+
+
+## LCR155 将二叉搜索树转化为排序的双向链表 -M
+
+```cpp
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* left;
+    Node* right;
+
+    Node() {}
+
+    Node(int _val) {
+        val = _val;
+        left = NULL;
+        right = NULL;
+    }
+
+    Node(int _val, Node* _left, Node* _right) {
+        val = _val;
+        left = _left;
+        right = _right;
+    }
+};
+*/
+// 使用数组
+class Solution {
+public:
+    vector<Node*> arr;
+    void inorder(Node* root) {
+        if (root == NULL)
+            return;
+        inorder(root->left);
+        arr.push_back(root);
+        inorder(root->right);
+    }
+    Node* treeToDoublyList(Node* root) {
+        if (root == nullptr)
+            return nullptr;
+        inorder(root);
+        int n = arr.size();
+        for (int i = 0; i < n; i++) 
+            arr[i]->right = arr[(i + 1) % n];
+        arr[0]->left = arr[n - 1];
+        for (int i = 1; i < n; i++) 
+            arr[i]->left = arr[i - 1];
+        return arr[0];
+    }
+};
+
+//直接修改
+class Solution {
+public:
+    Node* treeToDoublyList(Node* root) {
+        if(root == nullptr) return nullptr;
+        dfs(root);
+        head->left = pre;
+        pre->right = head;
+        return head;
+    }
+private:
+    Node *pre, *head;
+    void dfs(Node* cur) {
+        if(cur == nullptr) return;
+        dfs(cur->left);
+        if(pre != nullptr) pre->right = cur;
+        else head = cur;
+        cur->left = pre;
+        pre = cur;
+        dfs(cur->right);
+    }
+};
+```
+
+
+
+## LCR156 序列化与反序列化二叉树 -H
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Codec {
+public:
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        queue<TreeNode*> que;
+        string res = "";
+        if(root==nullptr) return res;
+        que.push(root);
+        while (!que.empty()) {
+            TreeNode* tmp = que.front();
+            que.pop();
+            if (tmp == nullptr) {
+                res += "null,";
+                continue;
+            }
+            que.push(tmp->left);
+            que.push(tmp->right);
+            res += to_string(tmp->val) + ",";
+        }
+        res.pop_back();
+        return res;
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        stringstream ss(data);
+        vector<string> arr;
+        string tmp_str;
+        while (getline(ss, tmp_str, ','))
+            arr.push_back(tmp_str);
+        if (arr.size() == 0)
+            return nullptr;
+        queue<TreeNode*> que;
+        TreeNode *node, *tmp;
+        int idx = 1;
+        TreeNode* root = new TreeNode(stoi(arr[0]));
+        que.push(root);
+        while (!que.empty()) {
+            node = que.front();
+            if (arr[idx] != "null") {
+                tmp = new TreeNode(stoi(arr[idx++]));
+                node->left = tmp;
+                que.push(tmp);
+            } else {
+                node->left = nullptr;
+                idx++;
+            }
+            if (arr[idx] != "null") {
+                tmp = new TreeNode(stoi(arr[idx++]));
+                node->right = tmp;
+                que.push(tmp);
+            } else {
+                node->right = nullptr;
+                idx++;
+            }
+            que.pop();
+        }
+        return root;
+    }
+};
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec;
+// codec.deserialize(codec.serialize(root));
 ```
 

@@ -615,14 +615,14 @@ nohup Command [Arg...] [ &]
 
 # nohup命令提交作业时，指定输出文件：
 nohup command > myout.file 2>&1 &
+echo $! > server.pid # 将最后一个后台进程的 PID 存储到一个文件 server.pid 中
 ```
 
 > 0 – stdin (standard input，标准输入) 
 > 1 – stdout (standard output，标准输出)
 > 2 – stderr (standard error，标准错误输出) 
 > 2>&1解释：
-> 将标准错误（2）重定向到标准输出（&1），
-> 标准输出（&1）再被重定向输入到myout.file文件中。
+> 将标准错误（2）重定向到标准输出（&1），标准输出（&1）再被重定向输入到myout.file文件中。
 
 - 最后的" &"：表示后台运行，不霸占交互命令行
 - 如果不将 nohup 命令的输出重定向，输出将附加到当前目录的 nohup.out 文件中。
@@ -768,3 +768,14 @@ nohup command > myout.file 2>&1 &
         找到您要删除的定时任务行，并将其删除或注释掉（在行首添加 `#` 符号）。
 
     请谨慎删除定时任务，确保您只删除了需要删除的任务。编辑或删除 crontab 文件后，不需要重启 cron 服务，修改会立即生效。
+
+
+
+# update-alternatives
+
+Ubuntu提供了`update-alternatives`工具来管理安装的多个版本
+
+```bash
+sudo update-alternatives --config java
+```
+
