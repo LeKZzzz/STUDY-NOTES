@@ -298,7 +298,7 @@ class 选择器在 HTML 中以 class 属性表示, 在 CSS 中，类选择器以
     property: style attribute;
 }
 /*选择标签中所有类名为class的元素*/
-lable.class{
+label.class{
     property: style attribute;
 }
 ```

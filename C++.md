@@ -1245,3 +1245,25 @@ return_type function_name( parameter list );
     ```
 
     这种方法使用了范围循环，更加简洁直观。`const auto& pair` 表示每个元素都是一个键值对，其中 `pair.first` 是键，`pair.second` 是值。
+
+
+
+## priority_queue
+
+优先队列，C++默认大根堆，Python默认小根堆
+
+`priority_queue<储存的类型,vector<储存的类型>,顶堆的类型> 容器名`
+
+> 顶堆类型
+>
+> - less<储存的数据类型> 即使用大顶堆
+> - greater<储存的数据类型> 即是用小顶堆
+
+自定义数据结构时，如果要创建小堆，需要用户提供>的重载；如果要创建大堆，需要用户提供<的重载
+
+
+
+## 升序与降序
+
+1. priority_queue：greater<>为小根堆，less<>为大根堆
+2. sort：greater<>()为降序，less<>()为升序

@@ -50,14 +50,13 @@ public:
 ```c++
 class Solution {
 public:
-    vector<int> twoSum(vector<int>& nums, int target) {
-        unordered_map<int, int> hashtable;
+    vector<int> twoSum(vector<int> &nums, int target) {
+        unordered_map<int, int> mp;
         for (int i = 0; i < nums.size(); ++i) {
-            auto it = hashtable.find(target - nums[i]);
-            if (it != hashtable.end()) {
+            auto it = mp.find(target - nums[i]);
+            if (it != mp.end()) 
                 return {it->second, i};
-            }
-            hashtable[nums[i]] = i;
+            mp[nums[i]] = i;
         }
         return {};
     }
@@ -1134,83 +1133,6 @@ public:
 
 
 
-## Q5 最长回文字符串 -M
-
-> ![image-20240418093146260](LeetCode/image-20240418093146260.png)
-
-```cpp
-class Solution {
-public:
-    string longestPalindrome(string s) {
-        int n = s.length();
-        if (n < 2) return s;
-
-        vector<vector<bool>> dp(n, vector<bool>(n, false));
-        for (int i = 0; i < n; ++i) {
-            dp[i][i] = true;
-        }
-
-        int left, right;
-        int maxLen = 0;
-        string result;
-
-        for (int length = 2; length <= n; ++length) {
-            for (left = 0; left < n; left++) {
-                right = left + length - 1;
-                if (right >= n) break;
-                if (length <= 3) {
-                    if (s[left] == s[right])
-                        dp[left][right] = true;
-                } else {
-                    if (s[left] == s[right] && dp[left + 1][right - 1])
-                        dp[left][right] = true;
-                }
-
-            }
-        }
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (dp[i][j] && (j - i + 1) > maxLen) {
-                    maxLen = j - i + 1;
-                    result = s.substr(i, j - i + 1);
-                }
-            }
-        }
-        return result;
-    }
-};
-```
-
-
-
-## Q20 有效的括号 -E
-
-```cpp
-class Solution {
-public:
-    bool isValid(string s) {
-        stack<char> stk;
-        unordered_map<char, char> mp;
-        mp['('] = ')';
-        mp['['] = ']';
-        mp['{'] = '}';
-        for (int i = 0; i < s.length(); i++) {
-            if (s[i] == '(' || s[i] == '[' || s[i] == '{')
-                stk.push(s[i]);
-            else if (!stk.empty() && mp[stk.top()] == s[i]) {
-                stk.pop();
-            } else {
-                return false;
-            }
-        }
-        if (stk.empty())
-            return true;
-        else
-            return false;
-    }
-};
-```
-
 
 
 ## Q343 整数拆分 -M
@@ -1257,6 +1179,156 @@ public:
 
 
 
+## Q2960 统计已测试设备 -E
+
+```cpp
+class Solution {
+public:
+    int countTestedDevices(vector<int>& batteryPercentages) {
+        int count = 0,res=0;
+        int n = batteryPercentages.size();
+        for(int i = 0;i<n;i++){
+            if(batteryPercentages[i]-count>0){
+                count++;
+                res++;
+            }
+        }
+        return res;
+    }
+};
+```
+
+
+
+## Q826 安排工作以达到最大收益 -M
+
+```cpp
+class Solution {
+public:
+    int maxProfitAssignment(vector<int> &difficulty, vector<int> &profit, vector<int> &worker) {
+        int n = difficulty.size(), res = 0;
+        vector<pair<int, int>> jobs(n);
+        for (int i = 0; i < n; i++)
+            jobs[i] = make_pair(difficulty[i], profit[i]);
+        std::sort(jobs.begin(), jobs.end());
+        std::sort(worker.begin(), worker.end());
+        int idx = 0, tmp = 0;
+        for (int i = 0; i < worker.size(); ++i) {
+            while (idx < n && jobs[idx].first <= worker[i]) {
+                tmp = std::max(tmp, jobs[idx].second);
+                idx++;
+            }
+            res += tmp;
+        }
+        return res;
+    }
+};
+```
+
+
+
+## Q2903 找出满足差值条件的下标 I -E
+
+> ![image-20240525093732083](LeetCode/image-20240525093732083.png)
+>
+> ![image-20240525093742383](LeetCode/image-20240525093742383.png)
+
+```cpp
+// 方法一：暴力
+class Solution {
+public:
+    vector<int> findIndices(vector<int> &nums, int indexDifference, int valueDifference) {
+        int n = nums.size();
+        for (int i = 0; i < n; ++i)
+            for (int j = i + indexDifference; j < n; ++j)
+                if (abs(nums[i] - nums[j]) >= valueDifference)
+                    return {i, j};
+        return {-1, -1};
+    }
+};
+
+// 方法二
+class Solution {
+public:
+    vector<int> findIndices(vector<int> &nums, int indexDifference, int valueDifference) {
+        int max_idx = 0, min_idx = 0;
+        for (int j = indexDifference; j < nums.size(); j++) {
+            int i = j - indexDifference;
+            if (nums[i] > nums[max_idx])
+                max_idx = i;
+            else if (nums[i] < nums[min_idx])
+                min_idx = i;
+
+            if (nums[max_idx] - nums[j] >= valueDifference)
+                return {max_idx, j};
+            if (nums[j] - nums[min_idx] >= valueDifference)
+                return {min_idx, j};
+        }
+        return {-1, -1};
+    }
+};
+```
+
+
+
+## Q2664 找出可整除性得分最大的整数 -E
+
+```cpp
+class Solution {
+public:
+    int maxDivScore(vector<int> &nums, vector<int> &divisors) {
+        int res = divisors[0], curmax = 0;
+        set<int> st;
+        std::sort(nums.begin(), nums.end(), greater<int>());
+        for (auto divisor: divisors) {
+            if (st.find(divisor) != st.end())
+                continue;
+            st.insert(divisor);
+            int tmp = 0;
+            for (auto num: nums)
+                if (num >= divisor) {
+                    if (num % divisor == 0)
+                        tmp++;
+                } else
+                    break;
+            if (tmp > curmax) {
+                curmax = tmp;
+                res = divisor;
+            } else if (tmp == curmax) {
+                if (divisor < res)
+                    res = divisor;
+            }
+        }
+        return res;
+    }
+};
+```
+
+
+
+## Q2779 数组的最大美丽值 -M
+
+> 排序+滑动窗口
+
+```cpp
+class Solution {
+public:
+    int maximumBeauty(vector<int>& nums, int k) {
+        ranges::sort(nums);
+        int ans = 0, left = 0;
+        for (int right = 0; right < nums.size(); right++) {
+            while (nums[right] - nums[left] > k * 2) {
+                left++;
+            }
+            ans = max(ans, right - left + 1);
+        }
+        return ans;
+    }
+};
+```
+
+
+
 # 树
 
 ---
@@ -1270,11 +1342,90 @@ public:
 
 
 
+# 栈
+
+---
+
+## Q20 有效的括号 -E
+
+```cpp
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> stk;
+        unordered_map<char, char> mp;
+        mp['('] = ')';
+        mp['['] = ']';
+        mp['{'] = '}';
+        for (int i = 0; i < s.length(); i++) {
+            if (s[i] == '(' || s[i] == '[' || s[i] == '{')
+                stk.push(s[i]);
+            else if (!stk.empty() && mp[stk.top()] == s[i]) {
+                stk.pop();
+            } else {
+                return false;
+            }
+        }
+        if (stk.empty())
+            return true;
+        else
+            return false;
+    }
+};
+```
 
 
 
+# 贪心
 
-# Q146 LRU缓存 -M
+---
+
+## Q2244 完成所有任务需要的最少轮次 -M
+
+> ![image-20240514233418967](LeetCode/image-20240514233418967.png)
+
+```cpp
+class Solution {
+public:
+    int minimumRounds(vector<int> &tasks) {
+        int res = 0;
+        unordered_map<int, int> mp;
+        for (auto i: tasks)
+            mp[i]++;
+        for (auto pair: mp) {
+            if (pair.second > 1)
+                res += (pair.second + 2) / 3;
+            else
+                return -1;
+        }
+        return res;
+    }
+};
+```
+
+
+
+## Q1953 你可以工作的最大周数 -M
+
+> ![image-20240516191023221](LeetCode/image-20240516191023221.png)
+
+```CPP
+class Solution {
+public:
+    long long numberOfWeeks(vector<int> &milestones) {
+        long long longest = *max_element(milestones.begin(), milestones.end());
+        long long res = accumulate(milestones.begin(), milestones.end(), 0ll) - longest;
+        if (res >= longest - 1)
+            return longest + res;
+        else
+            return 2 * res + 1;
+    }
+};
+```
+
+# 杂
+
+## Q146 LRU缓存 -M
 
 ```cpp
 struct DLinkedNode {
@@ -1418,7 +1569,7 @@ public:
 
 ## Q42 接雨水 -H
 
-> 当前遍历的元素与栈顶元素相同时，如果栈顶元素不出栈，则计算时当前柱子的高度为0结果也会为0，与出栈结果相同。
+> 当前遍历的元素与栈顶元素相同时，如果栈顶元素不出栈，则计算时当前柱子的高度为0结果也会为0，与出栈结果相同。 
 
 ```cpp
 //相同高度出栈
@@ -1470,6 +1621,31 @@ public:
 
 
 
+## Q1673 找出最具竞争力的子序列 -M
+
+> 何时出栈：新元素小于栈顶元素，且剩余元素个数和出栈后栈内元素个数的和>=k时
+>
+> 何时入栈：栈不满
+
+```cpp
+class Solution {
+public:
+    vector<int> mostCompetitive(vector<int> &nums, int k) {
+        int idx = 0, n = nums.size();
+        for (int i = 0; i < n; ++i) {
+            while (idx >= 1 && nums[idx - 1] > nums[i] && n - i + idx - 1 >= k)
+                idx--;
+            if (idx != k)
+                nums[idx++] = nums[i];
+        }
+        nums.resize(k);
+        return nums;
+    }
+};
+```
+
+
+
 # 字符串
 
 ---
@@ -1493,6 +1669,199 @@ public:
             n--;
         }
         std::reverse(res.begin(), res.end());
+        return res;
+    }
+};
+```
+
+
+
+## Q28 找出字符串中第一个匹配项的下标 -E
+
+> KMP算法
+
+```cpp
+// 暴力
+class Solution {
+public:
+    int strStr(string haystack, string needle) {
+        int n = haystack.size(), length = needle.size();
+        for (int i = 0; i < n-length+1; ++i)
+            if(haystack.substr(i,length)==needle)
+                return i;
+        return -1;
+    }
+};
+```
+
+
+
+## Q2981 找出出现至少三次的最长特殊子字符串I -M
+
+> ![image-20240529115935042](LeetCode/image-20240529115935042.png)
+
+```cpp
+class Solution {
+public:
+    int maximumLength(string s) {
+        vector<int> groups[26];
+        int cnt = 0, n = s.length();
+        for (int i = 0; i < n; i++) {
+            cnt++;
+            if (i + 1 == n || s[i] != s[i + 1]) {
+                groups[s[i] - 'a'].push_back(cnt); // 统计连续字符长度
+                cnt = 0;
+            }
+        }
+
+        int ans = 0;
+        for (auto& a: groups) {
+            if (a.empty()) continue;
+            ranges::sort(a, greater());
+            a.push_back(0);
+            a.push_back(0); // 假设还有两个空串
+            ans = max({ans, a[0] - 2, min(a[0] - 1, a[1]), a[2]});
+        }
+
+        return ans ? ans : -1;
+    }
+};
+```
+
+
+
+# 动态规划
+
+---
+
+## LCR99 最小路径和 -M
+
+```cpp
+class Solution {
+public:
+    int minPathSum(vector<vector<int>> &grid) {
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        dp[0][0] = grid[0][0];
+        for (int i = 1; i < m; ++i)
+            dp[i][0] = dp[i - 1][0] + grid[i][0];
+        for (int i = 1; i < n; ++i)
+            dp[0][i] = dp[0][i - 1] + grid[0][i];
+        for (int i = 1; i < m; ++i)
+            for (int j = 1; j < n; ++j)
+                dp[i][j] = std::min(dp[i - 1][j] + grid[i][j], dp[i][j - 1] + grid[i][j]);
+        return dp[m - 1][n - 1];
+    }
+};
+```
+
+
+
+## Q5 最长回文字符串 -M
+
+> ![image-20240418093146260](LeetCode/image-20240418093146260.png)
+
+```cpp
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n = s.length();
+        if (n < 2) return s;
+
+        vector<vector<bool>> dp(n, vector<bool>(n, false));
+        for (int i = 0; i < n; ++i) {
+            dp[i][i] = true;
+        }
+
+        int left, right;
+        int maxLen = 0;
+        string result;
+
+        for (int length = 2; length <= n; ++length) {
+            for (left = 0; left < n; left++) {
+                right = left + length - 1;
+                if (right >= n) break;
+                if (length <= 3) {
+                    if (s[left] == s[right])
+                        dp[left][right] = true;
+                } else {
+                    if (s[left] == s[right] && dp[left + 1][right - 1])
+                        dp[left][right] = true;
+                }
+
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (dp[i][j] && (j - i + 1) > maxLen) {
+                    maxLen = j - i + 1;
+                    result = s.substr(i, j - i + 1);
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
+
+
+# BFS
+
+---
+
+## Q994 腐烂的橘子 -M
+
+```cpp
+class Solution {
+private:
+    int res = 0;
+    int count = 0;
+
+    void bfs(vector<vector<int>> &grid) {
+        int m = grid.size(), n = grid[0].size();
+        queue<pair<int, int>> que;
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        vector<pair<int, int>> dirs = {{1,  0},
+                                       {-1, 0},
+                                       {0,  1},
+                                       {0,  -1}};
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1)
+                    count++;
+                if (grid[i][j] == 2) {
+                    que.push(make_pair(i, j));
+                    visited[i][j] = true;
+                }
+            }
+        if (count == 0)
+            return;
+        while (!que.empty()) {
+            int q_size = que.size();
+            for (int k = 0; k < q_size; k++) {
+                for (auto dir: dirs) {
+                    int newx = que.front().first + dir.first;
+                    int newy = que.front().second + dir.second;
+                    if (0 <= newx && newx < m && 0 <= newy && newy < n &&
+                        grid[newx][newy] == 1 && !visited[newx][newy]) {
+                        que.push(make_pair(newx, newy));
+                        visited[newx][newy] = true;
+                        count--;
+                    }
+                }
+                que.pop();
+            }
+            res++;
+        }
+        res--;
+        if (count != 0)
+            res = -1;
+    }
+
+public:
+    int orangesRotting(vector<vector<int>> &grid) {
+        bfs(grid);
         return res;
     }
 };
@@ -1875,7 +2244,7 @@ public:
 >
 > ![image-20240412102119020](LeetCode/image-20240412102119020.png)
 >
-> 快速幂求余
+> 快速幂求余(LCR 134)
 >
 > ![image-20240412102139831](LeetCode/image-20240412102139831.png)
 
@@ -3047,5 +3416,455 @@ public:
 // Your Codec object will be instantiated and called as such:
 // Codec codec;
 // codec.deserialize(codec.serialize(root));
+```
+
+
+
+## LCR157 套餐内商品的排列顺序 -M
+
+```cpp
+// 暴力递归
+class Solution {
+public:
+    vector<string> res;
+    string tmp;
+    unordered_map<string,bool> mp;
+    void recur(string goods, vector<bool>& visited, int cur) {
+        int n=goods.size();
+        if (cur == n) {
+            if(!mp.count(tmp))
+                res.push_back(tmp);
+            mp[tmp]=true;
+            return;
+        }
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                tmp.push_back(goods[i]);
+                visited[i] = true;
+                recur(goods, visited, cur + 1);
+                tmp.pop_back();
+                visited[i] = false;
+            }
+        }
+    }
+    vector<string> goodsOrder(string goods) {
+        int n = goods.length();
+        if (n == 0)
+            return res;
+        vector<bool> visited(n, false);
+        recur(goods, visited, 0);
+        return res;
+    }
+};
+
+// 回溯+剪枝
+class Solution {
+private:
+    vector<string> res;
+    void recur(string str, int idx) {
+        if (idx == str.length()) {
+            res.push_back(str);
+            return;
+        }
+        set<char> st;
+        for (int i = idx; i < str.length(); i++) {
+            if (st.find(str[i]) != st.end())    // idx是否存在过str[i]字符，如果存在则没必要再交换一次
+                continue;
+            st.insert(str[i]);
+            swap(str[idx], str[i]);
+            recur(str, idx + 1);
+            swap(str[idx], str[i]);
+        }
+    }
+
+public:
+    vector<string> goodsOrder(string goods) {
+        recur(goods,0);
+        return res;
+    }
+};
+
+// 库函数
+class Solution {
+public:
+    vector<string> goodsOrder(string goods) {
+        vector<string> res;
+        sort(goods.begin(), goods.end());
+        do {
+            res.push_back(goods);
+        } while (next_permutation(goods.begin(), goods.end()));
+        return res;
+    }
+};
+```
+
+
+
+## LCR158 库存管理II -E
+
+> 摩尔投票法
+>
+> ![image-20240511093123263](LeetCode/image-20240511093123263.png)
+
+```cpp
+// 排序
+class Solution {
+public:
+    int inventoryManagement(vector<int>& stock) {
+        int cur = 1;
+        sort(stock.begin(), stock.end());
+        return stock[stock.size()/2];
+    }
+};
+
+// 哈希表
+class Solution {
+public:
+    int inventoryManagement(vector<int>& stock) {
+        unordered_map<int,int> mp;
+        for(auto i : stock){
+            if(mp.count(i)){
+                if(++mp[i]>(stock.size()/2))
+                return i;
+            }else{
+                mp[i]=1;
+            }
+        }
+        return stock[0];
+    }
+};
+
+// 摩尔投票法
+class Solution {
+public:
+    int inventoryManagement(vector<int>& stock) {
+        int vote = 0, cur;
+        for (int i = 0; i < stock.size(); i++) {
+            if (vote == 0) {
+                cur = stock[i];
+                vote = 1;
+                continue;
+            }
+            if (stock[i] != cur)
+                vote--;
+            else
+                vote++;
+        }
+        return cur;
+    }
+};
+```
+
+
+
+## LCR159 库存管理III -E
+
+```cpp
+// 排序
+class Solution {
+public:
+    vector<int> inventoryManagement(vector<int>& stock, int cnt) {
+        sort(stock.begin(), stock.end());
+        vector<int> res;
+        for (int i = 0; i < cnt; i++)
+            res.push_back(stock[i]);
+        return res;
+    }
+};
+
+// 大根堆(优先队列)
+class Solution {
+public:
+    vector<int> inventoryManagement(vector<int>& stock, int cnt) {
+        vector<int> res;
+        if (cnt == 0)
+            return res;
+        priority_queue<int> que;
+        for (int i = 0; i < cnt; i++)
+            que.push(stock[i]);
+        for (int i = cnt; i < stock.size(); i++) {
+            if (stock[i] < que.top()) {
+                que.pop();
+                que.push(stock[i]);
+            }
+        }
+        for (int i = 0; i < cnt; i++) {
+            res.push_back(que.top());
+            que.pop();
+        }
+        return res;
+    }
+};
+
+// 快速选择
+class Solution {
+private:
+    void quick_search(vector<int> &stock, int cnt, int begin, int end) {
+        if (begin >= end) return;
+        int tmp = stock[begin], left = begin, right = end;
+        while (left < right) {
+            while (left < right && stock[right] >= tmp) right--;
+            stock[left] = stock[right];
+            while (left < right && stock[left] <= tmp) left++;
+            stock[right] = stock[left];
+        }
+        stock[left] = tmp;
+        if (left == cnt)
+            return;
+        if (left > cnt) return quick_search(stock, cnt, begin, left - 1);
+        if (right < cnt) return quick_search(stock, cnt, right + 1, end);
+    }
+
+public:
+    vector<int> inventoryManagement(vector<int> &stock, int cnt) {
+        quick_search(stock, cnt, 0, stock.size() - 1);
+        vector<int> res;
+        res.assign(stock.begin(), stock.begin() + cnt);
+        return res;
+    }
+};
+```
+
+
+
+## LCR160 数据流中的中位数 -H
+
+> 创建一个大顶堆和一个小顶堆，中位数在大顶堆和小顶堆的堆顶之间，数据流中较大的一半保存在小顶堆中。如果两个堆中个数相等，则先放入大顶堆再将大顶堆堆顶放入小顶堆中，反之先放入小顶堆再将小顶堆堆顶放入大顶堆中。
+
+```cpp
+class MedianFinder {
+private:
+    priority_queue<int, vector<int>, greater<int>> larger;
+    priority_queue<int, vector<int>, less<int>> lower;
+    int m = 0, n = 0;
+public:
+    /** initialize your data structure here. */
+    MedianFinder() {
+
+    }
+
+    void addNum(int num) {
+        if (m == n) {
+            lower.push(num);
+            larger.push(lower.top());
+            lower.pop();
+            m++;
+        } else {
+            larger.push(num);
+            lower.push(larger.top());
+            larger.pop();
+            n++;
+        }
+    }
+
+    double findMedian() {
+        if (m > n)
+            return larger.top();
+        else
+            return double(larger.top() + lower.top()) / 2;
+    }
+};
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder* obj = new MedianFinder();
+ * obj->addNum(num);
+ * double param_2 = obj->findMedian();
+ */
+```
+
+
+
+## LCR161 连续天数的最高销售额 -E
+
+```cpp
+class Solution {
+public:
+    int maxSales(vector<int> &sales) {
+        int n = sales.size(), res;
+        vector<int> dp(n, 0);
+        dp[0] = sales[0];
+        res = dp[0];
+        for (int i = 1; i < n; ++i) {
+            dp[i] = std::max(dp[i - 1] + sales[i], sales[i]);
+            res = std::max(res, dp[i]);
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR162 数字1的个数 -H
+
+> ![image-20240524160043618](LeetCode/image-20240524160043618.png)
+>
+> ![image-20240524160052520](LeetCode/image-20240524160052520.png)
+>
+> ![image-20240524160100419](LeetCode/image-20240524160100419.png)
+
+```cpp
+class Solution {
+public:
+    int digitOneInNumber(int num) {
+        long digit = 1;
+        int high = num / 10, cur = num % 10, low = 0, res = 0;
+        while(high != 0 || cur != 0) {
+            if(cur == 0) res += high * digit;
+            else if(cur == 1) res += high * digit + low + 1;
+            else res += (high + 1) * digit;
+            low += cur * digit;
+            cur = high % 10;
+            high /= 10;
+            digit *= 10;
+        }
+        return res;
+    }
+};
+```
+
+
+
+## LCR163 找到第k位数字 -M
+
+> ![image-20240618090318724](LeetCode/image-20240618090318724.png)
+>
+> ![image-20240618090330537](LeetCode/image-20240618090330537.png)
+>
+> ![image-20240618090338547](LeetCode/image-20240618090338547.png)
+>
+> ![image-20240618090352106](LeetCode/image-20240618090352106.png)
+
+```cpp
+class Solution {
+public:
+    int findKthNumber(int k) {
+        int digit = 1;
+        long start = 1;
+        long count = 9;
+        while (k > count) { // 1.
+            k -= count;
+            start *= 10;
+            digit += 1;
+            count = digit * start * 9;
+        }
+        long num = start + (k - 1) / digit; // 2.
+        return to_string(num)[(k - 1) % digit] - '0'; // 3.
+    }
+};
+```
+
+
+
+## LCR165 解密数字 -M
+
+> 动态规划 带条件的跳跃训练(LCR127)
+
+```cpp
+//暴力
+class Solution {
+private:
+    set<string> st;
+    string str = "";
+
+    void recur(int num) {
+        if (num == 0) {
+            st.insert(str);
+            return;
+        }
+        string tmp;
+        if (num > 9 && num % 100 > 9 && num % 100 < 26) {
+            tmp = char(num % 100 + 'a');
+            str.insert(0, tmp);
+            recur(num / 100);
+            str = str.substr(1, str.length());
+        }
+        tmp = char(num % 10 + 'a');
+        str.insert(0, tmp);
+        recur(num / 10);
+        str = str.substr(1, str.length());
+    }
+
+public:
+    int crackNumber(int ciphertext) {
+        recur(ciphertext);
+        return st.size();
+    }
+};
+
+// 动规 从左到右
+class Solution {
+public:
+    int crackNumber(int ciphertext) {
+        string s = to_string(ciphertext);
+        int a = 1, b = 1, len = s.size();
+        for(int i = 2; i <= len; i++) {
+            string tmp = s.substr(i - 2, 2);
+            int c = tmp.compare("10") >= 0 && tmp.compare("25") <= 0 ? a + b : a;
+            b = a;
+            a = c;
+        }
+        return a;
+    }
+};
+
+// 动规 从右到左
+class Solution {
+public:
+    int crackNumber(int ciphertext) {
+        string s = to_string(ciphertext);
+        int a = 1, b = 1, len = s.size();
+        for(int i = len - 2; i > -1; i--) {
+            string tmp = s.substr(i, 2);
+            int c = tmp.compare("10") >= 0 && tmp.compare("25") <= 0 ? a + b : a;
+            b = a;
+            a = c;
+        }
+        return a;
+    }
+};
+
+// 动规 数字求余(从右到左)
+class Solution {
+public:
+    int crackNumber(int ciphertext) {
+        int a = 1, b = 1;
+        while(ciphertext > 9) {
+            int tmp = ciphertext % 100;
+            ciphertext /= 10;
+            int c = (tmp >= 10 && tmp <= 25) ? a + b : a;
+            b = a;
+            a = c;
+        }
+        return a;
+    }
+};
+```
+
+
+
+## LCR166 珠宝的最高价值 -M
+
+> 记忆化搜索
+
+```cpp
+class Solution {
+private:
+    int dfs(vector<vector<int>> &frame, vector<vector<int>> &memo, int x, int y) {
+        if (x < 0 || y < 0)
+            return 0;
+        if (memo[x][y] != 0)
+            return memo[x][y];
+        else
+            return memo[x][y] = max(dfs(frame, memo, x - 1, y) + frame[x][y], dfs(frame, memo, x, y - 1) + frame[x][y]);
+    }
+
+public:
+    int jewelleryValue(vector<vector<int>> &frame) {
+        vector<vector<int>> memo(frame.size(), vector<int>(frame[0].size(), 0));
+        return dfs(frame, memo, frame.size() - 1, frame[0].size() - 1);;
+    }
+};
 ```
 
