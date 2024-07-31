@@ -1679,6 +1679,8 @@ public:
 ## Q28 找出字符串中第一个匹配项的下标 -E
 
 > KMP算法
+>
+> https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/solutions/732461/dai-ma-sui-xiang-lu-kmpsuan-fa-xiang-jie-mfbs
 
 ```cpp
 // 暴力
@@ -1689,6 +1691,37 @@ public:
         for (int i = 0; i < n-length+1; ++i)
             if(haystack.substr(i,length)==needle)
                 return i;
+        return -1;
+    }
+};
+// KMP
+class Solution {
+public:
+    int strStr(string haystack, string needle) {
+        int m = haystack.size(), n = needle.size();
+        if (n == 0 || m == 0)
+            return 0;
+        vector<int> next(n);
+
+        next[0] = 0;
+        int pre = 0;
+        for (int cur = 1; cur < n; cur++) {
+            while (pre > 0 && needle[cur] != needle[pre])
+                pre = next[pre - 1];
+            if (needle[cur] == needle[pre])
+                pre++;
+            next[cur] = pre;
+        }
+
+        int i = 0, j = 0;
+        for (i = 0; i < m; i++) {
+            while (j > 0 && haystack[i] != needle[j])
+                j = next[j - 1];
+            if (haystack[i] == needle[j])
+                j++;
+            if (j == n)
+                return i - n + 1;
+        }
         return -1;
     }
 };
