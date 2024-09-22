@@ -1822,6 +1822,14 @@ spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
 	<artifactId>druid-spring-boot-starter</artifactId>
 	<version>1.2.21</version>
 </dependency>
+
+spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://
+spring.datasource.username=
+spring.datasource.password=
+spring.servlet.multipart.max-file-size=500MB
+spring.servlet.multipart.max-request-size=500MB
 ```
 
 

@@ -72,4 +72,11 @@ NVM：Node Version Manage，即Node的版本管理工具。使用NVM，可以很
     --dev	# 只显示开发环境依赖的包
     ```
 
+3. 删除已安装包
+
+    ```shell
+    npm uninstall xxx
+    npm uninstall $(npm ls --parseable --depth=0 | grep node_modules | sed 's/.*node_modules\///') --save
+    ```
+
     

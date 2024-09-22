@@ -478,6 +478,16 @@ export可以设置环境变量。使用 export 设置的变量就成为了环境
 
 配置全局环境变量时要使用`source /etc/profile`更新环境变量
 
+```shell
+# 1. 临时
+export xxx=yyy
+
+# 2. 当前用户添加
+vim ~/.bashrc
+export xxx=yyy	# 文件末尾添加
+source ~/.bashrc
+```
+
 
 
 # 环境变量PS1配置
@@ -669,12 +679,12 @@ echo $! > server.pid # 将最后一个后台进程的 PID 存储到一个文件 
     1. 在终端中执行以下命令：
 
         ```
-        
         ps aux
         ```
-
-        这会列出当前系统中的所有进程。每个进程都会显示其 PID（进程 ID）、PPID（父进程 ID）、CPU 使用情况、内存使用情况等信息。
-
+        
+    
+    这会列出当前系统中的所有进程。每个进程都会显示其 PID（进程 ID）、PPID（父进程 ID）、CPU 使用情况、内存使用情况等信息。
+    
 2. `top`
 
 
@@ -774,6 +784,8 @@ echo $! > server.pid # 将最后一个后台进程的 PID 存储到一个文件 
 # update-alternatives
 
 Ubuntu提供了`update-alternatives`工具来管理安装的多个版本
+
+> https://www.jb51.net/article/281665.htm
 
 ```bash
 sudo update-alternatives --config java
