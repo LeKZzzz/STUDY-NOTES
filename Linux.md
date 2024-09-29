@@ -791,3 +791,18 @@ Ubuntu提供了`update-alternatives`工具来管理安装的多个版本
 sudo update-alternatives --config java
 ```
 
+
+
+
+
+# sysctl.conf
+
+`sysctl.conf` 是一个配置文件，用于设置 Linux 系统内核参数。它通常位于 `/etc/sysctl.conf`。通过编辑这个文件，你可以调整系统的行为，比如网络设置、内存管理和安全性等。
+
+在启动时，系统会读取这个文件中的设置并应用它们。你也可以使用 `/sbin/sysctl -p` 命令在不重启系统的情况下重新加载这些设置。
+
+主要用途：
+
+- 配置网络参数（如启用或禁用 IPv6）。
+- 调整内核性能（如调节内存管理）。
+- 设置安全选项（如保护机制）。

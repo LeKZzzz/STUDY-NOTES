@@ -107,7 +107,12 @@
 
     `Undefined` 与 `null` 的值相等，但类型不相等
 
-9. `typeof` 运算符把数组返回为 "`object`"，因为在 JavaScript 中数组即对象
+9. NaN 的数据类型是数字
+    数组的数据类型是对象
+    日期的数据类型是对象
+    null 的数据类型是 object
+    未定义变量的数据类型为 undefined
+    未赋值的变量的数据类型也是 undefined
 
 
 
@@ -126,6 +131,30 @@
 > 
 >
 > JavaScript 拥有动态类型，这意味着相同变量可用作不同类型
+>
+> 
+>
+> 在 JavaScript 中有 5 种不同的可以包含值的数据类型：
+>
+> - `string`
+> - `number`
+> - `boolean`
+> - `object`
+> - `function`
+>
+> 有 6 种类型的对象：
+>
+> - `Object`
+> - `Date`
+> - `Array`
+> - `String`
+> - `Number`
+> - `Boolean`
+>
+> 以及 2 种不能包含值的数据类型：
+>
+> - `null`
+> - `undefined`
 
 ## var
 
